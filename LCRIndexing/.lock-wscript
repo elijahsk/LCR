@@ -1,0 +1,9 @@
+argv = ['waf', 'configure']
+blddir = '/Users/a692309/Documents/LCR/LCRIndexing/build'
+commands = {'dist': 0, 'configure': True, 'distcheck': 0, 'install': 0, 'build': 0, 'clean': 0, 'distclean': 0, 'check': 0, 'uninstall': 0}
+cwd = '/Users/a692309/Documents/LCR/LCRIndexing'
+environ = {'USERNAME': 'root', 'SSH_AUTH_SOCK': '/private/tmp/com.apple.launchd.xcYpsxryBY/Listeners', 'VERSIONER_PYTHON_PREFER_32_BIT': 'no', 'SUDO_UID': '502', 'LC_CTYPE': 'UTF-8', 'LOGNAME': 'root', 'USER': 'root', 'HOME': '/Users/a692309', 'PATH': '/anaconda3/bin:/Library/Frameworks/Python.framework/Versions/3.6/bin:/Library/Frameworks/Python.framework/Versions/3.6/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin', 'SUDO_GID': '20', 'SUDO_COMMAND': '/usr/bin/python2.7 waf configure', 'TERM': 'xterm-256color', 'SHELL': '/bin/sh', 'VERSIONER_PYTHON_VERSION': '2.7', '__CF_USER_TEXT_ENCODING': '0x0:0:0', 'MAIL': '/var/mail/root', 'SUDO_USER': 'a692309'}
+files = []
+hash = 0
+options = {'compile_targets': None, 'force': False, 'verbose': 0, 'nocache': False, 'progress_bar': 0, 'check_cxx_compiler': 'g++', 'destdir': '', 'keep': False, 'zones': '', 'blddir': '', 'prefix': '/usr/local/', 'download': False, 'srcdir': '', 'jobs': 8}
+srcdir = '/Users/a692309/Documents/LCR/LCRIndexing'

@@ -260,7 +260,7 @@ int main(int argc, char *argv[]) {
             index = new BFSIndex(graph);
 
         // LI+ (both extensions)
-        if( i == 1 )
+        if( i == 4 )
 	      {
             int k = 1250 + sqrt(N);
             int b = 20;
@@ -268,7 +268,7 @@ int main(int argc, char *argv[]) {
 	      }
 
         // LI (no extensions)
-        if( i == 2 )
+        if( i == 3 )
 	      {
             int k = 1250 + sqrt(N);
             int b = 20;
@@ -276,7 +276,7 @@ int main(int argc, char *argv[]) {
 	      }
 
         // Full-LI
-        if( i == 3 )
+        if( i == 2 )
 	      {
             int k = N;
             int b = 0;
@@ -284,7 +284,7 @@ int main(int argc, char *argv[]) {
 	      }
 
         // Zou
-        if( i == 4 )
+        if( i == 1 )
         {
             index = new Zou(graph);
         }

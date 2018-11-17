@@ -1,0 +1,2 @@
+cd ~/Documents/LCR/LCRIndexing
+./build/default/runExperiment ./tests/graphs/testGraph1.edge 1 ./output_test

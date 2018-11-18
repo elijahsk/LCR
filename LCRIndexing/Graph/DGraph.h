@@ -68,6 +68,7 @@ class DGraph : public Graph
         int computerNumberOfTriangles();
         int computeNumberOfConnectedTriplets();
         double computeClusterCoefficient();
+        void randomClustering(vector<vector<VertexID>>& SCCs);
         void tarjan(vector< vector<VertexID> >& SCCs);
         void tarjanStrongConnect(int v, int& index, stack<VertexID>& q, vector< int >& indexPerNode,
             vector< int >& lowlinkPerNode, vector< bool >& onStack, vector< vector<VertexID> >& SCCs);

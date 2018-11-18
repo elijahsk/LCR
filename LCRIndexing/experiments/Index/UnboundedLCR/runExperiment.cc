@@ -19,6 +19,7 @@
 #include "../../Index/UnboundedLCR/BFSIndex.cc"
 #include "../../Index/UnboundedLCR/LandmarkedIndex.cc"
 #include "../../Index/UnboundedLCR/Zou.cc"
+#include "../../Index/UnboundedLCR/New.cc"
 
 #include "../../Graph/DGraph.cc"
 
@@ -255,8 +256,9 @@ int main(int argc, char *argv[]) {
         Index* index;
 
         long altSize = -1;
-
-        if( i == 0 )
+        if (i == 0)
+            index = new New(graph);
+        if( i == 5 )
             index = new BFSIndex(graph);
 
         // LI+ (both extensions)

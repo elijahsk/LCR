@@ -13,6 +13,37 @@ using namespace std;
 
     namespace zhouns
     {
+        typedef struct
+        {
+            LabelSet ls;
+            VertexID x;
+            int dist;
+        }
+        BitEntry;
+
+        typedef vector< Triplet > BitEntries;
+
+        struct compBitEntries
+        {
+           bool operator()( const BitEntry& lhs,  const VertexID& rhs ) const
+           {
+               return lhs.x < rhs;
+           }
+
+           bool operator()( const VertexID& lhs, const BitEntry& rhs ) const
+           {
+               return lhs > rhs.x;
+           }
+        };
+
+        struct PQBitEntries
+        {
+            bool operator()(BitEntry const & t1, BitEntry const & t2)
+            {
+                // return "true" if "p1" is ordered before "p2", for example:
+                return t1.dist > t2.dist;
+            }
+        };
         //typedef pair< pair < LabelSet, vector< VertexID > >, int > NeighTriplet;
         typedef struct
         {
@@ -122,7 +153,8 @@ using namespace std;
             ~New();
 
             void buildIndex();
-            void buildIndex(int SCCID, Graph* graph);
+            void labeledBFSPerCluster(int cID, Graph* graph);
+            void labledBFSPerVertex(int cID, VertexID v, Graph* graph);
             void eDijkstra(int SCCID, VertexID v, Graph* graph);
 
             bool query(VertexID source, VertexID target, LabelSet ls);

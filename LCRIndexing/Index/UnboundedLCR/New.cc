@@ -123,10 +123,10 @@ void New::buildIndex()
 
     cout << "Step 2 (ID-maps and DAGedges found): " << print_digits( getCurrentTimeInMilliSec()-constStartTime, 2 ) << endl;
 
-    // build an index for each SCC first
+    // build an index for each cluster first
     for(int i = 0; i < subGraphs.size(); i++)
     {
-        buildIndex(i, subGraphs[i]);
+        labledBFSPerCluster(i, subGraphs[i]);
     }
 
     cout << "Step 3 (SCC indices built): " << print_digits( getCurrentTimeInMilliSec()-constStartTime, 2 ) << endl;
@@ -432,32 +432,85 @@ void New::buildIndex()
 
 };
 
-void New::buildIndex(int SCCID, Graph* sG)
+void New::labeledBFSPerCluster(int cID, Graph* sG)
 {
     int N = sG->getNumberOfVertices();
-    int q = max(N/10, 10);
     //cout << "buildIndex sG->N=" << N << " ,SCCID=" << SCCID << endl;
-
+    vector<bool> indexed = vector<bool>(N, false);
+    vector<vector<pair<VertexID, LabelSet>>> Ind; 
+    for (int i = 0; i < N; i++) {
+        vector<pair<VertexID, LabelSet>> temp;
+        Ind.push_back(temp);
+    }
     for(int i = 0; i < N; i++)
     {
         /*if( ((i%q == 0) || i == N-1) && i > 0 )
             cout << "buildIndex sG->i=" << i << endl;*/
-        eDijkstra(SCCID, i, sG);
+        // eDijkstra(SCCID, i, sG);
+        labeledBFSPerVertex(cID, i, sG, indexed, Ind);
     }
 };
 
-bool New::tryInsert(VertexID w, VertexID v, LabelSet ls)
-{
-    if( w == v )
-    {
-        return false;
+void New::labeledBFSPerVertex(int cID, VertexID v, Graph* sG, vector<bool>& indexed, vector<vector<pair<VertexID, LabelSet>>>& Ind) {
+    priority_queue< BitEntry, vector<BitEntry>, PQBitEntries > q;
+    BitEntry t;
+    t.x = v;
+    t.ls = 0;
+    t.dist = 0;
+
+    q.push(t);
+    while( q.empty() == false ) {
+        int roundNo = 0;
+        BitEntry tr = q.top();
+        VertexID v1 = tr.x;
+        VertexID ls1 = tr.ls;
+        q.pop();
+
+        if (v != v1) {
+            if (indexed[v] == true) {
+                for (int i = 0; i < Ind[v].size(); i++) {
+                    pair<VertexID, LabelSet>> p = Ind[v].at(i);
+                    tryInsert(v, p.first, p.second);
+                }
+            }
+            if (tryInsert(v, v1, ls1) == false) {
+                continue;
+            }
+        }
+
+        SmallEdgeSet ses;
+        sG->getOutNeighbours(v1, ses);
+
+        for(int i = 0; i < ses.size(); i++)
+        {
+            VertexID v2 = ses[i].first;
+            LabelSet ls2 = ses[i].second;
+            LabelSet ls3 = joinLabelSets(ls1, ls2);
+
+            if( v2 == w )
+            {
+                continue;
+            }
+
+            int dist = tr.dist;
+            if( ls3 != ls1 || ls3 != ls2 )
+            {
+                dist += 1; // labels are added one by one
+            }
+
+            BitEntry tr2;
+            tr2.x = v2;
+            tr2.ls = ls3;
+            tr2.dist = dist;
+            tr2.id = id2;
+
+            q.push( tr2 );
+        }
+
     }
-
-    bool b2 = tryInsertLabelSetToIndex(ls, w, v);
-    //cout << "tryInsert: w=" << w << ",v=" << v << ",ls=" << labelSetToString(ls) << ",b2=" << b2 << endl;
-
-    return b2;
+    indexed[v] = true;
 }
+
 
 void New::eDijkstra(int SCCID, VertexID v, Graph* sG)
 {
@@ -515,6 +568,18 @@ void New::eDijkstra(int SCCID, VertexID v, Graph* sG)
         tryInsert(vG,wG,ls);
     }
 };
+
+bool New::tryInsert(VertexID s, VertexID v, LabelSet ls)
+{
+    if( s == v ) {
+        return true;
+    }
+    
+    bool b2 = tryInsertLabelSetToIndex(ls, s, v);
+    //cout << "tryInsert: w=" << w << ",v=" << v << ",ls=" << labelSetToString(ls) << ",b2=" << b2 << endl;
+
+    return b2;
+}
 
 void New::produceNeighTriplets(NeighTriplet& nt, Graph* sG, NeighTriplets& nts)
 {

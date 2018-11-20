@@ -755,7 +755,6 @@ void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& v
             clusterCount ++;
         }
     }
-
 }
 
 void DGraph::tarjan(vector< vector<VertexID> >& SCCs)

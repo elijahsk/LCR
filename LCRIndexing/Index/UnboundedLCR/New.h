@@ -151,11 +151,13 @@ using namespace std;
         public:
             New(Graph* mg);
             ~New();
-
+            void initializeLocalIndexes();
             void buildIndex();
             void labeledBFSPerCluster(int cID, Graph* graph);
             void labledBFSPerVertex(int cID, VertexID v, Graph* graph);
             void eDijkstra(int SCCID, VertexID v, Graph* graph);
+            void getRBI(int cID, Graph* graph, vector<vector<VertexID>> clusters);
+            void getRRBI(int cID, Graph* graph, vector<vector<VertexID>> clusters);
 
             bool query(VertexID source, VertexID target, LabelSet ls);
             bool queryShell(VertexID source, VertexID target, LabelSet ls);
@@ -181,5 +183,8 @@ using namespace std;
             vector< vector < VertexID > > inPortals;
             vector< vector < VertexID > > outPortals;
             vector< vector < VertexID > > SCCs;
+            // each node -> a list of boundary nodes and respectively minimal labelset
+            vector<vector<pair<VerteID, vector<LabelSet>>> RBI;
+            vector<vector<pair<VerteID, vector<LabelSet>>> RRBI;
     };
 #endif

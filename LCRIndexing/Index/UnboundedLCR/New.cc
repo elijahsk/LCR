@@ -32,6 +32,16 @@ void New::queryAll(VertexID source, LabelSet ls, dynamic_bitset<>& canReach)
 
 };
 
+vpod New::initializeLocalIndexes() {
+    int N = graph->getNumberOfVertices();
+
+    for (int i = 0; i < N; i++) {
+        vector<pair<VertexID, vector<LabelSet>>> v1, v2;
+        RBI.push_back(v1);
+        RRBI.push_back(v2);
+    }
+}
+
 void New::buildIndex()
 {
     constStartTime = getCurrentTimeInMilliSec();
@@ -43,10 +53,12 @@ void New::buildIndex()
 
     // construct tIn or cIn
     initializeIndex();
+    initializeLocalIndexes();
 
-    // first we divide graph G into a set of SCC's
-    // we use a normal SCC for this, i.e. ignoring the edge labels
+    // first we divide graph G into a set of random clusters
+    // each cluster -> a list of vertexID
     clusters = vector< vector < VertexID > >();
+    // each vertex -> a cluster IDs
     vToCID = vector<int>(N, -1);
 
     // this->graph->tarjan(SCCs);
@@ -95,6 +107,14 @@ void New::buildIndex()
 
     //     countPerSCC[ iID ] += 1;
     // }
+    // position in each cluster starting from 0 to cluster.size() - 1
+    map<VertexID, int> positionInC;
+    for (int i = 0; i < clusters.size; i++) {
+        vector<VertexID> cluster = clusters.at[i];
+        for (j = 0; j < cluster.size(); j++) {
+            positionInC[cluster[j]] = j;
+        }
+    }
 
     for(int i = 0; i < N; i++)
     {
@@ -111,12 +131,12 @@ void New::buildIndex()
             {
                 // int jSID = vToSubGraphID[ ses[j].first ];
                 //cout << "- ses[j].first =" << ses[j].first << ", jID=" << iID << ", jSID=" << jSID << endl;
-                subGraphs[iCID]->addEdge( i, ses[j].first, labelSetToLabelID(ses[j].second) );
+                subGraphs[iCID]->addEdge( positionInC.at(i), positionInC.at(ses[j].first), labelSetToLabelID(ses[j].second) );
             }
             else
             {
                 // DAGedges.push_back( make_pair(i, make_pair( ses[j].first, ses[j].second )) );
-                boundaryNodesPerCluster.at[iCID].push_back(i);
+                boundaryNodesPerCluster.at[iCID].push_back(positionInC.at(i));
             }
         }
     }
@@ -127,6 +147,8 @@ void New::buildIndex()
     for(int i = 0; i < subGraphs.size(); i++)
     {
         labledBFSPerCluster(i, subGraphs[i]);
+        getRBI(i, subGraphs[i], clusters);
+        getRRBI(i, subGraphs[i], clusters);
     }
 
     cout << "Step 3 (SCC indices built): " << print_digits( getCurrentTimeInMilliSec()-constStartTime, 2 ) << endl;
@@ -437,21 +459,19 @@ void New::labeledBFSPerCluster(int cID, Graph* sG)
     int N = sG->getNumberOfVertices();
     //cout << "buildIndex sG->N=" << N << " ,SCCID=" << SCCID << endl;
     vector<bool> indexed = vector<bool>(N, false);
-    vector<vector<pair<VertexID, LabelSet>>> Ind; 
-    for (int i = 0; i < N; i++) {
-        vector<pair<VertexID, LabelSet>> temp;
-        Ind.push_back(temp);
-    }
     for(int i = 0; i < N; i++)
     {
+        for (int i = 0; i < N; i++) {
+            tIn.at(i).clear();
+        }
         /*if( ((i%q == 0) || i == N-1) && i > 0 )
             cout << "buildIndex sG->i=" << i << endl;*/
         // eDijkstra(SCCID, i, sG);
-        labeledBFSPerVertex(cID, i, sG, indexed, Ind);
+        labeledBFSPerVertex(cID, i, sG, indexed);
     }
 };
 
-void New::labeledBFSPerVertex(int cID, VertexID v, Graph* sG, vector<bool>& indexed, vector<vector<pair<VertexID, LabelSet>>>& Ind) {
+void New::labeledBFSPerVertex(int cID, VertexID v, Graph* sG, vector<bool>& indexed) {
     priority_queue< BitEntry, vector<BitEntry>, PQBitEntries > q;
     BitEntry t;
     t.x = v;
@@ -468,8 +488,8 @@ void New::labeledBFSPerVertex(int cID, VertexID v, Graph* sG, vector<bool>& inde
 
         if (v != v1) {
             if (indexed[v] == true) {
-                for (int i = 0; i < Ind[v].size(); i++) {
-                    pair<VertexID, LabelSet>> p = Ind[v].at(i);
+                for (int i = 0; i < tIn[v].size(); i++) {
+                    pair<VertexID, LabelSet>> p = tIn[v].at(i);
                     tryInsert(v, p.first, p.second);
                 }
             }
@@ -509,6 +529,45 @@ void New::labeledBFSPerVertex(int cID, VertexID v, Graph* sG, vector<bool>& inde
 
     }
     indexed[v] = true;
+}
+
+bool New::tryInsert(VertexID s, VertexID v, LabelSet ls)
+{
+    if( s == v ) {
+        return true;
+    }
+    
+    bool b2 = tryInsertLabelSetToIndex(ls, s, v);
+    //cout << "tryInsert: w=" << w << ",v=" << v << ",ls=" << labelSetToString(ls) << ",b2=" << b2 << endl;
+    return b2;
+}
+
+void New:getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
+    int N = sG->getNumberOfVertices();
+    vector<VertexID> boundaryNodes = boundaryNodesPerCluster.at(cID);
+    for (int i = 0; i < N; i++) {
+        vector<pair<VertexID, vector<LabelSet>>> RBPerVertex;
+        vector<pair<VertexID, vector<LabelSet>>> closure = tIn.at(i);
+        for (int j = 0; j < closure.size(); j++) {
+            if (find(boundaryNodes.begin(), boundaryNodes.end(), j) != boundaryNodes.end()) {
+                RBPerVertex.push_back(closure.at(j));
+            }
+        }
+        RBI.at(clusters.at(cID).at(i)) = RBPerVertex;
+    }
+}
+
+void New::getRRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
+    int N = sG->getNumberOfVertices();
+    vector<VertexID> boundaryNodes = boundaryNodesPerCluster.at(cID);
+    for (int i = 0; i < boundaryNodes.size(); i++) {
+        vector<pair<VertexID, vector<LabelSet>>> closure = tIn.at(i);
+        for (int j = 0; j < closure.size(); j++) {
+            vector<LabelSet> RRBInstanceLabelSets = closure.at(j).second;
+            VertexID vPositionInC = closure.at(j).first;
+            RRBI.at(clusters.at(cID).at(vPositionInC)).push_back(make_pair(boundaryNodes.at(i), RRBInstanceLabelSets));
+        }
+    }
 }
 
 
@@ -568,18 +627,6 @@ void New::eDijkstra(int SCCID, VertexID v, Graph* sG)
         tryInsert(vG,wG,ls);
     }
 };
-
-bool New::tryInsert(VertexID s, VertexID v, LabelSet ls)
-{
-    if( s == v ) {
-        return true;
-    }
-    
-    bool b2 = tryInsertLabelSetToIndex(ls, s, v);
-    //cout << "tryInsert: w=" << w << ",v=" << v << ",ls=" << labelSetToString(ls) << ",b2=" << b2 << endl;
-
-    return b2;
-}
 
 void New::produceNeighTriplets(NeighTriplet& nt, Graph* sG, NeighTriplets& nts)
 {

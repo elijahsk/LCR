@@ -154,10 +154,13 @@ using namespace std;
             void initializeLocalIndexes();
             void buildIndex();
             void labeledBFSPerCluster(int cID, Graph* graph);
-            void labledBFSPerVertex(int cID, VertexID v, Graph* graph);
+            void labeldBFSPerVertex(int cID, VertexID v, Graph* graph);
+            void labeldBFSAcrossClusters(int cID, vector<vector<VertexID>> clusters, vector<bool>* BNIndexed);
+            void tryInsert(VertexID s, VertexID v, LabelSet ls);
             void eDijkstra(int SCCID, VertexID v, Graph* graph);
             void getRBI(int cID, Graph* graph, vector<vector<VertexID>> clusters);
             void getRRBI(int cID, Graph* graph, vector<vector<VertexID>> clusters);
+            void getRRCI(int cID, Graph* graph);
 
             bool query(VertexID source, VertexID target, LabelSet ls);
             bool queryShell(VertexID source, VertexID target, LabelSet ls);
@@ -177,14 +180,18 @@ using namespace std;
 
         private:
             vector<Graph*> subGraphs;
-            vector< int > vToSubGraphID, vToSCCID;
+            vector<int> vToSubGraphID;
+            vector<int> vToCID;
+            map<VertexID, int> positionInC;
+            vector<bool> isBoundaryNode;
             Graph* D;
 
             vector< vector < VertexID > > inPortals;
             vector< vector < VertexID > > outPortals;
             vector< vector < VertexID > > SCCs;
             // each node -> a list of boundary nodes and respectively minimal labelset
-            vector<vector<pair<VerteID, vector<LabelSet>>> RBI;
-            vector<vector<pair<VerteID, vector<LabelSet>>> RRBI;
+            vector<vector<pair<VertexID, vector<LabelSet>>>> RBI;
+            vector<vector<pair<VertexID, vector<LabelSet>>>> RRBI;
     };
+
 #endif

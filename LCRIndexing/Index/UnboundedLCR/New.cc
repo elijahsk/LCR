@@ -60,6 +60,7 @@ void New::buildIndex()
     clusters = vector< vector < VertexID > >();
     // each vertex -> a cluster IDs
     vToCID = vector<int>(N, -1);
+    isBoundaryNode = vector<bool>(N, false);
 
     // this->graph->tarjan(SCCs);
     this->graph->randomClustering(clusters, vToCID)
@@ -108,7 +109,6 @@ void New::buildIndex()
     //     countPerSCC[ iID ] += 1;
     // }
     // position in each cluster starting from 0 to cluster.size() - 1
-    map<VertexID, int> positionInC;
     for (int i = 0; i < clusters.size; i++) {
         vector<VertexID> cluster = clusters.at[i];
         for (j = 0; j < cluster.size(); j++) {
@@ -136,7 +136,17 @@ void New::buildIndex()
             else
             {
                 // DAGedges.push_back( make_pair(i, make_pair( ses[j].first, ses[j].second )) );
-                boundaryNodesPerCluster.at[iCID].push_back(positionInC.at(i));
+                if (isBoundaryNode[i] == false) {
+                    boundaryNodesPerCluster.at[iCID].push_back(positionInC.at(i));    
+                    isBoundaryNode[i] = true;
+                }
+                if (isBoundaryNode[ses[j].first] == false) {
+                    boundaryNodesPerCluster.at[jCID].push_back(positionInC.at(ses[j].first));    
+                    isBoundaryNode[ses[j].first] = true;    
+                }
+                
+                
+                
             }
         }
     }
@@ -151,6 +161,12 @@ void New::buildIndex()
         getRRBI(i, subGraphs[i], clusters);
     }
 
+    initializeIndex();
+    vector<bool> BNIndexed = vector<bool>(N, false);
+    for (inti i = 0; i < clusters.size(); i++) {
+        LabeledBFSAcrossClusters(i, clusters, &BNIndexed);
+        getRRCI(i, subGraphs[i]);
+    }
     cout << "Step 3 (SCC indices built): " << print_digits( getCurrentTimeInMilliSec()-constStartTime, 2 ) << endl;
 
     // create DAG D
@@ -483,7 +499,7 @@ void New::labeledBFSPerVertex(int cID, VertexID v, Graph* sG, vector<bool>& inde
         int roundNo = 0;
         BitEntry tr = q.top();
         VertexID v1 = tr.x;
-        VertexID ls1 = tr.ls;
+        LabelSet ls1 = tr.ls;
         q.pop();
 
         if (v != v1) {
@@ -492,6 +508,7 @@ void New::labeledBFSPerVertex(int cID, VertexID v, Graph* sG, vector<bool>& inde
                     pair<VertexID, LabelSet>> p = tIn[v].at(i);
                     tryInsert(v, p.first, p.second);
                 }
+                continue;
             }
             if (tryInsert(v, v1, ls1) == false) {
                 continue;
@@ -522,7 +539,6 @@ void New::labeledBFSPerVertex(int cID, VertexID v, Graph* sG, vector<bool>& inde
             tr2.x = v2;
             tr2.ls = ls3;
             tr2.dist = dist;
-            tr2.id = id2;
 
             q.push( tr2 );
         }
@@ -542,7 +558,7 @@ bool New::tryInsert(VertexID s, VertexID v, LabelSet ls)
     return b2;
 }
 
-void New:getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
+void New::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
     int N = sG->getNumberOfVertices();
     vector<VertexID> boundaryNodes = boundaryNodesPerCluster.at(cID);
     for (int i = 0; i < N; i++) {
@@ -570,6 +586,85 @@ void New::getRRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
     }
 }
 
+void New::labeldBFSAcrossClusters(int cID, Graph* graph, vector<vector<VertexID>> clusters, vector<bool>* BNIndexed) {
+    vector<VertexID> boundaryNodes = boundaryNodesPerCluster.at(cID);
+    for (int i = 0; i < boundaryNodes.size(); i++) {
+        globalVID = clusters.at(cID).at(i);
+        priority_queue< BitEntry, vector<BitEntry>, PQBitEntries > q;
+        BitEntry t;
+        t.x = i;
+        t.ls = 0;
+        t.dist = 0;
+
+        q.push(t);
+
+        while (q.empty() == false) {
+            BitEntry tr = q.top();
+            VertexID v1 = tr.x;
+            LabelSet ls1 = tr.ls;
+            q.pop();
+
+            if (tryInsert(globalVID, v1, ls1) == false) {
+                continue;
+            }
+            if (BNIndexed[globalVID] == true) {
+                for (int i = 0; i < tIn[globalVID].size(); i++) {
+                    pair<VertexID, LabelSet>> p = tIn[globalVID].at(i);
+                    tryInsert(v, p.first, p.second);
+                }
+                continue;
+            }
+
+            SmallEdgeSet ses;
+            graph->getOutNeighbours(v1, ses);
+            for (int i = 0; i < ses.size(); i++) {
+                VertexID v2 = ses[i].first;
+                LabelSet ls2 = ses[i].second;
+                LabelSet ls3 = joinLabelSets(ls1, ls2);
+
+                if (vToCID.at(v2) != cID) {
+                    if (isBoundaryNode[v2] == true) {
+                        int dist = tr.dist;
+                        if( ls3 != ls1 || ls3 != ls2 )
+                        {
+                            dist += 1; // labels are added one by one
+                        }
+
+                        BitEntry tr2;
+                        tr2.x = v2;
+                        tr2.ls = ls3;
+                        tr2.dist = dist;
+
+                        q.push( tr2 );
+                    }
+                } 
+            }
+            if (vToCID.at(v1) == CID) {
+                continue;
+            }
+            vector<pair<VertexID, vector<LabelSet>>> RBIv1 = RBI.at(v1);
+            for (int i = 0; i < RBIv.size(); i++) {
+                Vertex v2 = RBIv1.at(i).first;
+                if (isBoundaryNode[v2] == true) {
+                    LabelSet ls2 = RBIv1.at(i).second;
+                    LabelSet ls3 = joinLabelSets(ls1, ls2);
+                    int dist = tr.dist;
+                    if( ls3 != ls1 || ls3 != ls2 )
+                    {
+                        dist += 1; // labels are added one by one
+                    }
+
+                    BitEntry tr2;
+                    tr2.x = v2;
+                    tr2.ls = ls3;
+                    tr2.dist = dist;
+
+                    q.push( tr2 );
+                }
+            }
+        }
+    }
+}
 
 void New::eDijkstra(int SCCID, VertexID v, Graph* sG)
 {

@@ -37,8 +37,10 @@ vpod New::initializeLocalIndexes() {
 
     for (int i = 0; i < N; i++) {
         vector<pair<VertexID, vector<LabelSet>>> v1, v2;
+        vector<pair<int, vector<LabelSet>>> v3;
         RBI.push_back(v1);
         RRBI.push_back(v2);
+        RRCI.push_back(v3)
     }
 }
 
@@ -165,7 +167,7 @@ void New::buildIndex()
     vector<bool> BNIndexed = vector<bool>(N, false);
     for (inti i = 0; i < clusters.size(); i++) {
         LabeledBFSAcrossClusters(i, clusters, &BNIndexed);
-        getRRCI(i, subGraphs[i]);
+        getRRCI(i);
     }
     cout << "Step 3 (SCC indices built): " << print_digits( getCurrentTimeInMilliSec()-constStartTime, 2 ) << endl;
 
@@ -662,6 +664,22 @@ void New::labeldBFSAcrossClusters(int cID, Graph* graph, vector<vector<VertexID>
                     q.push( tr2 );
                 }
             }
+        }
+        BNIndexed[i] = true;
+    }
+}
+
+void New::getRRCI(int cID) {
+    vector<VertexID> boundaryNodes = boundaryNodesPerCluster.at(cID);
+    for (int i = 0; i < boundaryNodes.size(); i++) {
+        int globalVID = clusters.at(cID).at(i);
+        vector<pair<VertexID, vector<LabelSet>>> closure = tIn[globalVID];
+        for (int j = 0; j < closure.size(); j++) {
+            int v1 = closure.at(j).first;
+            vector<LabelSet> lss = closure.at(j).second;
+            int cIDj = vToCID(v1);
+            vector<pair<int, vector<LabelSet>>> RRCIj  = RRCI.at(cIDj);
+            RRCIj.push_back(make_pair(cID, lss));
         }
     }
 }

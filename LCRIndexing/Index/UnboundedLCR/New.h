@@ -160,7 +160,7 @@ using namespace std;
             void eDijkstra(int SCCID, VertexID v, Graph* graph);
             void getRBI(int cID, Graph* graph, vector<vector<VertexID>> clusters);
             void getRRBI(int cID, Graph* graph, vector<vector<VertexID>> clusters);
-            void getRRCI(int cID, Graph* graph);
+            void getRRCI(int cID);
 
             bool query(VertexID source, VertexID target, LabelSet ls);
             bool queryShell(VertexID source, VertexID target, LabelSet ls);
@@ -192,6 +192,8 @@ using namespace std;
             // each node -> a list of boundary nodes and respectively minimal labelset
             vector<vector<pair<VertexID, vector<LabelSet>>>> RBI;
             vector<vector<pair<VertexID, vector<LabelSet>>>> RRBI;
+            // each cluster -> a list of clusters and minimal labelset
+            vector<vector<pair<int, vector<LabelSet>>>> RRCI;
     };
 
 #endif

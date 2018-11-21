@@ -426,12 +426,14 @@ void DGraph::addEdge(VertexID v, VertexID w, LabelID newLabel)
 
     bool b1 = findInsertablePosition(w, outE[v], pos1);
     bool b2 = findInsertablePosition(v, inE[w], pos2);
-
+    allowMultipleEdges = true;
     if( (b1 == true || b2 == true) && allowMultipleEdges == false )
     {
         cerr << " DGraph::addEdge vw edge already exists w=" << w  << ",v=" << v << endl;
         return;
     }
+    cout << "test" << endl;
+    allowMultipleEdges = false;
 
     LabelSet ls = labelIDToLabelSet( newLabel );
     outE[v].insert( outE[v].begin() + pos1, make_pair(w, ls));
@@ -722,16 +724,16 @@ void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& v
 
     // randomly choose k edges
     int randomK = rand() % M + 1;
+    randomK = 5;
     for (int i = 0; i < randomK; i++) {
         int randomV = rand() % N + 1;
         int numOfOutE = outE.at(randomV).size();
-
         while (numOfOutE == 0){
             randomV = rand() % N + 1;
             numOfOutE = outE.at(randomV).size();
         }
 
-        int randomW = rand() % numOfOutE;
+        int randomW = outE.at(randomV).at(rand() % numOfOutE).first;
         int targetCluster = (int)tempV[randomW];
         int sourceCluster = (int)tempV[randomV];
         vector<VertexID> targetVertices = tempC[targetCluster];
@@ -741,9 +743,10 @@ void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& v
         sourceVertices.insert(sourceVertices.end(), targetVertices.begin(), targetVertices.end());
         int targetVerticesSize = targetVertices.size();
         for(int i = 0; i < targetVerticesSize; i++) {
-            tempV[i] = sourceCluster;
+            tempV[targetVertices.at(i)] = sourceCluster;
         }
-        targetVertices.clear();
+        tempC[targetCluster].clear();
+        tempC[sourceCluster] = sourceVertices;
     }
 
     int clusterCount = 0;

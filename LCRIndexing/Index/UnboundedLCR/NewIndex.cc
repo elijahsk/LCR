@@ -50,7 +50,6 @@ void NewIndex::buildIndex()
 
     int N = graph->getNumberOfVertices();
     int L = graph->getNumberOfLabels();
-
     this->didComplete = false;
 
     // construct tIn or cIn
@@ -66,7 +65,15 @@ void NewIndex::buildIndex()
 
     // this->graph->tarjan(SCCs);
     this->graph->randomClustering(clusters, vToCID);
-
+    
+    cout<<"cluster size "<<clusters.size()<<endl;
+    for (int i = 0; i < clusters.size(); i++) {
+        vector<VertexID> cluster = clusters.at(i);
+        for (int j = 0; j < cluster.size(); j++) {
+            cout << cluster.at(j) << " ";
+        }
+        cout << endl;
+    }
     // create a subgraph for each SCC containing only the right edges
     subGraphs = vector< Graph* >();
     vector< int > countPerCluster = vector< int >(clusters.size(), 0);
@@ -119,22 +126,51 @@ void NewIndex::buildIndex()
                     boundaryNodesPerCluster.at(jCID).push_back(positionInC.at(ses[j].first));    
                     isBoundaryNode[ses[j].first] = true;    
                 }
-                
-                
-                
             }
         }
     }
 
+    subGraphs[4]->addEdge(1, 2, labelSetToLabelID(4));
+    cout << subGraphs[4]->toString() << endl;
+    // for (int i = 0; i < N; i++) {
+    //     cout << i << ' ' << isBoundaryNode[i] << endl;
+    // }
+
     cout << "Step 2 (ID-maps and DAGedges found): " << print_digits( getCurrentTimeInMilliSec()-constStartTime, 2 ) << endl;
 
     // build an index for each cluster first
-    for(int i = 0; i < subGraphs.size(); i++)
-    {
+    for(int i = 0; i < subGraphs.size(); i++) {
         labeledBFSPerCluster(i, subGraphs[i]);
         getRBI(i, subGraphs[i], clusters);
         getRRBI(i, subGraphs[i], clusters);
     }
+
+    // for (int i = 0; i < N; i++) {
+    //     cout << "vertex: " << i << " can reach BN: " << endl;
+    //     vector<pair<VertexID, vector<LabelSet>>> RBIPerNode = this->RBI.at(i);
+    //     for (int j = 0; j < RBIPerNode.size(); j++) {
+    //         cout << RBIPerNode.at(j).first << " (";
+    //         vector<LabelSet> lss = RBIPerNode.at(j).second;
+    //         for (int k = 0; k < lss.size();  k++) {
+    //             cout << lss.at(k) << " ";
+    //         }
+    //         cout << ")" << endl;
+    //     }
+    // }
+
+    // for (int i = 0; i < N; i++) {
+    //     cout << "vertex: " << i << " can reached by BN: " << endl;
+    //     vector<pair<VertexID, vector<LabelSet>>> RBIPerNode = this->RRBI.at(i);
+    //     for (int j = 0; j < RBIPerNode.size(); j++) {
+    //         cout << RBIPerNode.at(j).first << " (";
+    //         vector<LabelSet> lss = RBIPerNode.at(j).second;
+    //         for (int k = 0; k < lss.size();  k++) {
+    //             cout << lss.at(k) << " ";
+    //         }
+    //         cout << ")" << endl;
+    //     }
+    // }
+
 
     initializeIndex();
     vector<bool> BNIndexed = vector<bool>(N, false);
@@ -143,22 +179,47 @@ void NewIndex::buildIndex()
         getRRCI(i);
     }
     cout << "Step 3 (SCC indices built): " << print_digits( getCurrentTimeInMilliSec()-constStartTime, 2 ) << endl;
+    this->didComplete = true;
+    constEndTime = getCurrentTimeInMilliSec();
+    totalConstTime = constEndTime - constStartTime;
+
 };
 
 void NewIndex::labeledBFSPerCluster(int cID, Graph* sG)
 {
+
     int N = sG->getNumberOfVertices();
-    //cout << "buildIndex sG->N=" << N << " ,SCCID=" << SCCID << endl;
+    cout << "buildIndex sG->N=" << N << " ,cID=" << cID << endl;
     vector<bool> indexed = vector<bool>(N, false);
+
+    for (int i = 0; i < N; i++) {
+        tIn.at(i).clear();
+    }
+
     for(int i = 0; i < N; i++)
     {
-        for (int i = 0; i < N; i++) {
-            tIn.at(i).clear();
-        }
-        /*if( ((i%q == 0) || i == N-1) && i > 0 )
-            cout << "buildIndex sG->i=" << i << endl;*/
-        // eDijkstra(SCCID, i, sG);
+        // cout <<"At vertex: " << i << endl;
         labeledBFSPerVertex(cID, i, sG, indexed);
+    }
+    if (cID == 4) {
+        SmallEdgeSet ses;
+        sG->getOutNeighbours(1, ses);
+        for (int i = 0; i < ses.size(); i++) {
+            cout<<ses[i].first << " " << ses[i].second << endl;
+        }
+        for (int x = 0; x < N; x++) {
+            int wCount = tIn.at(x).size();
+            cout << x << ": ";
+            for (int j = 0; j < wCount; j++) {
+                int lsCount = tIn.at(x).at(j).second.size();
+                cout << tIn.at(x).at(j).first << "(";
+                for (int k = 0; k < lsCount; k++) {
+                    cout << tIn.at(x).at(j).second.at(k) << " ";
+                }
+                cout << ")";
+            }
+            cout << endl;
+        }
     }
 };
 
@@ -171,11 +232,12 @@ void NewIndex::labeledBFSPerVertex(int cID, VertexID v, Graph* sG, vector<bool>&
 
     q.push(t);
     while( q.empty() == false ) {
-        int roundNo = 0;
+        cout<<"Queue size: "<<q.size()<<endl;
         NewIndexBitEntry tr = q.top();
         VertexID v1 = tr.x;
         LabelSet ls1 = tr.ls;
         q.pop();
+        // cout<<"Next element: "<<v1<<" "<<ls1<<endl;
 
         if (v != v1) {
             if (indexed[v] == true) {
@@ -200,6 +262,7 @@ void NewIndex::labeledBFSPerVertex(int cID, VertexID v, Graph* sG, vector<bool>&
         {
             VertexID v2 = ses[i].first;
             LabelSet ls2 = ses[i].second;
+            // cout<<"Add to queue: "<<v2 <<" "<<ls2<<endl;
             LabelSet ls3 = joinLabelSets(ls1, ls2);
 
             if( v2 == v1 )
@@ -238,12 +301,11 @@ bool NewIndex::tryInsert(VertexID s, VertexID v, LabelSet ls)
 
 void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
     int N = sG->getNumberOfVertices();
-    vector<VertexID> boundaryNodes = this->boundaryNodesPerCluster.at(cID);
     for (int i = 0; i < N; i++) {
         vector<pair<VertexID, vector<LabelSet>>> RBPerVertex;
         vector<pair<VertexID, vector<LabelSet>>> closure = tIn.at(i);
         for (int j = 0; j < closure.size(); j++) {
-            if (find(boundaryNodes.begin(), boundaryNodes.end(), j) != boundaryNodes.end()) {
+            if (isBoundaryNode[clusters.at(cID).at(closure.at(j).first)]) {
                 RBPerVertex.push_back(closure.at(j));
             }
         }

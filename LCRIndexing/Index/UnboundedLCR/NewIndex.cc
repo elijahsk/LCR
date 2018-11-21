@@ -55,6 +55,7 @@ void NewIndex::buildIndex()
     this->didComplete = false;
 
     // construct tIn or cIn
+
     initializeIndex();
     initializeLocalIndexes();
 
@@ -64,7 +65,6 @@ void NewIndex::buildIndex()
     // each vertex -> a cluster IDs
     this->vToCID = vector<int>(N, -1);
     this->isBoundaryNode = vector<bool>(N, false);
-
     // this->graph->tarjan(SCCs);
     this->graph->randomClustering(clusters, vToCID);
     
@@ -130,7 +130,7 @@ void NewIndex::buildIndex()
         }
     }
 
-    subGraphs[4]->addEdge(1, 2, labelSetToLabelID(4));
+    // subGraphs[4]->addEdge(1, 2, labelSetToLabelID(4));
     // cout << subGraphs[4]->toString() << endl;
     // for (int i = 0; i < N; i++) {
     //     cout << i << ' ' << isBoundaryNode[i] << endl;
@@ -193,6 +193,19 @@ void NewIndex::buildIndex()
     //         cout << ")";
     //     }
     //     cout << endl;
+    // // }
+    // for (int i = 0; i < clusters.size(); i++) {
+    //     vector<pair<int, vector<LabelSet>>> RRCIi = RRCI.at(i);
+    //     cout << i << ": ";
+    //     for (int j = 0; j < RRCIi.size(); j++) {
+    //         cout << RRCIi.at(j).first << "(";
+    //         vector<LabelSet> lss = RRCIi.at(j).second;
+    //         for (int k = 0; k < lss.size(); k++) {
+    //             cout << lss.at(k) << " ";
+    //         }
+    //         cout << ") ";
+    //     }
+    //     cout << endl;
     // }
     cout << "Step 3 (RRCI indices built): " << print_digits( getCurrentTimeInMilliSec()-constStartTime, 2 ) << endl;
     this->didComplete = true;
@@ -205,7 +218,7 @@ void NewIndex::labeledBFSPerCluster(int cID, Graph* sG)
 {
 
     int N = sG->getNumberOfVertices();
-    cout << "buildIndex sG->N=" << N << " ,cID=" << cID << endl;
+    // cout << "buildIndex sG->N=" << N << " ,cID=" << cID << endl;
     vector<bool> indexed = vector<bool>(N, false);
 
     for (int i = 0; i < N; i++) {
@@ -248,13 +261,12 @@ void NewIndex::labeledBFSPerVertex(int cID, VertexID v, Graph* sG, vector<bool>&
 
     q.push(t);
     while( q.empty() == false ) {
-        cout<<"Queue size: "<<q.size()<<endl;
+        // cout<<"Queue size: "<<q.size()<<endl;
         NewIndexBitEntry tr = q.top();
         VertexID v1 = tr.x;
         LabelSet ls1 = tr.ls;
         q.pop();
         // cout<<"Next element: "<<v1<<" "<<ls1<<endl;
-
         if (v != v1) {
             if (tryInsert(v, v1, ls1) == false) {
                 continue;
@@ -465,7 +477,6 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls)
 {
     if(source == target)
         return true;
-
     if( ls == 0 )
         return false;
 
@@ -510,7 +521,6 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls)
                 continue;
             }
             marked[x] = 1;
-            visitedSetSize++;
 
             SmallEdgeSet ses;
             graph->getOutNeighbours(x, ses);
@@ -526,16 +536,20 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls)
     }
 
     unordered_set<int> X;
-    vector<pair<int, vector<LabelSet>>> RRCIt = RRCI.at(target);
+    vector<pair<int, vector<LabelSet>>> RRCIt = RRCI.at(vToCID[target]);
     for (int i = 0; i < RRCIt.size(); i++) {
+        // cout << RRCIt.at(i).first << " ";
         vector<LabelSet> lss = RRCIt.at(i).second;
         for (int j = 0; j < lss.size(); j++) {
+            // cout << lss.at(j) << " " << (joinLabelSets(ls, lss.at(j)) == ls) << " xxx";
             if (joinLabelSets(ls, lss.at(j)) == ls) {
                 X.insert(RRCIt.at(i).first);
                 break;
             }
         } 
+        // cout << endl;
     }
+    X.insert(vToCID[target]);
 
     if (X.find(vToCID[source]) == X.end()) {
         return false;
@@ -552,6 +566,11 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls)
             }
         } 
     }
+
+    if (isBoundaryNode[source]) {
+        BS.insert(source);
+    }
+
     if (BS.empty()) {
         return false;
     }
@@ -568,11 +587,17 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls)
         } 
     }
 
+    if (isBoundaryNode[target]) {
+        BT.insert(target);
+    }
+
     if (BT.empty()) {
         return false;
     }
 
-    int N = graph->getNumberOfVertices;
+    // cout << "BT Size: " << BT.size() << endl;
+
+    int N = graph->getNumberOfVertices();
     map<VertexID, int> BNToID;
     vector<bool> visited;
     int count = 0;
@@ -583,18 +608,27 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls)
             count ++;
         }
     }
+    // for (int i = 0; i < visited.size(); i++) {
+    //     cout << visited[i] << " ";
+    // }
+    // cout << endl;
 
     while (!BS.empty()) {
         unordered_set<int> BS1;
-        for (set<int>::iterator i = BS.begin(); i != BS.end(); i++) {
+        for (unordered_set<int>::iterator i = BS.begin(); i != BS.end(); i++) {
+            // cout << "v in BS: " << *i << endl;
             vector<pair<VertexID, vector<LabelSet>>> RBIi = RBI.at(*i);
+            // cout << "RBIi size: " << RBIi.size() << endl; 
             for (int j = 0; j < RBIi.size(); j++) {
-                if (visited[BNToID[RBIi.at(j).first]] == false) { 
+                int globalVID = clusters.at(vToCID[*i]).at(RBIi.at(j).first);
+                // cout << "globalVID: " << globalVID << endl;
+                if (visited[BNToID[globalVID]] == false) { 
                     vector<LabelSet> lss = RBIi.at(j).second;
                     for (int k = 0; k < lss.size(); k++) {
                         if (joinLabelSets(lss.at(k), ls) == ls) {
-                            BS1.insert(RBIi.at(j).first);
-                            visited[BNToID[RBIi.at(j).first]] = true;
+                            BS1.insert(globalVID);
+                            // cout << "Inserted!" << endl;
+                            visited[BNToID[globalVID]] = true;
                             break;
                         }
                     }
@@ -604,10 +638,20 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls)
             SmallEdgeSet ses;
             graph->getOutNeighbours(*i, ses);
             for (int j = 0; j < ses.size(); j++) {
-                VertexID v2 = ses[i].first;
-                LabelSet ls2 = ses[i].second;
+                VertexID v2 = ses[j].first;
+                LabelSet ls2 = ses[j].second;
+                // cout << "v2: " << v2 << " ls2 :" << ls2 << endl;
+                // cout << "Cv: " << vToCID[*i] << " Cv2: "<< vToCID[v2] << endl;
+                // cout << "ls: " << joinLabelSets(ls2, ls) << endl;
+                // cout << "visited? " << visited[BNToID[v2]] << endl;
+                // for (unordered_set<int>::iterator k = X.begin(); k != X.end(); k++) {
+                //     cout << *k << "__";
+                // }
+                // cout << endl;
+                // cout << (X.find(vToCID[v2]) != X.end()) << endl;
+                // cout << (BT.find(v2) != BT.end()) << endl;
                 if ((vToCID[*i] != vToCID[v2]) && (joinLabelSets(ls2, ls) == ls)) {
-                    if ((visited[BNToID[v2]] == false) && (X.find(vToCID[v2] != X.end()))) {
+                    if ((visited[BNToID[v2]] == false) && (X.find(vToCID[v2]) != X.end())) {
                         if (BT.find(v2) != BT.end()) {
                             return true;
                         }

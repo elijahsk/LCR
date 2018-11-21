@@ -246,7 +246,7 @@ int main(int argc, char *argv[]) {
     int N = graph->getNumberOfVertices();
     int M = graph->getNumberOfEdges();
 
-    noOfMethods = 4;
+    noOfMethods = 2;
 
     // Here we loop over all methods
     for(int i = firstMethod; i < noOfMethods; i++)
@@ -277,7 +277,7 @@ int main(int argc, char *argv[]) {
 	      }
 
         // Full-LI
-        if( i == 2 )
+        if( i == 1 )
 	      {
             int k = N;
             int b = 0;
@@ -285,7 +285,7 @@ int main(int argc, char *argv[]) {
 	      }
 
         // Zou
-        if( i == 1 )
+        if( i == 2 )
         {
             index = new Zou(graph);
         }

@@ -432,7 +432,6 @@ void DGraph::addEdge(VertexID v, VertexID w, LabelID newLabel)
         cerr << " DGraph::addEdge vw edge already exists w=" << w  << ",v=" << v << endl;
         return;
     }
-    cout << "test" << endl;
     allowMultipleEdges = false;
 
     LabelSet ls = labelIDToLabelSet( newLabel );
@@ -713,6 +712,7 @@ double DGraph::computeClusterCoefficient()
 void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID)
 {
     // initialize all vertices to be in different clusters
+    cout << "N: " << N << endl;
     map<int, vector<VertexID>> tempC;
     map<int, int> tempV;
     for (int i = 0; i < N; i++) {
@@ -723,29 +723,33 @@ void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& v
     }
 
     // randomly choose k edges
-    int randomK = rand() % M + 1;
-    randomK = 5;
+    int randomK = rand() % M;
+    cout << randomK << endl;
+
     for (int i = 0; i < randomK; i++) {
-        int randomV = rand() % N + 1;
+        // cout << 1;
+        int randomV = rand() % N;
         int numOfOutE = outE.at(randomV).size();
         while (numOfOutE == 0){
-            randomV = rand() % N + 1;
+            randomV = rand() % N;
             numOfOutE = outE.at(randomV).size();
         }
-
+        // cout << 2;
         int randomW = outE.at(randomV).at(rand() % numOfOutE).first;
         int targetCluster = (int)tempV[randomW];
         int sourceCluster = (int)tempV[randomV];
         vector<VertexID> targetVertices = tempC[targetCluster];
         vector<VertexID> sourceVertices = tempC[sourceCluster];
-        
+        // cout << 3;
         //Merge clusters
         sourceVertices.insert(sourceVertices.end(), targetVertices.begin(), targetVertices.end());
         int targetVerticesSize = targetVertices.size();
         for(int i = 0; i < targetVerticesSize; i++) {
             tempV[targetVertices.at(i)] = sourceCluster;
         }
+        // cout << 4;
         tempC[targetCluster].clear();
+        tempC[sourceCluster].clear();
         tempC[sourceCluster] = sourceVertices;
     }
 

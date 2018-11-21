@@ -489,7 +489,7 @@ using namespace boost;
             virtual graphns::LabelID getLabelID(graphns::VertexID v , graphns::VertexID w) = 0;
 
             virtual long getCountPerLabel(graphns::LabelID l) = 0;
-
+            virtual void randomClustering(vector<vector<graphns::VertexID>>& clusters, vector<int>& vToCID);
             virtual void tarjan(vector< vector< graphns::VertexID > >& SCCs) = 0;
 
             // prints stats of the graph

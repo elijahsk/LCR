@@ -16,10 +16,10 @@
 #include <sys/time.h>
 
 #include "../../Index/UnboundedLCR/Index.h"
+#include "../../Index/UnboundedLCR/NewIndex.cc"
 #include "../../Index/UnboundedLCR/BFSIndex.cc"
 #include "../../Index/UnboundedLCR/LandmarkedIndex.cc"
 #include "../../Index/UnboundedLCR/Zou.cc"
-#include "../../Index/UnboundedLCR/New.cc"
 
 #include "../../Graph/DGraph.cc"
 
@@ -208,7 +208,7 @@ int main(int argc, char *argv[]) {
         cout << "or: ./runExperiment <edge_file> <number of query sets> <output_file> <number of methods (BFS|Partial|Landmarked|DoubleBFS)>" << endl;
         exit(1);
     }
-
+    // cout << NewIndex();
     string edge_file = argv[1]; // the file containing the graph
     int noOfQuerySets = atoi(argv[2]);
     string output_file = argv[3]; // the file where the output goes
@@ -256,8 +256,7 @@ int main(int argc, char *argv[]) {
         Index* index;
 
         long altSize = -1;
-        if (i == 0)
-            index = new New(graph);
+
         if( i == 5 )
             index = new BFSIndex(graph);
 
@@ -290,6 +289,8 @@ int main(int argc, char *argv[]) {
         {
             index = new Zou(graph);
         }
+        if (i == 0)
+            index = new NewIndex(graph);
 
         if( index->didCompleteBuilding() == true )
         {

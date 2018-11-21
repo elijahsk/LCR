@@ -711,10 +711,10 @@ double DGraph::computeClusterCoefficient()
 void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID)
 {
     // initialize all vertices to be in different clusters
-    hash_map<int, vector<int>> tempC;
-    hash_map<int, int> tempV;
+    map<int, vector<VertexID>> tempC;
+    map<int, int> tempV;
     for (int i = 0; i < N; i++) {
-        vector<int> v;
+        vector<VertexID> v;
         v.push_back(i);
         tempC[i] = v;
         tempV[i] = i;
@@ -724,16 +724,19 @@ void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& v
     int randomK = rand() % M + 1;
     for (int i = 0; i < randomK; i++) {
         int randomV = rand() % N + 1;
-        int numOfOutE = outE.at(randomV).size()
-        while(numOfOutE == 0){
+        int numOfOutE = outE.at(randomV).size();
+
+        while (numOfOutE == 0){
             randomV = rand() % N + 1;
-            numOfOutE = outE.at(randomV).size()
+            numOfOutE = outE.at(randomV).size();
         }
-        int randomW = rand() % numOfOutE.first;
-        int targetCluster = tempV[randomW];
-        int sourceCluster = tempV[randomV];
-        vector<int> targetVertices = tempC[targetCluster];
-        vector<int> sourceVertices = tempC[sourceCluster];
+
+        int randomW = rand() % numOfOutE;
+        int targetCluster = (int)tempV[randomW];
+        int sourceCluster = (int)tempV[randomV];
+        vector<VertexID> targetVertices = tempC[targetCluster];
+        vector<VertexID> sourceVertices = tempC[sourceCluster];
+        
         //Merge clusters
         sourceVertices.insert(sourceVertices.end(), targetVertices.begin(), targetVertices.end());
         int targetVerticesSize = targetVertices.size();
@@ -746,10 +749,10 @@ void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& v
     int clusterCount = 0;
     for (int i = 0; i < N; i++) {
         if (tempC[i].size() > 0) {
-            vector<int> clusterVertices = tempC[i];
+            vector<VertexID> clusterVertices = tempC[i];
             int size = clusterVertices.size();
             for (int j = 0; j < size; j++) {
-                vToCID.at(clusterVertices.at(j)) = clusterCount
+                vToCID.at(clusterVertices.at(j)) = clusterCount;
             }
             clusters.push_back(tempC[i]);
             clusterCount ++;

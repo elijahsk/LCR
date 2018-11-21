@@ -1,5 +1,5 @@
-# project betweenness (0.0.1) configured on Thu Aug 30 10:11:08 2018 by
-# waf 1.5.18 (abi 37, python 30604f0 on darwin)
+# project betweenness (0.0.1) configured on Wed Nov 21 18:02:02 2018 by
+# waf 1.5.18 (abi 7, python 2070cf0 on linux2)
 # using ./waf configure
 #
 
@@ -39,4 +39,8 @@ int main() {
 [1/2] [32mcxx: build/.conf_check_0/test.cpp -> build/.conf_check_0/testbuild/default/test_1.o
 [0m['/usr/bin/g++', '../test.cpp', '-c', '-o', 'default/test_1.o']
 [2/2] [33mcxx_link: build/.conf_check_0/testbuild/default/test_1.o -> build/.conf_check_0/testbuild/default/testprog
-[0m['/usr/bin/g++', 'default/test_1.o', '-o', '/Users/a692309/Documents/LCR/LCRIndexing/build/.conf_check_0/testbuild/default/testprog', '-lglog', '-lgflags']
+[0m/usr/bin/ld: cannot find -lglog
+/usr/bin/ld: cannot find -lgflags
+collect2: error: ld returned 1 exit status
+['/usr/bin/g++', 'default/test_1.o', '-o', '/home/sk/Documents/LCR/LCRIndexing/build/.conf_check_0/testbuild/default/testprog', '-Wl,-Bdynamic', '-lglog', '-lgflags']
+command returned 'Build failed:  -> task failed (err #1): \n\t{task: cxx_link test_1.o -> testprog}'not found

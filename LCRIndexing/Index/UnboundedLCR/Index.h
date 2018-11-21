@@ -469,7 +469,7 @@ as a string or insert a LabelSet into a set of LabelSets.
                         a = "Zou";
                         break;
                     case indexns::IndexType::New:
-                        a = "New";
+                        a = "NewIndex";
                         break;
                     default:
                         break;

@@ -1,0 +1,129 @@
+10_000_000.
+number of methods: 3
+number of query sets: 3
+number of queries in each true or false: 0
+DGraph fileName=./tests/graphs/V5kD5L8exp.edge
+dataset: ./tests/graphs/V5kD5L8exp.edge with |L|=8 and |V|=5000
+method i=0
+runTestsPerIndex index=BFSBFS has index size (byte): 399760
+BFS required index construction time (s): 0.0058261
+Method: BFS queryset: 0
+indexName=BFS,j=0,trueSum=0,falseSum=0
+Method: BFS queryset: 1
+indexName=BFS,j=1,trueSum=0,falseSum=0
+Method: BFS queryset: 2
+indexName=BFS,j=2,trueSum=0,falseSum=0
+------
+method i=1
+buildIndex name=LI+OTH+EXTv2-b=20-k=1320,continueCode=0
+LandmarkedIndex ordering.size()=5000,N=5000
+LandmarkedIndex::determineLandmarks noOfLandmarks=1320 ,method=1
+LI+OTH+EXTv2-b=20-k=1320-Index initialized
+LI+OTH+EXTv2-b=20-k=1320::buildIndex build landmarks, quotum=66
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=65 4.92424% , ,roundNo=1,Esize(kB)=11575,time(s)=1.93272
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=131 9.92424% , ,roundNo=1,Esize(kB)=22907,time(s)=3.03073
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=197 14.9242% , ,roundNo=1,Esize(kB)=33764,time(s)=3.98718
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=263 19.9242% , ,roundNo=1,Esize(kB)=44998,time(s)=5.15691
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=329 24.9242% , ,roundNo=1,Esize(kB)=55855,time(s)=6.50979
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=395 29.9242% , ,roundNo=1,Esize(kB)=66686,time(s)=8.09222
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=461 34.9242% , ,roundNo=1,Esize(kB)=77614,time(s)=9.4675
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=527 39.9242% , ,roundNo=1,Esize(kB)=88458,time(s)=10.4791
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=593 44.9242% , ,roundNo=1,Esize(kB)=99077,time(s)=11.3671
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=659 49.9242% , ,roundNo=1,Esize(kB)=109564,time(s)=12.2165
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=725 54.9242% , ,roundNo=1,Esize(kB)=119856,time(s)=13.033
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=791 59.9242% , ,roundNo=1,Esize(kB)=130551,time(s)=13.928
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=857 64.9242% , ,roundNo=1,Esize(kB)=140770,time(s)=14.7846
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=923 69.9242% , ,roundNo=1,Esize(kB)=151170,time(s)=15.5921
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=989 74.9242% , ,roundNo=1,Esize(kB)=161453,time(s)=16.4124
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=1055 79.9242% , ,roundNo=1,Esize(kB)=171381,time(s)=17.061
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=1121 84.9242% , ,roundNo=1,Esize(kB)=181732,time(s)=17.8115
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=1187 89.9242% , ,roundNo=1,Esize(kB)=191852,time(s)=18.5253
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=1253 94.9242% , ,roundNo=1,Esize(kB)=201547,time(s)=19.1903
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (landmarks) progress=1319 99.9242% , ,roundNo=1,Esize(kB)=210532,time(s)=19.5991
+LI+OTH+EXTv2-b=20-k=1320::buildIndex built all landmarks size(kB)=210532 ,time(s)=0
+LI+OTH+EXTv2-b=20-k=1320::buildIndex build others, quotum=184
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=183 4.97283% , ,roundNo=2,Esize(kB)=210588,time(s)=0.00210609
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=367 9.97283% , ,roundNo=2,Esize(kB)=210638,time(s)=0.00393409
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=551 14.9728% , ,roundNo=6,Esize(kB)=210690,time(s)=0.00637109
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=735 19.9728% , ,roundNo=2,Esize(kB)=210746,time(s)=0.00838809
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=919 24.9728% , ,roundNo=2,Esize(kB)=210798,time(s)=0.0102361
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=1103 29.9728% , ,roundNo=2,Esize(kB)=210851,time(s)=0.0118371
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=1287 34.9728% , ,roundNo=2,Esize(kB)=210906,time(s)=0.0135331
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=1471 39.9728% , ,roundNo=2,Esize(kB)=210962,time(s)=0.0152601
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=1655 44.9728% , ,roundNo=2,Esize(kB)=211017,time(s)=0.0168411
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=1839 49.9728% , ,roundNo=4,Esize(kB)=211069,time(s)=0.0183651
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=2023 54.9728% , ,roundNo=2,Esize(kB)=211126,time(s)=0.0201481
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=2207 59.9728% , ,roundNo=2,Esize(kB)=211180,time(s)=0.0217011
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=2391 64.9728% , ,roundNo=2,Esize(kB)=211237,time(s)=0.0234651
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=2575 69.9728% , ,roundNo=2,Esize(kB)=211292,time(s)=0.0252901
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=2759 74.9728% , ,roundNo=2,Esize(kB)=211348,time(s)=0.0271881
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=2943 79.9728% , ,roundNo=2,Esize(kB)=211407,time(s)=0.0288041
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=3127 84.9728% , ,roundNo=3,Esize(kB)=211465,time(s)=0.0304681
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=3311 89.9728% , ,roundNo=2,Esize(kB)=211521,time(s)=0.0319501
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=3495 94.9728% , ,roundNo=2,Esize(kB)=211579,time(s)=0.0335501
+LI+OTH+EXTv2-b=20-k=1320::buildIndex (others) (o) progress=3679 99.9728% , ,roundNo=1,Esize(kB)=211619,time(s)=0.0344091
+LandmarkedIndex construction time(s)=20.7973
+LandmarkedIndex size=213202300,isBlockedMode=0, noOfLandmarks=1320 ,propagateCode=0
+runTestsPerIndex index=LI+OTH+EXTv2-b=20-k=1320LI+OTH+EXTv2-b=20-k=1320 has index size (byte): 213202300
+LI+OTH+EXTv2-b=20-k=1320 required index construction time (s): 20.7973
+Method: LI+OTH+EXTv2-b=20-k=1320 queryset: 0
+indexName=LI+OTH+EXTv2-b=20-k=1320,j=0,trueSum=0,falseSum=0
+Method: LI+OTH+EXTv2-b=20-k=1320 queryset: 1
+indexName=LI+OTH+EXTv2-b=20-k=1320,j=1,trueSum=0,falseSum=0
+Method: LI+OTH+EXTv2-b=20-k=1320 queryset: 2
+indexName=LI+OTH+EXTv2-b=20-k=1320,j=2,trueSum=0,falseSum=0
+------
+method i=2
+buildIndex name=LI-k=1320,continueCode=0
+LandmarkedIndex ordering.size()=5000,N=5000
+LandmarkedIndex::determineLandmarks noOfLandmarks=1320 ,method=1
+LI-k=1320-Index initialized
+LI-k=1320::buildIndex build landmarks, quotum=66
+LI-k=1320::buildIndex (landmarks) progress=65 4.92424% , ,roundNo=1,Esize(kB)=797,time(s)=3.35535
+LI-k=1320::buildIndex (landmarks) progress=131 9.92424% , ,roundNo=1,Esize(kB)=1441,time(s)=5.07427
+LI-k=1320::buildIndex (landmarks) progress=197 14.9242% , ,roundNo=1,Esize(kB)=2599,time(s)=6.61277
+LI-k=1320::buildIndex (landmarks) progress=263 19.9242% , ,roundNo=1,Esize(kB)=4758,time(s)=8.25718
+LI-k=1320::buildIndex (landmarks) progress=329 24.9242% , ,roundNo=1,Esize(kB)=6978,time(s)=9.72971
+LI-k=1320::buildIndex (landmarks) progress=395 29.9242% , ,roundNo=1,Esize(kB)=11100,time(s)=11.3013
+LI-k=1320::buildIndex (landmarks) progress=461 34.9242% , ,roundNo=1,Esize(kB)=14879,time(s)=12.6933
+LI-k=1320::buildIndex (landmarks) progress=527 39.9242% , ,roundNo=1,Esize(kB)=17504,time(s)=13.7003
+LI-k=1320::buildIndex (landmarks) progress=593 44.9242% , ,roundNo=1,Esize(kB)=21733,time(s)=14.5322
+LI-k=1320::buildIndex (landmarks) progress=659 49.9242% , ,roundNo=1,Esize(kB)=24958,time(s)=15.4096
+LI-k=1320::buildIndex (landmarks) progress=725 54.9242% , ,roundNo=1,Esize(kB)=30125,time(s)=16.419
+LI-k=1320::buildIndex (landmarks) progress=791 59.9242% , ,roundNo=1,Esize(kB)=35325,time(s)=17.2249
+LI-k=1320::buildIndex (landmarks) progress=857 64.9242% , ,roundNo=1,Esize(kB)=40657,time(s)=18.0811
+LI-k=1320::buildIndex (landmarks) progress=923 69.9242% , ,roundNo=1,Esize(kB)=46917,time(s)=18.8977
+LI-k=1320::buildIndex (landmarks) progress=989 74.9242% , ,roundNo=1,Esize(kB)=51786,time(s)=19.679
+LI-k=1320::buildIndex (landmarks) progress=1055 79.9242% , ,roundNo=1,Esize(kB)=57019,time(s)=20.426
+LI-k=1320::buildIndex (landmarks) progress=1121 84.9242% , ,roundNo=1,Esize(kB)=63820,time(s)=21.1895
+LI-k=1320::buildIndex (landmarks) progress=1187 89.9242% , ,roundNo=1,Esize(kB)=69281,time(s)=22.0892
+LI-k=1320::buildIndex (landmarks) progress=1253 94.9242% , ,roundNo=1,Esize(kB)=75008,time(s)=23.2357
+LI-k=1320::buildIndex (landmarks) progress=1319 99.9242% , ,roundNo=1,Esize(kB)=79218,time(s)=24.0991
+LI-k=1320::buildIndex built all landmarks size(kB)=79369 ,time(s)=0
+LI-k=1320::buildIndex build others, quotum=184
+LandmarkedIndex construction time(s)=24.1109
+LandmarkedIndex size=210948528,isBlockedMode=0, noOfLandmarks=1320 ,propagateCode=0
+runTestsPerIndex index=LI-k=1320LI-k=1320 has index size (byte): 210948528
+LI-k=1320 required index construction time (s): 24.1109
+Method: LI-k=1320 queryset: 0
+indexName=LI-k=1320,j=0,trueSum=0,falseSum=0
+Method: LI-k=1320 queryset: 1
+indexName=LI-k=1320,j=1,trueSum=0,falseSum=0
+Method: LI-k=1320 queryset: 2
+indexName=LI-k=1320,j=2,trueSum=0,falseSum=0
+------
+method i=3
+buildIndex name=LI-k=5000,continueCode=0
+LandmarkedIndex ordering.size()=5000,N=5000
+LandmarkedIndex::determineLandmarks noOfLandmarks=5000 ,method=1
+LI-k=5000-Index initialized
+LI-k=5000::buildIndex build landmarks, quotum=250
+LI-k=5000::buildIndex (landmarks) progress=249 4.98% , ,roundNo=1,Esize(kB)=1441,time(s)=6.92777
+LI-k=5000::buildIndex (landmarks) progress=499 9.98% , ,roundNo=1,Esize(kB)=5214,time(s)=11.3307
+LI-k=5000::buildIndex (landmarks) progress=749 14.98% , ,roundNo=1,Esize(kB)=11391,time(s)=15.4314
+LI-k=5000::buildIndex (landmarks) progress=999 19.98% , ,roundNo=1,Esize(kB)=20578,time(s)=19.4288
+LI-k=5000::buildIndex (landmarks) progress=1249 24.98% , ,roundNo=1,Esize(kB)=29422,time(s)=22.3288
+LI-k=5000::buildIndex (landmarks) progress=1499 29.98% , ,roundNo=1,Esize(kB)=41604,time(s)=25.0196
+LI-k=5000::buildIndex (landmarks) progress=1749 34.98% , ,roundNo=1,Esize(kB)=54649,time(s)=27.4833
+LI-k=5000::buildIndex (landmarks) progress=1999 39.98% , ,roundNo=1,Esize(kB)=68901,time(s)=29.8995
+LI-k=5000::buildIndex (landmarks) progress=2249 44.98% , ,roundNo=1,Esize(kB)=87135,time(s)=31.915

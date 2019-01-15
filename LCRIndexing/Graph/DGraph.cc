@@ -709,61 +709,80 @@ double DGraph::computeClusterCoefficient()
     return max(0.0, clusterCoefficient / N);
 }
 
+void DGraph::initializeUnionFind(int& parent[])
+{
+    for (int i = 0; i < N; i++) {
+        parent[i] = i;
+    }
+}
+
+int DGraph::find(int parent[], int v) {
+    if (parent[v] != v) {
+        // path compression
+        parent[v] = find(parent, parent[v]);
+    }   
+    
+    return parent[v];
+}
+
+void DGraph::union(int parent[], int v, int w) {
+    int vSet = find(parent, v);
+    int wSet = find(parent, w);
+    parent[wSet] = vSet;
+}
+
 void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID)
 {
-    // initialize all vertices to be in different clusters
+    // initialize all vertices to be in different clusters, where the Vertex ID is the Cluster ID
     cout << "N: " << N << endl;
-    map<int, vector<VertexID>> tempC;
-    map<int, int> tempV;
-    for (int i = 0; i < N; i++) {
-        vector<VertexID> v;
-        v.push_back(i);
-        tempC[i] = v;
-        tempV[i] = i;
-    }
+    int parent[N];
+    initializeUnionFind(parent);
 
     // randomly choose k edges
     int randomK = rand() % M;
-    cout << randomK << endl;
+    cout << "Random number of edges to be merged: " << randomK << endl;
 
     for (int i = 0; i < randomK; i++) {
-        // cout << 1;
         int randomV = rand() % N;
         int numOfOutE = outE.at(randomV).size();
         while (numOfOutE == 0){
             randomV = rand() % N;
             numOfOutE = outE.at(randomV).size();
         }
-        // cout << 2;
         int randomW = outE.at(randomV).at(rand() % numOfOutE).first;
-        int targetCluster = (int)tempV[randomW];
-        int sourceCluster = (int)tempV[randomV];
-        vector<VertexID> targetVertices = tempC[targetCluster];
-        vector<VertexID> sourceVertices = tempC[sourceCluster];
-        // cout << 3;
-        //Merge clusters
-        sourceVertices.insert(sourceVertices.end(), targetVertices.begin(), targetVertices.end());
-        int targetVerticesSize = targetVertices.size();
-        for(int i = 0; i < targetVerticesSize; i++) {
-            tempV[targetVertices.at(i)] = sourceCluster;
-        }
-        // cout << 4;
-        tempC[targetCluster].clear();
-        tempC[sourceCluster].clear();
-        tempC[sourceCluster] = sourceVertices;
+
+        cout << "Random edge with vertex IDs: " << randomV << ", " << randomW << endl;
+
+        // link up parent of w to v
+        union(parent, v, w);
     }
 
     int clusterCount = 0;
+    map<int, int> ancestorToCID;
+
     for (int i = 0; i < N; i++) {
-        if (tempC[i].size() > 0) {
-            vector<VertexID> clusterVertices = tempC[i];
-            int size = clusterVertices.size();
-            for (int j = 0; j < size; j++) {
-                vToCID.at(clusterVertices.at(j)) = clusterCount;
-            }
-            clusters.push_back(tempC[i]);
+        int ancestor = find(parent, i);
+        // Create a new cluster if the given ancestor is not in the map yet
+        if (ancestorToCID.find(ancestor) == ancestorToCID.end()) {
+            ancestorToCID[ancestor] = clusterCount;
             clusterCount ++;
+            vector<VertexID> temp;
+            temp.push_back((VertexID)i);
+            clusters.push_back(temp);
+        } else {
+            clusters.at(ancestorToCID[ancestor]).push_back((VertexID)i);
         }
+    }
+
+    cout << "Clustering: " << endl;
+    for (int i = 0; i < clusterCount; i++) {
+        cout << "Cluster " << i << ": ";
+        vector<VertexID> currCluster = clusters.at(i);
+        int cSize = currCluster.size();
+        for (int j = 0; j < cSize; j++) {
+            cout << currCluster.at(j) << ", ";
+        }
+        cout << endl;
     }
 }
 

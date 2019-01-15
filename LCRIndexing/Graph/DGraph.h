@@ -70,7 +70,7 @@ class DGraph : public Graph
         double computeClusterCoefficient();
         void initializeUnionFind(vector<VertexID> parent);
         int find(vector<VertexID> parent, int v);
-        void union(vector<VertexID> parent, int v, int w);
+        void connect(vector<VertexID> parent, int v, int w);
         void randomClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID);
         void tarjan(vector< vector<VertexID> >& SCCs);
         void tarjanStrongConnect(int v, int& index, stack<VertexID>& q, vector< int >& indexPerNode,

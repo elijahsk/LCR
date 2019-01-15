@@ -709,14 +709,14 @@ double DGraph::computeClusterCoefficient()
     return max(0.0, clusterCoefficient / N);
 }
 
-void DGraph::initializeUnionFind(int& parent[])
+void DGraph::initializeUnionFind(vector<VertexID>& parent)
 {
     for (int i = 0; i < N; i++) {
-        parent[i] = i;
+        parent.push_back(i);
     }
 }
 
-int DGraph::find(int parent[], int v) {
+int DGraph::find(vector<VertexID> parent, int v) {
     if (parent[v] != v) {
         // path compression
         parent[v] = find(parent, parent[v]);
@@ -725,7 +725,7 @@ int DGraph::find(int parent[], int v) {
     return parent[v];
 }
 
-void DGraph::union(int parent[], int v, int w) {
+void DGraph::union(vector<VertexID> parent, int v, int w) {
     int vSet = find(parent, v);
     int wSet = find(parent, w);
     parent[wSet] = vSet;
@@ -735,7 +735,7 @@ void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& v
 {
     // initialize all vertices to be in different clusters, where the Vertex ID is the Cluster ID
     cout << "N: " << N << endl;
-    int parent[N];
+    vector<VertexID> parent;
     initializeUnionFind(parent);
 
     // randomly choose k edges
@@ -774,6 +774,7 @@ void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& v
         }
     }
 
+    // Print cluster info for verification
     cout << "Clustering: " << endl;
     for (int i = 0; i < clusterCount; i++) {
         cout << "Cluster " << i << ": ";

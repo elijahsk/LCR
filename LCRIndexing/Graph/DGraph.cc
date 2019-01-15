@@ -734,12 +734,15 @@ void DGraph::connect(vector<VertexID>& parent, VertexID v, VertexID w) {
 void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID)
 {
     // initialize all vertices to be in different clusters, where the Vertex ID is the Cluster ID
-    cout << "N: " << N << endl;
+    cout << "No of Vertices: " << N << endl;
+    cout << "No. of Edges: " << M << endl;
     vector<VertexID> parent;
     initializeUnionFind(parent);
 
     // randomly choose k edges
     int randomK = rand() % M;
+    // currently we merge half of the edges
+    randomK = M / 2;
     cout << "Random number of edges to be merged: " << randomK << endl;
 
     for (int i = 0; i < randomK; i++) {

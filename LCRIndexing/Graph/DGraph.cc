@@ -768,12 +768,14 @@ void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& v
         // Create a new cluster if the given ancestor is not in the map yet
         if (ancestorToCID.find(ancestor) == ancestorToCID.end()) {
             ancestorToCID[ancestor] = clusterCount;
+            vToCID[i] = clusterCount;
             clusterCount ++;
             vector<VertexID> temp;
             temp.push_back((VertexID)i);
             clusters.push_back(temp);
         } else {
             clusters.at(ancestorToCID[ancestor]).push_back((VertexID)i);
+            vToCID[i] = ancestorToCID[ancestor];
         }
     }
 

@@ -712,11 +712,11 @@ double DGraph::computeClusterCoefficient()
 void DGraph::initializeUnionFind(vector<VertexID>& parent)
 {
     for (int i = 0; i < N; i++) {
-        parent.push_back(i);
+        parent.push_back((VertexID)i);
     }
 }
 
-int DGraph::find(vector<VertexID> parent, int v) {
+int DGraph::find(vector<VertexID> parent, VertexID v) {
     if (parent[v] != v) {
         // path compression
         parent[v] = find(parent, parent[v]);
@@ -725,7 +725,7 @@ int DGraph::find(vector<VertexID> parent, int v) {
     return parent[v];
 }
 
-void DGraph::connect(vector<VertexID> parent, int v, int w) {
+void DGraph::connect(vector<VertexID>& parent, VertexID v, VertexID w) {
     int vSet = find(parent, v);
     int wSet = find(parent, w);
     parent[wSet] = vSet;
@@ -754,7 +754,7 @@ void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& v
         cout << "Random edge with vertex IDs: " << randomV << ", " << randomW << endl;
 
         // link up parent of w to v
-        connect(parent, v, w);
+        connect(parent, randomV, randomW);
     }
 
     int clusterCount = 0;

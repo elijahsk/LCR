@@ -68,14 +68,6 @@ void NewIndex::buildIndex()
     // this->graph->tarjan(SCCs);
     this->graph->randomClustering(clusters, vToCID);
     
-    cout<<"cluster size "<<clusters.size()<<endl;
-    for (int i = 0; i < clusters.size(); i++) {
-        vector<VertexID> cluster = clusters.at(i);
-        for (int j = 0; j < cluster.size(); j++) {
-            cout << cluster.at(j) << " ";
-        }
-        cout << endl;
-    }
     // create a subgraph for each cluster containing only the right edges
     subGraphs = vector< Graph* >();
     vector< int > countPerCluster = vector< int >(clusters.size(), 0);
@@ -90,7 +82,7 @@ void NewIndex::buildIndex()
         boundaryNodesPerCluster.push_back(v);
     }
 
-    // position in each cluster starting from 0 to cluster.size() - 1
+    // position of nodes in each cluster starting from 0 to cluster.size() - 1
     for (int i = 0; i < clusters.size(); i++) {
         vector<VertexID> cluster = clusters.at(i);
         for (int j = 0; j < cluster.size(); j++) {
@@ -132,9 +124,13 @@ void NewIndex::buildIndex()
 
     // subGraphs[4]->addEdge(1, 2, labelSetToLabelID(4));
     // cout << subGraphs[4]->toString() << endl;
-    // for (int i = 0; i < N; i++) {
-    //     cout << i << ' ' << isBoundaryNode[i] << endl;
-    // }
+    cout << "Boundary Nodes: ";
+    for (int i = 0; i < N; i++) {
+        if (isBoundaryNode[i]) {
+            cout << i << " ";
+        }
+        cout << endl;
+    }
 
     cout << "Step 1 (clustering): " << print_digits( getCurrentTimeInMilliSec()-constStartTime, 2 ) << endl;
 
@@ -146,34 +142,8 @@ void NewIndex::buildIndex()
     }
 
     cout << "Step 2 (RBI & RRBI indices built): " << print_digits( getCurrentTimeInMilliSec()-constStartTime, 2 ) << endl;
-
-    // for (int i = 0; i < N; i++) {
-    //     cout << "vertex: " << i << " can reach BN: " << endl;
-    //     vector<pair<VertexID, vector<LabelSet>>> RBIPerNode = this->RBI.at(i);
-    //     for (int j = 0; j < RBIPerNode.size(); j++) {
-    //         cout << RBIPerNode.at(j).first << " (";
-    //         vector<LabelSet> lss = RBIPerNode.at(j).second;
-    //         for (int k = 0; k < lss.size();  k++) {
-    //             cout << lss.at(k) << " ";
-    //         }
-    //         cout << ")" << endl;
-    //     }
-    // }
-    // cout << "+++++++++++++++++++" << endl;
-
-    // for (int i = 0; i < N; i++) {
-    //     cout << "vertex: " << i << " can reached by BN: " << endl;
-    //     vector<pair<VertexID, vector<LabelSet>>> RBIPerNode = this->RRBI.at(i);
-    //     for (int j = 0; j < RBIPerNode.size(); j++) {
-    //         cout << RBIPerNode.at(j).first << " (";
-    //         vector<LabelSet> lss = RBIPerNode.at(j).second;
-    //         for (int k = 0; k < lss.size();  k++) {
-    //             cout << lss.at(k) << " ";
-    //         }
-    //         cout << ")" << endl;
-    //     }
-    // }
-
+    printRBI();
+    printRRBI();
 
     initializeIndex();
     vector<bool> BNIndexed = vector<bool>(N, false);
@@ -181,33 +151,11 @@ void NewIndex::buildIndex()
         labeledBFSAcrossClusters(i, clusters, BNIndexed);
         getRRCI(i);
     }
-    // for (int x = 0; x < N; x++) {
-    //     int wCount = tIn.at(x).size();
-    //     cout << x << ": ";
-    //     for (int j = 0; j < wCount; j++) {
-    //         int lsCount = tIn.at(x).at(j).second.size();
-    //         cout << tIn.at(x).at(j).first << "(";
-    //         for (int k = 0; k < lsCount; k++) {
-    //             cout << tIn.at(x).at(j).second.at(k) << " ";
-    //         }
-    //         cout << ")";
-    //     }
-    //     cout << endl;
-    // // }
-    // for (int i = 0; i < clusters.size(); i++) {
-    //     vector<pair<int, vector<LabelSet>>> RRCIi = RRCI.at(i);
-    //     cout << i << ": ";
-    //     for (int j = 0; j < RRCIi.size(); j++) {
-    //         cout << RRCIi.at(j).first << "(";
-    //         vector<LabelSet> lss = RRCIi.at(j).second;
-    //         for (int k = 0; k < lss.size(); k++) {
-    //             cout << lss.at(k) << " ";
-    //         }
-    //         cout << ") ";
-    //     }
-    //     cout << endl;
-    // }
+
+    printRRCI();
+
     cout << "Step 3 (RRCI indices built): " << print_digits( getCurrentTimeInMilliSec()-constStartTime, 2 ) << endl;
+
     this->didComplete = true;
     constEndTime = getCurrentTimeInMilliSec();
     totalConstTime = constEndTime - constStartTime;
@@ -218,7 +166,7 @@ void NewIndex::labeledBFSPerCluster(int cID, Graph* sG)
 {
 
     int N = sG->getNumberOfVertices();
-    // cout << "buildIndex sG->N=" << N << " ,cID=" << cID << endl;
+    cout << "buildIndex sG->N=" << N << " ,cID=" << cID << endl;
     vector<bool> indexed = vector<bool>(N, false);
 
     for (int i = 0; i < N; i++) {
@@ -227,7 +175,7 @@ void NewIndex::labeledBFSPerCluster(int cID, Graph* sG)
 
     for(int i = 0; i < N; i++)
     {
-        // cout <<"At vertex: " << i << endl;
+        cout <<"At vertex: " << i << endl;
         labeledBFSPerVertex(cID, i, sG, indexed);
     }
     // if (cID == 4) {
@@ -272,10 +220,12 @@ void NewIndex::labeledBFSPerVertex(int cID, VertexID v, Graph* sG, vector<bool>&
                 continue;
             }
             if (indexed[v1] == true) {
-                for (int i = 0; i < tIn[v].size(); i++) {
-                    pair<VertexID, vector<LabelSet>> p = tIn[v].at(i);
+                cout << "using index of " << v1 << endl;
+                for (int i = 0; i < tIn[v1].size(); i++) {
+                    pair<VertexID, vector<LabelSet>> p = tIn[v1].at(i);
                     vector<LabelSet> lss = p.second;
                     for (int j = 0; j < lss.size(); j++) {
+                        cout << v << " " << p.first << " " << joinLabelSets(ls1, lss.at(j)) << endl;
                         tryInsert(v, p.first, joinLabelSets(ls1, lss.at(j)));
                     }
                 }
@@ -327,8 +277,81 @@ bool NewIndex::tryInsert(VertexID s, VertexID v, LabelSet ls)
     return b2;
 }
 
+void NewIndex::printRBI() {
+    cout << "RBI" <<endl;
+    int l1 = RBI.size();
+    for (int i = 0; i < l1; i++) {
+        cout << "Vertex " << i << ": ";
+        int l2 = RBI[i].size();
+        for (int j = 0; j < l2; j++) {
+            cout << " ( " << RBI[i][j].first << " ";
+            int l3 = RBI[i][j].second.size();
+            for (int k = 0; k < l3; k++) {
+                cout << (RBI[i][j].second)[k] << ", ";
+            } 
+            cout << ") ";
+        }
+        cout << endl;
+    }
+}
+
+void NewIndex::printRRBI() {
+    cout << "RRBI" << endl;
+    int l1 = RRBI.size();
+    for (int i = 0; i < l1; i++) {
+        cout << "Vertex " << i << ": ";
+        int l2 = RRBI[i].size();
+        for (int j = 0; j < l2; j++) {
+            cout << " ( " << RRBI[i][j].first << " ";
+            int l3 = RRBI[i][j].second.size();
+            for (int k = 0; k < l3; k++) {
+                cout << (RRBI[i][j].second)[k] << ", ";
+            } 
+            cout << ") ";
+        }
+        cout << endl;
+    }
+}
+
+void NewIndex::printRRCI() {
+    cout << "RRCI" << endl;
+    int l1 = RRCI.size();
+    for (int i = 0; i < l1; i++) {
+        cout << "Vertex " << i << ": ";
+        int l2 = RRCI[i].size();
+        for (int j = 0; j < l2; j++) {
+            cout << " ( " << RRCI[i][j].first << " ";
+            int l3 = RRCI[i][j].second.size();
+            for (int k = 0; k < l3; k++) {
+                cout << (RRCI[i][j].second)[k] << ", ";
+            } 
+            cout << ") ";
+        }
+        cout << endl;
+    }
+}
+
+void NewIndex::printTIn(int cID) {
+    cout << "tIn of " << cID << endl;
+    int l1 = tIn.size();
+    for (int i = 0; i < l1; i++) {
+        cout << "Vertex " << i << ": ";
+        int l2 = tIn[i].size();
+        for (int j = 0; j < l2; j++) {
+            cout << " ( " << tIn[i][j].first << " ";
+            int l3 = tIn[i][j].second.size();
+            for (int k = 0; k < l3; k++) {
+                cout << (tIn[i][j].second)[k] << ", ";
+            } 
+            cout << ") ";
+        }
+        cout << endl;
+    }
+}
+
 void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
     int N = sG->getNumberOfVertices();
+    printTIn(cID);
     for (int i = 0; i < N; i++) {
         vector<pair<VertexID, vector<LabelSet>>> RBPerVertex;
         vector<pair<VertexID, vector<LabelSet>>> closure = tIn.at(i);
@@ -345,7 +368,8 @@ void NewIndex::getRRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
     int N = sG->getNumberOfVertices();
     vector<VertexID> boundaryNodes = this->boundaryNodesPerCluster.at(cID);
     for (int i = 0; i < boundaryNodes.size(); i++) {
-        vector<pair<VertexID, vector<LabelSet>>> closure = tIn.at(i);
+        // cout << i << " " << boundaryNodes[i];
+        vector<pair<VertexID, vector<LabelSet>>> closure = tIn.at(boundaryNodes[i]);
         for (int j = 0; j < closure.size(); j++) {
             vector<LabelSet> RRBInstanceLabelSets = closure.at(j).second;
             VertexID vPositionInC = closure.at(j).first;

@@ -23,7 +23,51 @@ NewIndex::~NewIndex() {
 };
 
 unsigned long NewIndex::getIndexSizeInBytes() {
-    return getIndexSizeInBytesM();
+    unsigned long size = 0;
+    int N = graph->getNumberOfVertices();
+    int L = sizeof(LabelSet);
+    int emptyVectorSize = 3 * sizeof(int); // estimated 3 times 32-bits
+    unsigned long RBISize = 0;
+    unsigned long RRBISize = 0;
+    unsigned long RRCISize = 0;
+
+    cout << "RBI RRBI" << endl;
+    for (int i = 0; i < N; i++) {
+        vector<pair<VertexID, vector<LabelSet>>> RBIi = RBI[i];
+        for (int j = 0; j < RBIi.size(); j++) {
+            vector<LabelSet> lss = RBIi[j].second;
+            if (lss.size() > 0) {
+                RBISize += sizeof(VertexID) + lss.size() * L + emptyVectorSize;
+            }
+        }
+
+        vector<pair<VertexID, vector<LabelSet>>> RRBIi = RRBI[i];
+        for (int j = 0; j < RRBIi.size(); j++) {
+            vector<LabelSet> lss = RRBIi[j].second;
+            if (lss.size() > 0) {
+                RRBISize += sizeof(VertexID) + lss.size() * L + emptyVectorSize;
+            }
+        }
+    }
+
+    cout << "RRCI" << endl;
+    for (int i = 0; i < clusters.size(); i++) {
+        vector<pair<int, vector<LabelSet>>> RRCIi = RRCI[i];
+        for (int j = 0; j < RRCIi.size(); j++) {
+            vector<LabelSet> lss = RRCIi[j].second;
+            if (lss.size() > 0) {
+                RRCISize += sizeof(VertexID) + lss.size() * L + emptyVectorSize;
+            }
+        }
+    }
+
+    cout << "RBI Size: " << RBISize << endl;
+    cout << "RRBI Size: " << RRBISize << endl;
+    cout << "RRCI Size: " << RRCISize << endl;
+
+    size += RBISize + RRBISize + RRCISize + graph->getGraphSizeInBytes();
+
+    return size;
 };
 
 void NewIndex::queryAll(VertexID source, LabelSet ls, dynamic_bitset<>& canReach) {
@@ -504,6 +548,7 @@ bool NewIndex::query(VertexID source, VertexID target, LabelSet ls) {
 }
 
 bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
+    double queryStartTime = getCurrentTimeInMilliSec();
     if (source == target)
         return true;
     if ( ls == 0 )
@@ -514,7 +559,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 
     // same cluster
     if (sourceCluster == targetCluster) {
-        // cout << "In the same cluster" << endl;
+        cout << "Same cluster " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
         unordered_set<int> possibleBoundaryNodes;
         vector<pair<VertexID, vector<LabelSet>>> RBIs = RBI.at(source);
         for (int i = 0; i < RBIs.size(); i++) {
@@ -548,7 +593,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
         queue< VertexID > q;
         q.push(source);
 
-        // cout << "BFS: " << endl;
+        cout << "BFS within cluster " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
         // Use a BFS within cluster
         int N = graph->getNumberOfVertices();
         dynamic_bitset<> marked = dynamic_bitset<>(N);
@@ -579,6 +624,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
     }
 
     // Found out clusters that can reach target cluster
+    cout << "X " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
     unordered_set<int> X;
     vector<pair<int, vector<LabelSet>>> RRCIt = RRCI.at(vToCID[target]);
     for (int i = 0; i < RRCIt.size(); i++) {
@@ -599,6 +645,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 
 
     // Get boundary nodes that source can reach
+    cout << "BS " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
     unordered_set<int> BS;
     vector<pair<VertexID, vector<LabelSet>>> RBIs = RBI.at(source);
     for (int i = 0; i < RBIs.size(); i++) {
@@ -626,6 +673,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
     // cout << endl;
 
     // Get boundary nodes that can reach target
+    cout << "BT " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
     unordered_set<int> BT;
     vector<pair<VertexID, vector<LabelSet>>> RRBIt = RRBI.at(target);
     for (int i = 0; i < RRBIt.size(); i++) {
@@ -651,7 +699,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
     //         cout << *i << ", ";
     // }
     // cout << endl;
-
+    cout << "BFS Across cluters " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 ) << endl;
     int N = graph->getNumberOfVertices();
     map<VertexID, int> BNToID;
     vector<bool> visited;
@@ -668,12 +716,19 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
     // }
     // cout << endl;
 
+    int totalVisitedBN = 0;
+    int totalNumofPasses = 0;
+
     while (!BS.empty()) {
+        totalVisitedBN += BS.size();
+        totalNumofPasses += 1;
         unordered_set<int> BS1;
         for (unordered_set<int>::iterator i = BS.begin(); i != BS.end(); i++) {
             // cout << "Viewing queued element v in BS: " << *i << endl;
 
             if (BT.find(*i) != BT.end()) {
+                cout << "Total Visted BN: " << totalVisitedBN;
+                cout << "    Total Number of passes: " << totalNumofPasses << " " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 ) << endl;
                 return true;
             }
 
@@ -730,6 +785,9 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
         // }
         // cout << endl;
     }
+
+    cout << "Total Visted BN: " << totalVisitedBN;
+    cout << "    Total Number of passes: " << totalNumofPasses << " " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 ) << endl;
 
     return false;
 };

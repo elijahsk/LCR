@@ -503,7 +503,7 @@ int main(int argc, char *argv[]) {
     }
     cout << "\\\\ \n";
 
-    for(int i = 1; i < methodNames.size(); i++)
+    for(int i = 0; i < methodNames.size(); i++)
     {
         cout << methodNames[i];
 

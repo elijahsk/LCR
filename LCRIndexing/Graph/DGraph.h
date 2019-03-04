@@ -19,7 +19,7 @@ class DGraph : public Graph
     private:
         SmallEdgeSets outE, inE;
         double constStartTime, constEndTime;
-
+        vector<int> weight;
         bool allowMultipleEdges;
 
     public:
@@ -56,6 +56,7 @@ class DGraph : public Graph
         void removeEdge(graphns::VertexID v, graphns::VertexID w);
         void changeLabel(graphns::VertexID v, graphns::VertexID w, graphns::LabelID newLabel);
         bool hasMultiEdge(graphns::VertexID v , graphns::VertexID w, graphns::LabelSet ls);
+        void setWeight(vector<int> w);
 
         bool findInsertablePosition(graphns::VertexID w, graphns::SmallEdgeSet& ses, int& pos);
         void insertEdge(graphns::VertexID v, graphns::VertexID w, graphns::LabelID newLabel, SmallEdgeSet& ses);
@@ -72,6 +73,7 @@ class DGraph : public Graph
         int find(vector<VertexID> parent, VertexID v);
         void connect(vector<VertexID>& parent, VertexID v, VertexID w);
         void randomClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID);
+        void newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID);
         void tarjan(vector< vector<VertexID> >& SCCs);
         void tarjanStrongConnect(int v, int& index, stack<VertexID>& q, vector< int >& indexPerNode,
             vector< int >& lowlinkPerNode, vector< bool >& onStack, vector< vector<VertexID> >& SCCs);

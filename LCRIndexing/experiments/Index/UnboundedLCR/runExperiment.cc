@@ -240,7 +240,7 @@ int main(int argc, char *argv[]) {
 
         long altSize = -1;
 
-        if ( i == 2 )
+        if ( i == 1 )
             index = new BFSIndex(graph);
 
         // LI+ (both extensions)
@@ -258,7 +258,7 @@ int main(int argc, char *argv[]) {
         }
 
         // Full-LI
-        if ( i == 1 ) {
+        if ( i == 2 ) {
             int k = N;
             int b = 0;
             index = new LandmarkedIndex(graph, false, false, k, b);

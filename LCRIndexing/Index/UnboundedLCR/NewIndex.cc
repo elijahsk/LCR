@@ -197,7 +197,7 @@ void NewIndex::buildIndex() {
 void NewIndex::labeledBFSPerCluster(int cID, Graph* sG) {
 
     int N = sG->getNumberOfVertices();
-    cout << "buildIndex sG->N=" << N << " ,cID=" << cID << endl;
+    // cout << "buildIndex sG->N=" << N << " ,cID=" << cID << endl;
     vector<bool> indexed = vector<bool>(N, false);
 
     for (int i = 0; i < N; i++) {
@@ -411,7 +411,7 @@ void NewIndex::getRRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 }
 
 void NewIndex::labeledBFSAcrossClusters(int cID, vector<vector<VertexID>> clusters, vector<bool>& BNIndexed) {
-    cout << "Cluster ID: " << cID << endl;
+    // cout << "Cluster ID: " << cID << endl;
     int N = graph->getNumberOfVertices();
     vector<VertexID> boundaryNodes = boundaryNodesPerCluster.at(cID);
     vector<VertexID> cluster = clusters.at(cID);

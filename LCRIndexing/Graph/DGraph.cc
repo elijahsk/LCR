@@ -647,7 +647,7 @@ void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& v
     // randomly choose k edges
     int randomK = rand() % M;
     // currently we merge half of the edges
-    randomK = 20;
+    // randomK = 20;
     cout << "Random number of edges to be merged: " << randomK << endl;
 
     for (int i = 0; i < randomK; i++) {

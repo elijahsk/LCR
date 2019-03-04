@@ -633,7 +633,8 @@ void DGraph::connect(vector<VertexID>& parent, VertexID v, VertexID w) {
 }
 
 void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID) {
-
+    findLongestChain();
+    
 }
 
 void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID) {
@@ -658,7 +659,7 @@ void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& v
         }
         int randomW = outE.at(randomV).at(rand() % numOfOutE).first;
 
-        cout << "Random edge with vertex IDs: " << randomV << ", " << randomW << endl;
+        // cout << "Random edge with vertex IDs: " << randomV << ", " << randomW << endl;
 
         // link up parent of w to v
         connect(parent, randomV, randomW);
@@ -684,16 +685,16 @@ void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& v
     }
 
     // Print cluster info for verification
-    cout << "Clustering: " << endl;
-    for (int i = 0; i < clusterCount; i++) {
-        cout << "Cluster " << i << ": ";
-        vector<VertexID> currCluster = clusters.at(i);
-        int cSize = currCluster.size();
-        for (int j = 0; j < cSize; j++) {
-            cout << currCluster.at(j) << ", ";
-        }
-        cout << endl;
-    }
+    // cout << "Clustering: " << endl;
+    // for (int i = 0; i < clusterCount; i++) {
+    //     cout << "Cluster " << i << ": ";
+    //     vector<VertexID> currCluster = clusters.at(i);
+    //     int cSize = currCluster.size();
+    //     for (int j = 0; j < cSize; j++) {
+    //         cout << currCluster.at(j) << ", ";
+    //     }
+    //     cout << endl;
+    // }
 }
 
 void DGraph::tarjan(vector< vector<VertexID> >& SCCs) {

@@ -663,7 +663,11 @@ void DGraph::randomClustering(vector<vector<VertexID>>& clusters, vector<int>& v
 
         // link up parent of w to v
         connect(parent, randomV, randomW);
+        if (i % 200 == 0) {
+            cout << i << " ";
+        }
     }
+    cout << endl;
 
     int clusterCount = 0;
     map<int, int> ancestorToCID;

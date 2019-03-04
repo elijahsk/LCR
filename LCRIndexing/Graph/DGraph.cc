@@ -633,7 +633,7 @@ void DGraph::connect(vector<VertexID>& parent, VertexID v, VertexID w) {
 }
 
 void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID) {
-    findLongestChain();
+    // findLongestChain();
     
 }
 

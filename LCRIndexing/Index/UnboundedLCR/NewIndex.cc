@@ -108,7 +108,7 @@ void NewIndex::buildIndex() {
 
     // create a subgraph for each cluster containing only the right edges
     subGraphs = vector< Graph* >();
-    vector< int > countPerCluster = vector< int >(clusters.size(), 0);
+    vector<int> countPerCluster = vector<int>(clusters.size(), 0);
 
     // Initialize graph for each cluster
     for (int i = 0; i < clusters.size(); i++) {

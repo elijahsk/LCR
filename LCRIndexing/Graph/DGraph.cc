@@ -784,7 +784,7 @@ vector<vector<VertexID>> DGraph::segmentChain(vector<VertexID> chain, int radius
     return segments;
 }
 
-void DGraph::growSegments(DGraph* tempGraph, VertexID cID, vector<VertexID>& startVertices, int maxClusterSize, vector<vector<VertexID>>& clusters, vector<int>& vToCID) {
+void DGraph::growSegment(DGraph* tempGraph, VertexID cID, vector<VertexID>& startVertices, int maxClusterSize, vector<vector<VertexID>>& clusters, vector<int>& vToCID) {
 
     int size = startVertices.size();
     int i = 0;
@@ -992,7 +992,7 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
                 vector<VertexID> segment = segments[j];
                 VertexID cID = vToCID[segment[segment.size() / 2]];
                 // total - existing cluster - nodes on segment that have not been included
-                int maxCurrentClusterSize = maxClusterSize - clusters[(int) cID].size() - max(segment.size() - (i * 2 + 1), 0);
+                int maxCurrentClusterSize = maxClusterSize - (int) clusters[(int) cID].size() - max((int) segment.size() - (i * 2 + 1), 0);
                 // grow segment when there are vacancy in the cluster and there are nodes to develop
                 if (maxClusterSize > 0 && startVertices[j].size() > 0) {
                     growSegment(tempGraph, cID, startVertices[j], maxCurrentClusterSize, clusters, vToCID);
@@ -1055,7 +1055,7 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
     // Bring unclustered nodes to clusters
     for (int i = 0; i < N; i++) {
         if (vToCID[i] == -1) {
-            SmallEdgeSet outEdges = tempGraph->getOutE[i];
+            SmallEdgeSet outEdges = tempGraph->getOutE()[i];
             VertexID minVertexID = -1;
             int minWeight = N + 1;
             for (size_t j = 0, size = outEdges.size(); j != size ; ++j) {
@@ -1066,7 +1066,7 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
                     minVertexID = v;
                 }
             }
-            modifyGraph(minVertexID, v);
+            modifyGraph(minVertexID, i);
         }
     }
 
@@ -1083,7 +1083,7 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
             break;
         }
         for (size_t i = 0, sizeI = smallClusters.size(); i != sizeI; ++i) {
-            SmallEdgeSet outEdges = tempGraph->getOutE[smallClusters[i]];
+            SmallEdgeSet outEdges = tempGraph->getOutE()[smallClusters[i]];
             VertexID minVertexID = -1;
             int minWeight = N + 1;
             for (size_t j = 0, sizeJ = outEdges.size(); j != sizeJ ; ++j) {
@@ -1094,7 +1094,7 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
                     minVertexID = v;
                 }
             }
-            modifyGraph(minVertexID, v);
+            modifyGraph(minVertexID, i);
         }
     }
 

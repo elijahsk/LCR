@@ -84,9 +84,10 @@ public:
     vector<VertexID> getNodesWithNoInDegree(DGraph* tempGraph);
     vector<VertexID> findLongestChain(DGraph* tempGraph, VertexID v);
     vector<VertexID> findLongestChain(DGraph* tempGraph, vector<VertexID> nodesWithNoInDegree);
+    vector<vector<VertexID>> segmentChain(vector<VertexID> chain, int radius)
     void addSegments(int head, int tail, vector<VertexID> chain, vector<vector<VertexID>>& segments);
     vector<vector<VertexID>> segmentChain(vector<VertexID> chain, int radius);
-    void growSegments(DGraph* tempGraph, VertexID cID, vector<VertexID>& startVertices, int maxClusterSize, vector<vector<VertexID>>& clusters, vector<int>& vToCID);
+    void growSegment(DGraph* tempGraph, VertexID cID, vector<VertexID>& startVertices, int maxClusterSize, vector<vector<VertexID>>& clusters, vector<int>& vToCID);
     void modifyGraph(DGraph* tempGraph, VertexID v, VertexID w);
     void modifyGraph(DGraph* tempGraph, int segmentCount, vector<vector<VertexID>> clusters, vector<int>& vToCID);
     void newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID, int radius, int maxClusterSize, int minClusterSize);

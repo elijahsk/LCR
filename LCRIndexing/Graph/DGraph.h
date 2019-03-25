@@ -89,7 +89,7 @@ public:
     void growSegments(DGraph* tempGraph, VertexID cID, vector<VertexID>& startVertices, int maxClusterSize, vector<vector<VertexID>>& clusters, vector<int>& vToCID);
     void modifyGraph(DGraph* tempGraph, VertexID v, VertexID w);
     void modifyGraph(DGraph* tempGraph, int segmentCount, vector<vector<VertexID>> clusters, vector<int>& vToCID);
-    void newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID);
+    void newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID, int radius, int maxClusterSize, int minClusterSize);
 
 
     void tarjan(vector< vector<VertexID> >& SCCs);

@@ -649,8 +649,8 @@ double DGraph::computeClusterCoefficient() {
 
 vector<VertexID> DGraph::getNodesWithNoInDegree(DGraph* tempGraph) {
     vector<VertexID> result;
-    int size = tempGraph.getNumberOfVertices();
-    SmallEdgeSets tempInE = tempGraph.getInE();
+    int size = tempGraph->getNumberOfVertices();
+    SmallEdgeSets tempInE = tempGraph->getInE();
     for (int i = 0; i < size; i++) {
         if (tempInE[i].size() == 0 && tempGraph->getWeight(i) > 0) {
             result.push_back(i);
@@ -664,8 +664,8 @@ vector<VertexID> DGraph::getNodesWithNoInDegree(DGraph* tempGraph) {
 vector<VertexID> DGraph::findLongestChain(DGraph* tempGraph, VertexID v) {
     vector<VertexID> queue = vector<VertexID>();
     vector<int> prev = vector<int>();
-    vector<bool> visited(tempGraph.getNumberOfVertices, false);
-    SmallEdgeSets tempOutE = tempGraph.getOutE();
+    vector<bool> visited(tempGraph->getNumberOfVertices, false);
+    SmallEdgeSets tempOutE = tempGraph->getOutE();
     int head = 0;
 
     queue.push_back(v);
@@ -789,7 +789,7 @@ void DGraph::growSegments(DGraph* tempGraph, VertexID cID, vector<VertexID>& sta
     int size = startVertices.size();
     int i = 0;
     int count = 0;
-    SmallEdgeSets tempOutE = tempGraph.getOutE();
+    SmallEdgeSets tempOutE = tempGraph->getOutE();
     vector<VertexID> nextVertices;
     while (i < size && count <= maxClusterSize) {
         VertexID v = startVertices[i];
@@ -818,9 +818,9 @@ void DGraph::growSegments(DGraph* tempGraph, VertexID cID, vector<VertexID>& sta
 
 void DGraph::modifyGraph(DGraph* tempGraph, VertexID v, VertexID w) {
     // if both are nodes
-    if (v < N && tempGraph.w < N) {
-        tempGraph.addNode();
-        int newN = tempGraph.getNumberOfVertices();
+    if (v < N && w < N) {
+        tempGraph->addNode();
+        int newN = tempGraph->getNumberOfVertices();
 
         vector<VertexID> temp;
         temp.push_back(v);
@@ -835,14 +835,14 @@ void DGraph::modifyGraph(DGraph* tempGraph, VertexID v, VertexID w) {
         tempGraph->setWeight(newN, 2);
 
         vector<VertexID> cluster = clusters[clusterID];
-        SmallEdgeSets tempOutE = tempGraph.getOutE();
-        SmallEdgeSets tempInE = tempGraph.getInE();
+        SmallEdgeSets tempOutE = tempGraph->getOutE();
+        SmallEdgeSets tempInE = tempGraph->getInE();
         for (int j = 0; j < 2; j++) {
             // Reconnect from supernode to existing out-nodes
             SmallEdgeSet currOutE = tempOutE[cluster[j]];
             for (int k = 0; k < currOutE.size(); k++) {
                 if (vToCID[currOutE[k].first] != clusterID) {
-                    tempGraph.addEdge(newN, currOutE[k].first, currOutE[k].second);
+                    tempGraph->addEdge(newN, currOutE[k].first, currOutE[k].second);
                 }
             }
 
@@ -850,7 +850,7 @@ void DGraph::modifyGraph(DGraph* tempGraph, VertexID v, VertexID w) {
             SmallEdgeSet currInE = tempInE[cluster[j]];
             for (int k = 0; k < currInE.size(); k++) {
                 if (vToCID[currInE[k].first] != clusterID) {
-                    tempGraph.addEdge(currInE[k].first, newN, currInE[k].second);
+                    tempGraph->addEdge(currInE[k].first, newN, currInE[k].second);
                 }
             }
 
@@ -858,8 +858,8 @@ void DGraph::modifyGraph(DGraph* tempGraph, VertexID v, VertexID w) {
             tempGraph->setWeight(cluster[j], 0);
 
             // Remove edges from alrady clustered node
-            tempGraph.removeInEdges(cluster[j]);
-            tempGraph.removeOutEdges(cluster[j]);
+            tempGraph->removeInEdges(cluster[j]);
+            tempGraph->removeOutEdges(cluster[j]);
         }
     } else {
         // To deal with the situation where w is a cluster while v may / may not be a cluster
@@ -875,22 +875,22 @@ void DGraph::modifyGraph(DGraph* tempGraph, VertexID v, VertexID w) {
         tempGraph->setWeight(v, tempGraph->getWeight(v) + tempGraph->getWeight(w));
         tempGraph->setWeight(w, 0);
 
-        SmallEdgeSet currOutE = tempGraph.getOutE()[w];
+        SmallEdgeSet currOutE = tempGraph->getOutE()[w];
         for (int k = 0; k < currOutE.size(); k++) {
             if (currOutE[k].first != v) {
-                tempGraph.addEdge(v, currOutE[k].first, currOutE[k].second);
+                tempGraph->addEdge(v, currOutE[k].first, currOutE[k].second);
             }
         }
 
-        SmallEdgeSet currInE = tempGraph.getInE()[w];
+        SmallEdgeSet currInE = tempGraph->getInE()[w];
         for (int k = 0; k < currInE.size(); k++) {
             if (currInE[k].first != v) {
-                tempGraph.addEdge(currInE[k].first, v, currInE[k].second);
+                tempGraph->addEdge(currInE[k].first, v, currInE[k].second);
             }
         }
 
-        tempGraph.removeInEdges(w);
-        tempGraph.removeOutEdges(w);
+        tempGraph->removeInEdges(w);
+        tempGraph->removeOutEdges(w);
     }
 }
 
@@ -900,12 +900,12 @@ void DGraph::modifyGraph(DGraph* tempGraph, int segmentCount, vector<vector<Vert
 
     for (int i = segmentCount; i > 0; i--) {
         // have to be retrieved after each iteration
-        SmallEdgeSets tempOutE = tempGraph.getOutE();
-        SmallEdgeSets tempInE = tempGraph.getInE();
+        SmallEdgeSets tempOutE = tempGraph->getOutE();
+        SmallEdgeSets tempInE = tempGraph->getInE();
 
         // Add new node, set its weight to be cluster size
-        tempGraph.addNode();
-        tempGraph->setWeight((VertexID) tempGraph.getNumberOfVertices(), clusters[size - i].size());
+        tempGraph->addNode();
+        tempGraph->setWeight((VertexID) tempGraph->getNumberOfVertices(), clusters[size - i].size());
         // Set CID to be the cluster ID of member nodes
         vToCID.push_back(size - i);
 
@@ -916,7 +916,7 @@ void DGraph::modifyGraph(DGraph* tempGraph, int segmentCount, vector<vector<Vert
             SmallEdgeSet currOutE = tempOutE[cluster[j]];
             for (int k = 0; k < currOutE.size(); k++) {
                 if (vToCID[currOutE[k].first] != size - i) {
-                    tempGraph.addEdge(size + segmentCount - i, currOutE[k].first, currOutE[k].second);
+                    tempGraph->addEdge(size + segmentCount - i, currOutE[k].first, currOutE[k].second);
                 }
             }
 
@@ -924,7 +924,7 @@ void DGraph::modifyGraph(DGraph* tempGraph, int segmentCount, vector<vector<Vert
             SmallEdgeSet currInE = tempInE[cluster[j]];
             for (int k = 0; k < currInE.size(); k++) {
                 if (vToCID[currInE[k].first] != size - i) {
-                    tempGraph.addEdge(currInE[k].first, size + segmentCount - i, currInE[k].second);
+                    tempGraph->addEdge(currInE[k].first, size + segmentCount - i, currInE[k].second);
                 }
             }
 
@@ -932,8 +932,8 @@ void DGraph::modifyGraph(DGraph* tempGraph, int segmentCount, vector<vector<Vert
             tempGraph->setWeight(cluster[j], 0);
 
             // Remove edges from alrady clustered node
-            tempGraph.removeInEdges(cluster[j]);
-            tempGraph.removeOutEdges(cluster[j]);
+            tempGraph->removeInEdges(cluster[j]);
+            tempGraph->removeOutEdges(cluster[j]);
         }
     }
 
@@ -1055,7 +1055,7 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
     // Bring unclustered nodes to clusters
     for (int i = 0; i < N; i++) {
         if (vToCID[i] == -1) {
-            SmallEdgeSet outEdges = tempGraph.getOutE[i];
+            SmallEdgeSet outEdges = tempGraph->getOutE[i];
             VertexID minVertexID = -1;
             int minWeight = N + 1;
             for (size_t j = 0, size = outEdges.size(); j != size ; ++j) {
@@ -1070,7 +1070,7 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
         }
     }
 
-    int newN = tempGraph.getNumberOfVertices();
+    int newN = tempGraph->getNumberOfVertices();
     while (true) {
         vector<VertexID> smallClusters;
         for (int i = N; i < newN; i++) {
@@ -1083,7 +1083,7 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
             break;
         }
         for (size_t i = 0, sizeI = smallClusters.size(); i != sizeI; ++i) {
-            SmallEdgeSet outEdges = tempGraph.getOutE[smallClusters[i]];
+            SmallEdgeSet outEdges = tempGraph->getOutE[smallClusters[i]];
             VertexID minVertexID = -1;
             int minWeight = N + 1;
             for (size_t j = 0, sizeJ = outEdges.size(); j != sizeJ ; ++j) {

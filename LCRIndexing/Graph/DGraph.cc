@@ -816,7 +816,7 @@ void DGraph::growSegment(DGraph* tempGraph, VertexID cID, vector<VertexID>& star
     startVertices = nextVertices;
 }
 
-void DGraph::modifyGraph(DGraph* tempGraph, VertexID v, VertexID w) {
+void DGraph::modifyGraph(DGraph* tempGraph, VertexID v, VertexID w, vector<vector<VertexID>>& clusters, vector<int>& vToCID) {
     // if both are nodes
     if (v < N && w < N) {
         tempGraph->addNode();
@@ -956,7 +956,7 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
         vector<VertexID> chain = findLongestChain(tempGraph, nodesWithNoInDegree);
         vector<vector<VertexID>> segments = segmentChain(chain, radius);
         int segmentCount = segments.size();
-        int oldClusterSize = cluster.size();
+        int oldClusterSize = clusters.size();
 
         // termination condition
         if (segmentCount == 0) {
@@ -1066,7 +1066,7 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
                     minVertexID = v;
                 }
             }
-            modifyGraph(minVertexID, i);
+            modifyGraph(tempGraph, minVertexID, (VertexID) i, clusters, vToCID);
         }
     }
 
@@ -1094,7 +1094,7 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
                     minVertexID = v;
                 }
             }
-            modifyGraph(minVertexID, i);
+            modifyGraph(tempGraph, minVertexID, (VertexID) i, clusters, vToCID);
         }
     }
 

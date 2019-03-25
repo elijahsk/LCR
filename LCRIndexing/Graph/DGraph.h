@@ -26,7 +26,7 @@ public:
     DGraph(EdgeSet* edgeSet);
     DGraph(EdgeSet* edgeSet, int pN, int pL);
     DGraph(EdgeSet* edgeSet, int pN, int pL, bool allowMultipleEdges);
-    DGraph(SmallEdgeSets* inE，SmallEdgeSets* outE, int pN, int pL, int pM, vector<int> weight);
+    DGraph(SmallEdgeSets* inE，SmallEdgeSets* outE, int& pN, int& pL, int& pM, vector<int> weight);
     void construct(EdgeSet* edgeSet, int pN, int pL, bool allowMultipleEdges);
     ~DGraph();
 
@@ -88,7 +88,7 @@ public:
     void addSegments(int head, int tail, vector<VertexID> chain, vector<vector<VertexID>>& segments);
     vector<vector<VertexID>> segmentChain(vector<VertexID> chain, int radius);
     void growSegment(DGraph* tempGraph, VertexID cID, vector<VertexID>& startVertices, int maxClusterSize, vector<vector<VertexID>>& clusters, vector<int>& vToCID);
-    void modifyGraph(DGraph* tempGraph, VertexID v, VertexID w);
+    void modifyGraph(DGraph* tempGraph, VertexID v, VertexID w, vector<vector<VertexID>>& clusters, vector<int>& vToCID);
     void modifyGraph(DGraph* tempGraph, int segmentCount, vector<vector<VertexID>> clusters, vector<int>& vToCID);
     void newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID, int radius, int maxClusterSize, int minClusterSize);
 

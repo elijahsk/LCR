@@ -51,7 +51,7 @@ DGraph::DGraph(string fileName) {
     construct( loadEdgeFile(fileName), -1, -1, false );
 };
 
-DGraph::DGraph(SmallEdgeSets* inE, SmallEdgeSets* outE, int& pN, int& pL, int& pM, vector<int> weight) {
+DGraph::DGraph(SmallEdgeSets& inE, SmallEdgeSets& outE, int& pN, int& pL, int& pM, vector<int> weight) {
     this->constStartTime = getCurrentTimeInMilliSec();
     this->N = pN;
     this->L = pL;

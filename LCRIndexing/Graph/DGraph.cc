@@ -737,7 +737,7 @@ void DGraph::addSegments(int head, int tail, vector<VertexID> chain, vector<vect
     } else {
         int segmentCount = (int) segmentsLength / radius + 1;
         int approxSegmentLength = (int) segmentsLength / segmentCount;
-        int remainder = seglentsLength % segmentCount;
+        int remainder = segmentsLength % segmentCount;
         int count = 0;
         while (head < tail) {
             segment.push_back(chain[head]);
@@ -797,7 +797,7 @@ void DGraph::growSegment(DGraph* tempGraph, VertexID cID, vector<VertexID>& star
         int edgeCount = outEdges.size();
         for (int j = 0; j < edgeCount; j++) {
 
-            if (cout > maxClusterSize) break;
+            if (count > maxClusterSize) break;
 
             VertexID currNode = outEdges[j].first;
             // non-supernode that has not been clustered

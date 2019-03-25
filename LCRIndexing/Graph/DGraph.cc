@@ -51,7 +51,7 @@ DGraph::DGraph(string fileName) {
     construct( loadEdgeFile(fileName), -1, -1, false );
 };
 
-DGraph::DGraph(SmallEdgeSets inE， SmallEdgeSets outE, int pN, int pL, int pM, vector<int> weight) {
+DGraph::DGraph(SmallEdgeSets* inE，SmallEdgeSets* outE, int pN, int pL, int pM, vector<int> weight) {
     this->constStartTime = getCurrentTimeInMilliSec();
     this->N = pN;
     this->L = pL;
@@ -661,7 +661,7 @@ vector<VertexID> DGraph::getNodesWithNoInDegree(DGraph* tempGraph) {
 }
 
 
-vector<VertexID> DGraph::findLongestChain(Dgraph* tempGraph, VertexID v) {
+vector<VertexID> DGraph::findLongestChain(DGraph* tempGraph, VertexID v) {
     vector<VertexID> queue = vector<VertexID>();
     vector<int> prev = vector<int>();
     vector<bool> visited(tempGraph.getNumberOfVertices, false);

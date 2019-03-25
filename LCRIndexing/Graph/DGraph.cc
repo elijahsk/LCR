@@ -51,7 +51,7 @@ DGraph::DGraph(string fileName) {
     construct( loadEdgeFile(fileName), -1, -1, false );
 };
 
-DGraph::DGraph(SmallEdgeSets* inE，SmallEdgeSets* outE, int pN, int pL, int pM, vector<int> weight) {
+DGraph::DGraph(SmallEdgeSets* inE, SmallEdgeSets* outE, int& pN, int& pL, int& pM, vector<int> weight) {
     this->constStartTime = getCurrentTimeInMilliSec();
     this->N = pN;
     this->L = pL;
@@ -664,7 +664,7 @@ vector<VertexID> DGraph::getNodesWithNoInDegree(DGraph* tempGraph) {
 vector<VertexID> DGraph::findLongestChain(DGraph* tempGraph, VertexID v) {
     vector<VertexID> queue = vector<VertexID>();
     vector<int> prev = vector<int>();
-    vector<bool> visited(tempGraph->getNumberOfVertices, false);
+    vector<bool> visited(tempGraph->getNumberOfVertices(), false);
     SmallEdgeSets tempOutE = tempGraph->getOutE();
     int head = 0;
 
@@ -687,7 +687,7 @@ vector<VertexID> DGraph::findLongestChain(DGraph* tempGraph, VertexID v) {
         head += 1;
     }
 
-    vector<VertexID> result = vector<VertexID>;
+    vector<VertexID> result;
     while (prev[head] != -1) {
         result.push_back(queue[head]);
         head = prev[head];
@@ -717,7 +717,7 @@ vector<VertexID> DGraph::findLongestChain(DGraph* tempGraph, vector<VertexID> no
 
 // naive approach, length = m * r + remainder
 // more complex approach length = (m + 1) segments of similar length
-void DGraph::addSegments(int head, int tail, vector<VertexID> chain, vector<vector<VertexID>>& segments) {
+void DGraph::addSegments(int head, int tail, vector<VertexID> chain, vector<vector<VertexID>>& segments, int radius) {
     vector<VertexID> segment = vector<VertexID>();
     int segmentsLength = tail - head;
     if (segmentsLength % radius == 0) {
@@ -771,14 +771,14 @@ vector<vector<VertexID>> DGraph::segmentChain(vector<VertexID> chain, int radius
             tail += 1;
         }
         if (head < tail) {
-            addSegments(head, tail, chain, segments);
+            addSegments(head, tail, chain, segments, radius);
         }
         head += 1;
         tail += 1;
     }
 
     if (head < tail) {
-        addSegments(head, tail, chain, segments);
+        addSegments(head, tail, chain, segments, radius);
     }
 
     return segments;

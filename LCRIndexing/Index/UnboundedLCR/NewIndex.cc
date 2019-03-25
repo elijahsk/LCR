@@ -104,7 +104,8 @@ void NewIndex::buildIndex() {
     // each vertex -> a cluster IDs
     this->vToCID = vector<int>(N, -1);
     this->isBoundaryNode = vector<bool>(N, false);
-    this->graph->randomClustering(clusters, vToCID);
+    this->graph->newClustering(clusters, vToCID, 8, 500, 100);
+    // this->graph->randomClustering(clusters, vToCID);
 
     // create a subgraph for each cluster containing only the right edges
     subGraphs = vector< Graph* >();

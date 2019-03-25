@@ -1014,7 +1014,7 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
                 if (segments.size() % 2 == 0) {
                     if (vToCID[segment[0]] == -1) {
                         vToCID[segment[0]] = oldClusterSize + i;
-                        cluster[oldClusterSize + i].push_back(segment[0]);
+                        clusters[oldClusterSize + i].push_back(segment[0]);
                         head = 1;
                     } else {
                         continue;
@@ -1026,13 +1026,13 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
                 while (hasUnclustered) {
                     if (vToCID[segment[head]] == -1) {
                         vToCID[segment[head]] = oldClusterSize + i;
-                        cluster[oldClusterSize + i].push_back(segment[head]);
+                        clusters[oldClusterSize + i].push_back(segment[head]);
                     } else {
                         hasUnclustered = false;
                     }
                     if (vToCID[segment[tail]] == -1) {
                         vToCID[segment[tail]] = oldClusterSize + i;
-                        cluster[oldClusterSize + i].push_back(segment[tail]);
+                        clusters[oldClusterSize + i].push_back(segment[tail]);
                     } else {
                         hasUnclustered = false;
                     }

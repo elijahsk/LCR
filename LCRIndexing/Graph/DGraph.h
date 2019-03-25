@@ -26,7 +26,7 @@ public:
     DGraph(EdgeSet* edgeSet);
     DGraph(EdgeSet* edgeSet, int pN, int pL);
     DGraph(EdgeSet* edgeSet, int pN, int pL, bool allowMultipleEdges);
-    DGraph(SmallEdgeSets* inE, SmallEdgeSets* outE, int& pN, int& pL, int& pM, vector<int> weight);
+    DGraph(SmallEdgeSets& inE, SmallEdgeSets& outE, int& pN, int& pL, int& pM, vector<int> weight);
     void construct(EdgeSet* edgeSet, int pN, int pL, bool allowMultipleEdges);
     ~DGraph();
 

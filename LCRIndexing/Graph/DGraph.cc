@@ -552,12 +552,11 @@ void DGraph::setWeight(VertexID v, int w) {
 
 void DGraph::getWeight(VertexID v, int& tempWeight) {
     if (v < N) {
-        tempWeight = weight[(int) v];    
-    } 
-    else {
+        tempWeight = weight[(int) v];
+    } else {
         tempWeight = -2;
     }
-    
+
 }
 
 void DGraph::getWeights(vector<int>& weights) {
@@ -944,6 +943,7 @@ void DGraph::modifyGraph(DGraph* tempGraph, VertexID v, VertexID w, vector<vecto
                 if (vToCID[currOutE[k].first] != clusterID) {
                     tempGraph->addEdge(newN, currOutE[k].first, currOutE[k].second);
                 }
+                tempGraph->removeEdge(cluster[j], currOueE[k].first);
             }
 
             // Reconnect from existing in-nodes to supernode
@@ -952,14 +952,11 @@ void DGraph::modifyGraph(DGraph* tempGraph, VertexID v, VertexID w, vector<vecto
                 if (vToCID[currInE[k].first] != clusterID) {
                     tempGraph->addEdge(currInE[k].first, newN, currInE[k].second);
                 }
+                tempGraph->removeEdge(currInE[k].first, cluster[j]);
             }
 
             // Assign 0 weight to already clustered node
             tempGraph->setWeight(cluster[j], 0);
-
-            // Remove edges from alrady clustered node
-            tempGraph->removeInEdges(cluster[j]);
-            tempGraph->removeOutEdges(cluster[j]);
         }
     } else {
         // To deal with the situation where w is a cluster while v may / may not be a cluster
@@ -987,6 +984,7 @@ void DGraph::modifyGraph(DGraph* tempGraph, VertexID v, VertexID w, vector<vecto
             if (currOutE[k].first != v) {
                 tempGraph->addEdge(v, currOutE[k].first, currOutE[k].second);
             }
+            tempGraph->removeEdge(w, currOutE[k].first);
         }
 
         SmallEdgeSet currInE;
@@ -995,10 +993,8 @@ void DGraph::modifyGraph(DGraph* tempGraph, VertexID v, VertexID w, vector<vecto
             if (currInE[k].first != v) {
                 tempGraph->addEdge(currInE[k].first, v, currInE[k].second);
             }
+            tempGraph->removeEdge(currInE[k].first, w);
         }
-
-        tempGraph->removeInEdges(w);
-        tempGraph->removeOutEdges(w);
     }
 }
 
@@ -1112,7 +1108,7 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
     // chain length? segmentCount?
     while (true) {
         cout << "Start" << endl;
-        
+
         getNodesWithNoInDegree(tempGraph, nodesWithNoInDegree);
 
         cout << "done get nodes" << endl;
@@ -1300,67 +1296,93 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
 
 
     // Bring unclustered nodes to clusters
+    int weight;
     for (int i = 0; i < N; i++) {
         if (vToCID[i] == -1) {
             SmallEdgeSet outEdges;
             tempGraph->getOutE(i, outEdges);
             VertexID minVertexID = -1;
             int minWeight = N + 1;
-            for (size_t j = 0, size = outEdges.size(); j != size ; ++j) {
+            for (size_t j = 0, size = outEdges.size(); j != size; ++j) {
                 VertexID v = outEdges[j].first;
                 // all nodes that can be connected should have weight > 0
-                int weight;
                 tempGraph->getWeight(v, weight);
                 if (weight < minWeight) {
                     minWeight = weight;
                     minVertexID = v;
                 }
             }
-            modifyGraph(tempGraph, minVertexID, (VertexID) i, clusters, vToCID);
+            if (minVertexID != -1) {
+                modifyGraph(tempGraph, minVertexID, (VertexID) i, clusters, vToCID);
+            }
         }
     }
 
     int newN = tempGraph->getNumberOfVertices();
-    while (true) {
-        vector<VertexID> smallClusters;
-        for (int i = N; i < newN; i++) {
-            int weight;
-            tempGraph->getWeight(i, weight);
-            if (weight != 0 && weight < minClusterSize) {
-                smallClusters.push_back(i);
-            }
-        }
-        if (smallClusters.empty()) {
-            break;
-        }
-        for (size_t i = 0, sizeI = smallClusters.size(); i != sizeI; ++i) {
-            SmallEdgeSet outEdges;
-            tempGraph->getOutE(smallClusters[i], outEdges);
-            VertexID minVertexID = -1;
-            int minWeight = N + 1;
-            for (size_t j = 0, sizeJ = outEdges.size(); j != sizeJ ; ++j) {
-                VertexID v = outEdges[j].first;
-                // all nodes that can be connected should have weight > 0
-                int weight;
-                tempGraph->getWeight(v, weight);
-                if (weight < minWeight) {
-                    minWeight = weight;
-                    minVertexID = v;
-                }
-            }
-            modifyGraph(tempGraph, minVertexID, (VertexID) i, clusters, vToCID);
+    SmallEdgeSet tempOutE;
+    SmallEdgeSet tempInE
+    vector<VertexID> smallClusters;
+    for (int i = N; i < newN; i++) {
+        tempGraph->getWeight(i, weight);
+        tempGraph->getOutE(i, tempOutE);
+        tempGraph->getInE(i, tempInE);
+        if (weight != 0 && weight < minClusterSize && tempOutE.empty() && tempInE.empty()) {
+            smallClusters.push_back(i);
         }
     }
 
+    if (!smallClusters.empty()) { 
+        for (size_t i = 0, sizeI = smallClusters.size(); i != sizeI; ++i) {
+            // the node will only be merged once regardless
+            // 1. node become empty if merging is required
+            // 2. the node can't be merged as it has no neighbours
+            // 3. the node, after some previous merging, has become big enough
+            // 4. the node, after all the merging, still does not reach the minimum size, 
+            //    will be merged with a node that exceeds minimum size.
+            tempGraph->getWeight(smallClusters[i], weight);
+            if (weight < minClusterSize) {
+                SmallEdgeSet outEdges;
+                tempGraph->getOutE(smallClusters[i], outEdges);
+                VertexID minVertexID = -1;
+                int minWeight = N + 1;
+                for (size_t j = 0, sizeJ = outEdges.size(); j != sizeJ ; ++j) {
+                    VertexID v = outEdges[j].first;
+                    // all nodes that can be connected should have weight > 0
+                    tempGraph->getWeight(v, weight);
+                    if (weight < minWeight) {
+                        minWeight = weight;
+                        minVertexID = v;
+                    }
+                }
+                if (minVertexID != -1) {
+                    modifyGraph(tempGraph, minVertexID, (VertexID) i, clusters, vToCID);
+                }
+            } 
+        }
+
+    }
+
+    // For original node 0 ... N - 1
+    // 1. vToCID contains the original cluster it is in
+    // 2. vToCID == -1, indicating that the node is not connected to any other nodes
+
+    // For cluster node N ...
+    // 1. vToCID contains the true cluster id
+    // 2. vToCID contains the cluster id of its ancester
+
+    // Given a cluster id I, the position of the cluster node is N + I
+
+    // vToCID[i] -> cID -> vToCID[cID + N] == cID ? cID : clusterID = vToCID[cID + N]
+
     // Update VToCID based on cluster redirection
-    for (int i = 0; i != N; i++) {
+    for (int i = 0; i != N; ++i) {
         int clusterID = vToCID[i];
-        while (vToCID[clusterID] != clusterID) {
-            clusterID = vToCID[clusterID];
+        while (vToCID[clusterID + N] != clusterID) {
+            clusterID = vToCID[clusterID + N];
         }
 
         // path compression
-        vToCID[vToCID[i]] = clusterID;
+        vToCID[vToCID[i] + N] = clusterID;
 
         vToCID[i] = clusterID;
     }

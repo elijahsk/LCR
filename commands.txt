@@ -1,0 +1,19 @@
+./rebuild.sh;./build/default/runExperiment ./tests/graphs/advogato.edge 2 ./output_test
+./rebuild.sh;./build/default/runExperiment ./tests/graphs/testGraph1.edge 1 ./output_test
+
+Why use BFS instead of DFS for the longest chain
+BFS simulates the search, 
+we will reach the node first if there is a path the goes to that node, instead of going for a longer way to reach the node
+In a sense we are simulating the process of finding the diameter
+
+
+debuginfo-install --installroot=/home/k/kai1206 glibc-2.17-260.el7_6.3.x86_64 libgcc-4.8.5-36.el7_6.1.x86_64 libstdc++-4.8.5-36.el7_6.1.x86_64
+debuginfo-install --downloadonly --downloaddir=/home/k/kai1206/debugFolder glibc-2.17-260.el7_6.3.x86_64 libgcc-4.8.5-36.el7_6.1.x86_64 libstdc++-4.8.5-36.el7_6.1.x86_64
+
+file ./build/default/runExperiment
+set args ./tests/graphs/testGraph1.edge 1 ./output_test
+
+break ../Index/UnboundedLCR/NewIndex.cc:107
+break default/../../Graph/DGraph.cc:1110
+break default/../../Graph/DGraph.cc:717
+break default/../../Graph/DGraph.cc:1018

@@ -100,11 +100,12 @@ void NewIndex::buildIndex() {
 
     // first we divide graph G into a set of random clusters
     // each cluster -> a list of vertexID
-    this->clusters = vector< vector < VertexID > >();
+    this->clusters;
     // each vertex -> a cluster IDs
     this->vToCID = vector<int>(N, -1);
     this->isBoundaryNode = vector<bool>(N, false);
-    this->graph->newClustering(clusters, vToCID, 8, 500, 100);
+    this->graph->newClustering(clusters, vToCID, 3, 5, 2);
+
     // this->graph->randomClustering(clusters, vToCID);
 
     // create a subgraph for each cluster containing only the right edges

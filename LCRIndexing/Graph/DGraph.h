@@ -26,7 +26,7 @@ public:
     DGraph(EdgeSet* edgeSet);
     DGraph(EdgeSet* edgeSet, int pN, int pL);
     DGraph(EdgeSet* edgeSet, int pN, int pL, bool allowMultipleEdges);
-    DGraph(SmallEdgeSets& inE, SmallEdgeSets& outE, int& pN, int& pL, int& pM, vector<int> weight);
+    DGraph(SmallEdgeSets inE, SmallEdgeSets outE, int pN, int pL, int pM, vector<int> weight);
     void construct(EdgeSet* edgeSet, int pN, int pL, bool allowMultipleEdges);
     ~DGraph();
 
@@ -48,8 +48,10 @@ public:
     int getNumberOfVertices();
     int getNumberOfLabels();
     int getNumberOfEdges();
-    SmallEdgeSets getInE();
-    SmallEdgeSets getOutE();
+    void getInE(SmallEdgeSets& tempInE);
+    void getOutE(SmallEdgeSets& tempOutE);
+    void getInE(VertexID v, SmallEdgeSet& tempInE);
+    void getOutE(VertexID v, SmallEdgeSet& tempOutE);
 
     void addNode();
     void removeNode(graphns::VertexID w);
@@ -62,7 +64,8 @@ public:
     bool hasMultiEdge(graphns::VertexID v , graphns::VertexID w, graphns::LabelSet ls);
     void setWeight(vector<int> w);
     void setWeight(VertexID v, int w);
-    int getWeight(VertexID v);
+    void getWeight(VertexID v, int& tempWeight);
+    void getWeights(vector<int>& weights);
 
     bool findInsertablePosition(graphns::VertexID w, graphns::SmallEdgeSet& ses, int& pos);
     void insertEdge(graphns::VertexID v, graphns::VertexID w, graphns::LabelID newLabel, SmallEdgeSet& ses);
@@ -81,14 +84,14 @@ public:
     void connect(vector<VertexID>& parent, VertexID v, VertexID w);
     void randomClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID);
     
-    vector<VertexID> getNodesWithNoInDegree(DGraph* tempGraph);
-    vector<VertexID> findLongestChain(DGraph* tempGraph, VertexID v);
-    vector<VertexID> findLongestChain(DGraph* tempGraph, vector<VertexID> nodesWithNoInDegree);
-    vector<vector<VertexID>> segmentChain(vector<VertexID> chain, int radius);
+    void getNodesWithNoInDegree(DGraph* tempGraph, vector<VertexID>& nodesWithNoInDegree);
+    void findLongestChain(DGraph* tempGraph, VertexID v, vector<VertexID>& chain);
+    void findLongestChain(DGraph* tempGraph, vector<VertexID> nodesWithNoInDegree, vector<VertexID>& chain);
+    void segmentChain(vector<VertexID> chain, int radius, vector<int> weights, vector<vector<VertexID>>& segments);
     void addSegments(int head, int tail, vector<VertexID> chain, vector<vector<VertexID>>& segments, int radius);
     void growSegment(DGraph* tempGraph, VertexID cID, vector<VertexID>& startVertices, int maxClusterSize, vector<vector<VertexID>>& clusters, vector<int>& vToCID);
     void modifyGraph(DGraph* tempGraph, VertexID v, VertexID w, vector<vector<VertexID>>& clusters, vector<int>& vToCID);
-    void modifyGraph(DGraph* tempGraph, int segmentCount, vector<vector<VertexID>> clusters, vector<int>& vToCID);
+    void modifyGraph(DGraph* tempGraph, int segmentCount, vector<vector<VertexID>>& clusters, vector<int>& vToCID);
     void newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID, int radius, int maxClusterSize, int minClusterSize);
 
 
@@ -96,6 +99,8 @@ public:
     void tarjanStrongConnect(int v, int& index, stack<VertexID>& q, vector< int >& indexPerNode,
                              vector< int >& lowlinkPerNode, vector< bool >& onStack, vector< vector<VertexID> >& SCCs);
     int computeDiameter();
+
+    void getStatus();
 
 };
 #endif

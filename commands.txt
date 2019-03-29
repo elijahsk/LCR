@@ -19,6 +19,15 @@ break default/../../Graph/DGraph.cc:1110
 break default/../../Graph/DGraph.cc:717
 break default/../../Graph/DGraph.cc:1018
 
-
+file ./build/default/runExperiment
 set args ./tests/graphs/V2kD3L8exp.edge 1 ./output_test
-break default/../../Graph/DGraph.cc:1451
+break default/../../Graph/DGraph.cc:1460
+break ../Index/UnboundedLCR/NewIndex.cc:114
+
+
+BFS within the cluster!
+RRCI doesn't give much insight
+
+python2.7 ./datagen/addLabel.py ../../data/out.cit-HepTh 3 norm
+./rebuild.sh;./build/default/runExperiment ../../data/out.cit-HepTh_labeled 1 ./output_test
+./build/default/genQuery ../../data/out.cit-HepTh_labeled 2 20 2 3

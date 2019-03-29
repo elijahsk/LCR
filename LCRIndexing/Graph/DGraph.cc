@@ -705,49 +705,101 @@ void DGraph::findLongestChain(DGraph* tempGraph, VertexID v, vector<VertexID>& c
     // ================================================
     SmallEdgeSets tempOutE;
     tempGraph->getOutE(tempOutE);
+    SmallEdgeSets tempInE;
+    tempGraph->getInE(tempInE);
     // Does chaning tempOutE affect the original one?
     // Ans: No
     // ================================================
     // cout << "test2" << endl;
-    int head = 0;
 
-    queue.push_back(v);
-    prev.push_back(-1);
+    // use nodeID + 1 to avoid confusion caused by 0
+    int N = tempGraph->getNumberOfVertices();
+    queue.push_back(v + 1);
+    prev.push_back(N);
 
+    // Add head info in both directions
+    SmallEdgeSet outEdges = tempOutE[v];
+    SmallEdgeSet inEdges = tempInE[v];
+    VertexID nextV;
+
+    visited[v] = true;
+
+    for (int i = 0, sizeI = outEdges.size(); i != sizeI; ++i) {
+        nextV = outEdges[i].first;
+        if (!visited[nextV]) {
+            queue.push_back(nextV + 1);
+            prev.push_back(0);
+        }
+    }
+
+    for (int i = 0, sizeI = inEdges.size(); i != sizeI; ++i) {
+        nextV = inEdges[i].first;
+        if (!visited[nextV]) {
+            queue.push_back(-nextV - 1);
+            prev.push_back(0);
+        }
+    }
+
+
+    head = 1;
     while (head < queue.size()) {
         // cout << "head: " << head << endl;
         VertexID currV = queue[head];
-        visited[currV] = true;
         // cout << "currV: " << currV << endl;
+        if (currV > 0) {
+            currV --;
+            visited[currV] = true;
+            outEdges = tempOutE[currV];
+            // cout << "outEdges.size(): " << outEdges.size() << endl;
+            for (int i = 0, j = outEdges.size(); i != j; ++i) {
+                // cout << "i: " << i << endl;
+                nextV = outEdges[i].first;
+                if (!visited[nextV]) {
+                    // cout << "next: " << nextV << endl;
+                    // cout << "queue size: " << queue.size() << endl;
 
-        SmallEdgeSet outEdges = tempOutE[currV];
-        // cout << "outEdges.size(): " << outEdges.size() << endl;
-        for (int i = 0, j = outEdges.size(); i != j; ++i) {
-            // cout << "i: " << i << endl;
-            VertexID nextV = outEdges[i].first;
-            if (!visited[nextV]) {
-                // cout << "next: " << nextV << endl;
-                // cout << "queue size: " << queue.size() << endl;
+                    queue.push_back(nextV + 1);
 
-                queue.push_back(nextV);
-
-                // cout << "test3" << endl;
-                prev.push_back(head);
-                // cout << "test4" << endl;
+                    // cout << "test3" << endl;
+                    prev.push_back(head);
+                    // cout << "test4" << endl;
+                }
+                // cout << "done " << i << endl;
             }
-            // cout << "done " << i << endl;
+        } else {
+            currV = -currV - 1;
+            visited[currV] = true;
+            inEdges = tempInE[currV];
+
+            for (int i = 0, sizeI = inEdges.size(); i != sizeI; ++i) {
+                nextV = inEdges[i].first;
+                if (!visited[nextV]) {
+                    queue.push_back(-nextV - 1);
+                    prev.push_back(head);
+                }
+            }
+
         }
 
         head += 1;
         // cout << "next head" << head << endl;
     }
 
-    head -= 1;
+    int head1 = head - 1;
+    int head2 = head - 1;
+    // find the last node that is in the path of in degree
+    while (queue[head1] > 0) {
+        head1 --;
+    }
+    // find the last node that is in the path of out degree
+    while (queue[head2] < 0) {
+        head2 --;
+    }
     // cout << queue.size() << " " << head << endl;
 
-    while (prev[head] != -1) {
-        chain.push_back(queue[head]);
-        head = prev[head];
+    while (prev[head2] != N) {
+        chain.push_back(queue[head2] - 1);
+        head2 = prev[head2];
         // cout << head << " ";
     }
 
@@ -755,7 +807,16 @@ void DGraph::findLongestChain(DGraph* tempGraph, VertexID v, vector<VertexID>& c
 
     chain.push_back(queue[head]);
 
-    reverse(chain.begin(), chain.end());
+    vector<VertexID> tempChain;
+    while (prev[head1] != N) {
+        tempChain.push_back(-queue[head1] - 1);
+        head1 = prev[head1];
+    }
+
+    reverse(tempChain.begin(), tempChain.end());
+
+    chain.insert(chain.end(), tempChain.begin(), tempChain.end());
+
 }
 
 void DGraph::findLongestChain(DGraph* tempGraph, vector<VertexID> nodesWithNoInDegree, vector<VertexID>& chain) {

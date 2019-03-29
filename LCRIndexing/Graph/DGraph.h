@@ -58,8 +58,6 @@ public:
     void addEdge(graphns::VertexID v, graphns::VertexID w, graphns::LabelID newLabel);
     void addMultiEdge(graphns::VertexID v, graphns::VertexID w, graphns::LabelSet newLabelSet);
     void removeEdge(graphns::VertexID v, graphns::VertexID w);
-    void removeInEdges(graphns::VertexID v);
-    void removeOutEdges(graphns::VertexID v);
     void changeLabel(graphns::VertexID v, graphns::VertexID w, graphns::LabelID newLabel);
     bool hasMultiEdge(graphns::VertexID v , graphns::VertexID w, graphns::LabelSet ls);
     void setWeight(vector<int> w);

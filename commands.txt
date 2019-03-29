@@ -1,6 +1,7 @@
 ./rebuild.sh;./build/default/runExperiment ./tests/graphs/advogato.edge 2 ./output_test
 ./rebuild.sh;./build/default/runExperiment ./tests/graphs/testGraph1.edge 1 ./output_test
-
+./rebuild.sh;./build/default/runExperiment ./tests/graphs/testGraph7.edge 1 ./output_test
+./rebuild.sh;./build/default/runExperiment ./tests/graphs/V2kD3L8exp.edge 1 ./output_test
 Why use BFS instead of DFS for the longest chain
 BFS simulates the search, 
 we will reach the node first if there is a path the goes to that node, instead of going for a longer way to reach the node
@@ -17,3 +18,7 @@ break ../Index/UnboundedLCR/NewIndex.cc:107
 break default/../../Graph/DGraph.cc:1110
 break default/../../Graph/DGraph.cc:717
 break default/../../Graph/DGraph.cc:1018
+
+
+set args ./tests/graphs/V2kD3L8exp.edge 1 ./output_test
+break default/../../Graph/DGraph.cc:1451

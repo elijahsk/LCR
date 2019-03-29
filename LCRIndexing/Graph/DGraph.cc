@@ -395,14 +395,14 @@ void DGraph::addEdge(VertexID v, VertexID w, LabelID newLabel) {
     bool b1 = findInsertablePosition(w, outE[v], pos1);
     bool b2 = findInsertablePosition(v, inE[w], pos2);
 
-    cout << "b1: " << b1 << endl;
-    cout << "pos1: " << pos1 << endl;
-    cout << "b2: " << b2 << endl;
-    cout << "pos2: " << pos2 << endl;
+    // cout << "b1: " << b1 << endl;
+    // cout << "pos1: " << pos1 << endl;
+    // cout << "b2: " << b2 << endl;
+    // cout << "pos2: " << pos2 << endl;
 
     // allowMultipleEdges = true;
     if ( (b1 == true || b2 == true) && allowMultipleEdges == false ) {
-        cerr << " DGraph::addEdge vw edge already exists w=" << w  << ",v=" << v << endl;
+        // cerr << " DGraph::addEdge vw edge already exists w=" << w  << ",v=" << v << endl;
         return;
     }
     // allowMultipleEdges = false;
@@ -463,16 +463,8 @@ void DGraph::removeEdge(graphns::VertexID v, graphns::VertexID w) {
     outE[v].erase( outE[v].begin() + pos1 );
     inE[w].erase( inE[w].begin() + pos2 );
     M -= 1;
-    cout << "removeEdge w=" << w  << ",v=" << v << ",b1=" << b1 << ",b2=" << b2 << ",pos1=" << pos1 << ",pos2=" << pos2 << endl;
+    // cout << "removeEdge w=" << w  << ",v=" << v << ",b1=" << b1 << ",b2=" << b2 << ",pos1=" << pos1 << ",pos2=" << pos2 << endl;
 };
-
-void DGraph::removeInEdges(graphns::VertexID v) {
-    inE[v].clear();
-}
-
-void DGraph::removeOutEdges(graphns::VertexID v) {
-    outE[v].clear();
-}
 
 void DGraph::changeLabel(graphns::VertexID v, graphns::VertexID w, LabelID newLabel) {
     if ( v < 0 || v > N || w < 0 || w > N ) {
@@ -675,7 +667,7 @@ double DGraph::computeClusterCoefficient() {
 
 void DGraph::getNodesWithNoInDegree(DGraph* tempGraph, vector<VertexID>& nodesWithNoInDegree) {
     nodesWithNoInDegree.clear();
-    cout << N << endl;
+    // cout << N << endl;
     int size = N;
     SmallEdgeSets tempInE;
     // cout << "test1" << endl;
@@ -694,11 +686,11 @@ void DGraph::getNodesWithNoInDegree(DGraph* tempGraph, vector<VertexID>& nodesWi
         // cout << "test5" << endl;
     }
 
-    for (int i = 0, sizeI = nodesWithNoInDegree.size(); i != sizeI; ++i) {
-        cout << nodesWithNoInDegree[i] << " ";
-    }
-    cout << endl;
-    cout << "test6" << endl;
+    // for (int i = 0, sizeI = nodesWithNoInDegree.size(); i != sizeI; ++i) {
+    //     cout << nodesWithNoInDegree[i] << " ";
+    // }
+    // cout << endl;
+    // cout << "test6" << endl;
 }
 
 
@@ -751,15 +743,15 @@ void DGraph::findLongestChain(DGraph* tempGraph, VertexID v, vector<VertexID>& c
     }
 
     head -= 1;
-    cout << queue.size() << " " << head << endl;
+    // cout << queue.size() << " " << head << endl;
 
     while (prev[head] != -1) {
         chain.push_back(queue[head]);
         head = prev[head];
-        cout << head << " ";
+        // cout << head << " ";
     }
 
-    cout << endl;
+    // cout << endl;
 
     chain.push_back(queue[head]);
 
@@ -775,27 +767,29 @@ void DGraph::findLongestChain(DGraph* tempGraph, vector<VertexID> nodesWithNoInD
     cout << "Number of randomV: " << num << endl;
     for (int i = 0; i < num; i++) {
         // May give restrictions to the randomV, e.g. in & out degree
+        srand(time(NULL)*time(NULL));
         int randomV = rand() % populationSize;
-        cout << "randomV: " << nodesWithNoInDegree[randomV] << endl;
+        // cout << "randomV: " << nodesWithNoInDegree[randomV] << endl;
         // cout << "randomV: " << randomV << endl;
         vector<VertexID> tempChain;
         findLongestChain(tempGraph, nodesWithNoInDegree[randomV], tempChain);
         // vector<VertexID> tempChain = findLongestChain(tempGraph, randomV);
-        cout << "Chain length: " << tempChain.size() << endl;
-        for (int i = 0, sizeI = tempChain.size(); i != sizeI; ++i) {
-            cout << tempChain[i] << " ";
-        }
-        cout << endl;
+        // cout << "Chain length: " << tempChain.size() << endl;
+        // for (int i = 0, sizeI = tempChain.size(); i != sizeI; ++i) {
+        //     cout << tempChain[i] << " ";
+        // }
+        // cout << endl;
         if (tempChain.size() > chain.size()) {
             chain = tempChain;
         }
     }
+    cout << "Chain length: " << chain.size() << endl;
 }
 
 // naive approach, length = m * r + remainder
 // more complex approach length = (m + 1) segments of similar length
 void DGraph::addSegments(int head, int tail, vector<VertexID> chain, vector<vector<VertexID>>& segments, int radius) {
-    cout << "Add segments" << endl;
+    // cout << "Add segments" << endl;
     vector<VertexID> segment;
     int segmentsLength = tail - head;
     if (segmentsLength % radius == 0) {
@@ -814,12 +808,12 @@ void DGraph::addSegments(int head, int tail, vector<VertexID> chain, vector<vect
         }
     } else {
         int segmentCount = (int) segmentsLength / radius + 1;
-        cout << "segmentCount: " << segmentCount << endl;
+        // cout << "segmentCount: " << segmentCount << endl;
         int approxSegmentLength = (int) segmentsLength / segmentCount;
         int remainder = segmentsLength % approxSegmentLength;
         int count = 0;
-        cout << "Approximate length: " << approxSegmentLength << endl;
-        cout << "Remainder: " << remainder << endl;
+        // cout << "Approximate length: " << approxSegmentLength << endl;
+        // cout << "Remainder: " << remainder << endl;
         while (head < tail) {
             segment.push_back(chain[head]);
             count += 1;
@@ -827,14 +821,14 @@ void DGraph::addSegments(int head, int tail, vector<VertexID> chain, vector<vect
             if (remainder > 0) {
                 if (count == approxSegmentLength + 1) {
                     segments.push_back(segment);
-                    cout << "Segment Size: " << segment.size() << endl;
+                    // cout << "Segment Size: " << segment.size() << endl;
                     segment.clear();
                     count = 0;
                     remainder -= 1;
                 }
             } else if (count == approxSegmentLength) {
                 segments.push_back(segment);
-                cout << "Segment Size: " << segment.size() << endl;
+                // cout << "Segment Size: " << segment.size() << endl;
                 segment.clear();
                 count = 0;
             }
@@ -843,13 +837,13 @@ void DGraph::addSegments(int head, int tail, vector<VertexID> chain, vector<vect
         }
     }
 
-    cout << "current segments: " << endl;
-    for (int i = 0, sizeI = segments.size(); i != sizeI; ++i) {
-        for (int j = 0, sizeJ = segments[i].size(); j != sizeJ; ++j) {
-            cout << segments[i][j] << " ";
-        }
-        cout << endl;
-    }
+    // cout << "current segments: " << endl;
+    // for (int i = 0, sizeI = segments.size(); i != sizeI; ++i) {
+    //     for (int j = 0, sizeJ = segments[i].size(); j != sizeJ; ++j) {
+    //         cout << segments[i][j] << " ";
+    //     }
+    //     cout << endl;
+    // }
 }
 
 // find out partitions in chain that do not contain any supernodes
@@ -857,27 +851,26 @@ void DGraph::addSegments(int head, int tail, vector<VertexID> chain, vector<vect
 void DGraph::segmentChain(vector<VertexID> chain, int radius, vector<int> weights, vector<vector<VertexID>>& segments) {
     int head = 0;
     int tail = 0;
-    cout << "segment chain" << endl;
-    while (tail < chain.size()) {
-        cout << "head & tail: " << head << " " << tail << endl;
-        cout << "tail id: " << chain[tail] << endl;
-        cout << "tail weight: " << weights[chain[tail]] << endl;
+    // cout << "segment chain" << endl;
+    while (head < chain.size()) {
+        // cout << "head & tail: " << head << " " << tail << endl;
+        // cout << "tail id: " << chain[tail] << endl;
+        // cout << "tail weight: " << weights[chain[tail]] << endl;
+        // Find the first node that is a cluster, starting from head
         while (tail != chain.size() && weights[chain[tail]] == 1) {
-            tail += 1;
+            tail ++;
         }
         if (head < tail) {
-            cout << "head & tail: " << head << " " << tail << endl;
+            // cout << "head & tail: " << head << " " << tail << endl;
             addSegments(head, tail, chain, segments, radius);
         }
         head = tail;
-        tail += 1;
+        // Find the first node that is not a cluster, starting from tail (since )
+        while (head != chain.size() && weights[chain[head]] != 1) {
+            head ++;
+        }
+        tail = head;
     }
-
-    if (head != chain.size() && head < tail) {
-        cout << head << " " << tail << endl;
-        addSegments(head, tail, chain, segments, radius);
-    }
-
 }
 
 void DGraph::growSegment(DGraph* tempGraph, VertexID cID, vector<VertexID>& startVertices, int maxClusterSize, vector<vector<VertexID>>& clusters, vector<int>& vToCID) {
@@ -887,12 +880,14 @@ void DGraph::growSegment(DGraph* tempGraph, VertexID cID, vector<VertexID>& star
     int count = 0;
     SmallEdgeSets tempOutE;
     tempGraph->getOutE(tempOutE);
+    SmallEdgeSets tempInE;
+    tempGraph->getInE(tempInE);
     vector<VertexID> nextVertices;
     while (i < size && count <= maxClusterSize) {
         VertexID v = startVertices[i];
         SmallEdgeSet outEdges = tempOutE[(int) v];
         int edgeCount = outEdges.size();
-        for (int j = 0; j < edgeCount; j++) {
+        for (int j = 0; j != edgeCount; ++j) {
 
             if (count >= maxClusterSize) break;
 
@@ -908,6 +903,26 @@ void DGraph::growSegment(DGraph* tempGraph, VertexID cID, vector<VertexID>& star
                 count += 1;
             }
         }
+
+        SmallEdgeSet inEdges = tempInE[(int) v];
+        edgeCount = inEdges.size();
+        for (int j = 0; j != edgeCount; ++j) {
+
+            if (count >= maxClusterSize) break;
+
+            VertexID currNode = inEdges[j].first;
+            // non-supernode that has not been clustered
+            // instead of tempGraph->getWeight(currNode) == 1, check if the node is newly added (&& currNode < N)
+            // alternatively make cID of all supernodes another specific value?
+            // Yep
+            if (vToCID[currNode] == -1 ) {
+                nextVertices.push_back(currNode);
+                clusters[cID].push_back(currNode);
+                vToCID[currNode] = cID;
+                count += 1;
+            }
+        }
+
         i += 1;
     }
     startVertices = nextVertices;
@@ -917,14 +932,14 @@ void DGraph::modifyGraph(DGraph* tempGraph, VertexID v, VertexID w, vector<vecto
     // if both are nodes
     if (v < N && w < N) {
         tempGraph->addNode();
-        int newN = tempGraph->getNumberOfVertices();
+        int newN = tempGraph->getNumberOfVertices() - 1;
 
         vector<VertexID> temp;
         temp.push_back(v);
         temp.push_back(w);
         clusters.push_back(temp);
 
-        int clusterID = clusters.size();
+        int clusterID = clusters.size() - 1;
 
         vToCID.push_back(clusterID);
         vToCID[v] = clusterID;
@@ -938,20 +953,26 @@ void DGraph::modifyGraph(DGraph* tempGraph, VertexID v, VertexID w, vector<vecto
         tempGraph->getInE(tempInE);
         for (int j = 0; j < 2; j++) {
             // Reconnect from supernode to existing out-nodes
+            // cout << "Add out edges:" << endl;
             SmallEdgeSet currOutE = tempOutE[cluster[j]];
             for (int k = 0; k < currOutE.size(); k++) {
                 if (vToCID[currOutE[k].first] != clusterID) {
-                    tempGraph->addEdge(newN, currOutE[k].first, currOutE[k].second);
+                    // cout << "Add edge from, to: " << newN << " " << currOutE[k].first << endl;
+                    tempGraph->addEdge(newN, currOutE[k].first, labelSetToLabelID(currOutE[k].second));
                 }
-                tempGraph->removeEdge(cluster[j], currOueE[k].first);
+                // cout << "Remove edge from, to: " << cluster[j] << " " << currOutE[k].first;
+                tempGraph->removeEdge(cluster[j], currOutE[k].first);
             }
 
             // Reconnect from existing in-nodes to supernode
+            // cout << "Add in edges:" << endl;
             SmallEdgeSet currInE = tempInE[cluster[j]];
             for (int k = 0; k < currInE.size(); k++) {
                 if (vToCID[currInE[k].first] != clusterID) {
-                    tempGraph->addEdge(currInE[k].first, newN, currInE[k].second);
+                    // cout << "Add edge from, to: " << currInE[k].first << " " << newN << endl;
+                    tempGraph->addEdge(currInE[k].first, newN, labelSetToLabelID(currInE[k].second));
                 }
+                // cout << "Remove edge from, to: " << currInE[k].first << " " << cluster[j];
                 tempGraph->removeEdge(currInE[k].first, cluster[j]);
             }
 
@@ -970,6 +991,7 @@ void DGraph::modifyGraph(DGraph* tempGraph, VertexID v, VertexID w, vector<vecto
         }
 
         // Merge w to v, make w dummy node that directs to v
+        // cout << "Merge " << w << " into " << v << endl;
         vToCID[w] = vToCID[v];
         int weightV;
         int weightW;
@@ -980,19 +1002,27 @@ void DGraph::modifyGraph(DGraph* tempGraph, VertexID v, VertexID w, vector<vecto
 
         SmallEdgeSet currOutE;
         tempGraph->getOutE(w, currOutE);
-        for (int k = 0; k < currOutE.size(); k++) {
+        // cout << "Add out edges:" << endl;
+        for (int k = 0, sizeK = currOutE.size(); k != sizeK; ++k) {
+            // cout << k << endl;
             if (currOutE[k].first != v) {
-                tempGraph->addEdge(v, currOutE[k].first, currOutE[k].second);
+                // cout << "Add edge from, to: " << v << " " << currOutE[k].first << endl;
+                tempGraph->addEdge(v, currOutE[k].first, labelSetToLabelID(currOutE[k].second));
             }
+            // cout << "Remove edge from, to: " << w << " " << currOutE[k].first;
             tempGraph->removeEdge(w, currOutE[k].first);
         }
 
         SmallEdgeSet currInE;
         tempGraph->getInE(w, currInE);
-        for (int k = 0; k < currInE.size(); k++) {
+        // cout << "Add in edges:" << endl;
+        for (int k = 0, sizeK = currInE.size(); k != sizeK; ++k) {
+            // cout << k << endl;
             if (currInE[k].first != v) {
-                tempGraph->addEdge(currInE[k].first, v, currInE[k].second);
+                // cout << "Add edge from, to: " << currInE[k].first << " " << v << endl;
+                tempGraph->addEdge(currInE[k].first, v, labelSetToLabelID(currInE[k].second));
             }
+            // cout << "Remove edge from, to: " << currInE[k].first << " " << w;
             tempGraph->removeEdge(currInE[k].first, w);
         }
     }
@@ -1005,7 +1035,7 @@ void DGraph::modifyGraph(DGraph* tempGraph, int segmentCount, vector<vector<Vert
 
     for (int i = 0; i < segmentCount; i++) {
         int cID = oldSize + i;
-        cout << "Modify cluster " << cID << ": " << endl;
+        // cout << "Modify cluster " << cID << ": " << endl;
 
         // Add new node, set its weight to be cluster size
         tempGraph->addNode();
@@ -1021,42 +1051,38 @@ void DGraph::modifyGraph(DGraph* tempGraph, int segmentCount, vector<vector<Vert
         int numNodes = cluster.size();
         for (int j = 0; j < numNodes; j++) {
             // cout << cluster[j] << " ";
-            cout << "node " << j << ": " << cluster[j] << endl;
+            // cout << "node " << j << ": " << cluster[j] << endl;
             // Reconnect from supernode to existing out-nodes
             SmallEdgeSet currOutE;
             tempGraph->getOutE(cluster[j], currOutE);
-            // cout << "checking 794.." << endl;
-            // SmallEdgeSet curroutE = tempGraph->getOutE(794);
-            cout << "Add out edges: " << endl;
+
+            // cout << "Add out edges: " << endl;
             for (int k = 0, sizeK = currOutE.size(); k != sizeK; k++) {
                 // not in the same cluster
                 // cout << "k: " << k << endl;
                 // cout << currOutE[k].first << endl;
                 if (vToCID[currOutE[k].first] != cID) {
-                    cout << "Add edge: from, to, label  " <<  newNodeID << ", " << currOutE[k].first << ", " << currOutE[k].second << endl;
+                    // cout << "Add edge: from, to, label  " <<  newNodeID << ", " << currOutE[k].first << ", " << currOutE[k].second << endl;
                     tempGraph->addEdge(newNodeID, currOutE[k].first, labelSetToLabelID(currOutE[k].second));
-                    SmallEdgeSet tempInE;
-                    tempGraph->getInE(currOutE[k].first, tempInE);
-                    for (int m = 0, sizeM = tempInE.size(); m != sizeM; ++m) {
-                        cout << tempInE[m].first << " " << tempInE[m].second << endl;
-                    }
-                    // cout << "checking 795.." << endl;
-                    // curroutE = tempGraph->getOutE(795);
+                    // SmallEdgeSet tempInE;
+                    // tempGraph->getInE(currOutE[k].first, tempInE);
+                    // for (int m = 0, sizeM = tempInE.size(); m != sizeM; ++m) {
+                    //     cout << tempInE[m].first << " " << tempInE[m].second << endl;
+                    // }
 
                 }
                 tempGraph->removeEdge(cluster[j], currOutE[k].first);
-                // cout << "checking 796.." << endl;
-                // curroutE = tempGraph->getOutE(796);
+
             }
 
             // Reconnect from existing in-nodes to supernode
-            cout << "Add in edges: " << endl;
+            // cout << "Add in edges: " << endl;
             SmallEdgeSet currInE;
             tempGraph->getInE(cluster[j], currInE);
             for (int k = 0, sizeK = currInE.size(); k != sizeK; k++) {
                 // not in the same cluster
                 if (vToCID[currInE[k].first] != cID) {
-                    cout << "Add edge: from, to, label  " <<  currInE[k].first << ", " << newNodeID << ", " << currInE[k].second << endl;
+                    // cout << "Add edge: from, to, label  " <<  currInE[k].first << ", " << newNodeID << ", " << currInE[k].second << endl;
                     tempGraph->addEdge(currInE[k].first, newNodeID, labelSetToLabelID(currInE[k].second));
                     // cout << "checking 797.." << endl;
                     // curroutE = tempGraph->getOutE(797);
@@ -1069,9 +1095,9 @@ void DGraph::modifyGraph(DGraph* tempGraph, int segmentCount, vector<vector<Vert
             // Assign 0 weight to already clustered node
             tempGraph->setWeight(cluster[j], 0);
         }
-        cout << "Done with cluster " << cID << endl;
+        // cout << "Done with cluster " << cID << endl;
 
-        tempGraph->getStatus();
+        // tempGraph->getStatus();
         // break;
     }
 
@@ -1107,38 +1133,36 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
     // What is the termination condition?
     // chain length? segmentCount?
     while (true) {
-        cout << "Start" << endl;
+        // cout << "Start" << endl;
 
         getNodesWithNoInDegree(tempGraph, nodesWithNoInDegree);
 
-        cout << "done get nodes" << endl;
+        // cout << "done get nodes" << endl;
 
-        // cout << "weight of 6306: " << tempGraph->getWeight(6306) << endl;
-
-        for (int i = 0, sizeI = nodesWithNoInDegree.size(); i != sizeI; ++i) {
-            cout << nodesWithNoInDegree[i] << " ";
-        }
-        cout << endl;
+        // for (int i = 0, sizeI = nodesWithNoInDegree.size(); i != sizeI; ++i) {
+        //     cout << nodesWithNoInDegree[i] << " ";
+        // }
+        // cout << endl;
 
         findLongestChain(tempGraph, nodesWithNoInDegree, chain);
 
-        for (int i = 0, sizeI = chain.size(); i != sizeI; ++i) {
-            cout << chain[i] << " ";
-        }
-        cout << endl;
+        // for (int i = 0, sizeI = chain.size(); i != sizeI; ++i) {
+        //     cout << chain[i] << " ";
+        // }
+        // cout << endl;
 
         vector<vector<VertexID>> segments;
         vector<int> weights;
         tempGraph->getWeights(weights);
         segmentChain(chain, radius, weights, segments);
 
-        cout << "Final segments: " << endl;
-        for (int i = 0, sizeI = segments.size(); i != sizeI; ++i) {
-            for (int j = 0, sizeJ = segments[i].size(); j != sizeJ; ++j) {
-                cout << segments[i][j] << " ";
-            }
-            cout << endl;
-        }
+        // cout << "Final segments: " << endl;
+        // for (int i = 0, sizeI = segments.size(); i != sizeI; ++i) {
+        //     for (int j = 0, sizeJ = segments[i].size(); j != sizeJ; ++j) {
+        //         cout << segments[i][j] << " ";
+        //     }
+        //     cout << endl;
+        // }
 
         int segmentCount = segments.size();
         int oldClusterSize = clusters.size();
@@ -1171,29 +1195,29 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
             vToCID[(int) middleID] = oldClusterSize + i;
         }
 
-        cout << "segment count & cluster size: " << segmentCount << " " << clusters.size() << endl;
-        cout << "Middle nodes: ";
-        for (int i = oldClusterSize, sizeI = clusters.size(); i != sizeI; ++i) {
-            cout << clusters[i][0] << " ";
-        }
-        cout << endl;
+        // cout << "segment count & cluster size: " << segmentCount << " " << clusters.size() << endl;
+        // cout << "Middle nodes: ";
+        // for (int i = oldClusterSize, sizeI = clusters.size(); i != sizeI; ++i) {
+        //     cout << clusters[i][0] << " ";
+        // }
+        // cout << endl;
 
 
         for (int i = 0; i < radius; i++) {
             for (int j = 0; j < segmentCount; j++) {
-                cout << "radius: " << i << endl;
+                // cout << "radius: " << i << endl;
                 vector<VertexID> segment = segments[j];
                 VertexID cID = vToCID[segment[segment.size() / 2]];
                 // total - existing cluster - nodes on segment that have not been included
                 int maxCurrentClusterSize = maxClusterSize - (int) clusters[(int) cID].size() - max((int) segment.size() - (i * 2 + 1), 0);
 
-                cout << "Members of cluster " << cID << ": ";
-                for (int k = 0, sizeK = clusters[(int) cID].size(); k != sizeK; ++k) {
-                    cout << clusters[(int) cID][k] << " ";
-                }
-                cout << endl;
+                // cout << "Members of cluster " << cID << ": ";
+                // for (int k = 0, sizeK = clusters[(int) cID].size(); k != sizeK; ++k) {
+                //     cout << clusters[(int) cID][k] << " ";
+                // }
+                // cout << endl;
 
-                cout << "segment " << j << " current max cluster size: " << maxCurrentClusterSize << endl;
+                // cout << "segment " << j << " current max cluster size: " << maxCurrentClusterSize << endl;
                 // grow segment when there are vacancy in the cluster and there are nodes to develop
                 if (maxClusterSize > 0 && startVertices[j].size() > 0) {
                     growSegment(tempGraph, cID, startVertices[j], maxCurrentClusterSize, clusters, vToCID);
@@ -1270,19 +1294,19 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
 
         cout << "Done modifying graph" << endl;
 
-        for (int i = 0, sizeI = clusters.size(); i != sizeI; ++i) {
-            vector<VertexID> cluster = clusters[i];
-            cout << "Cluster " << i << ": ";
-            for (int j = 0, sizeJ = cluster.size(); j != sizeJ; ++j) {
-                cout << cluster[j] << " ";
-            }
-            cout << endl;
-        }
+        // for (int i = 0, sizeI = clusters.size(); i != sizeI; ++i) {
+        //     vector<VertexID> cluster = clusters[i];
+        //     cout << "Cluster " << i << ": ";
+        //     for (int j = 0, sizeJ = cluster.size(); j != sizeJ; ++j) {
+        //         cout << cluster[j] << " ";
+        //     }
+        //     cout << endl;
+        // }
 
-        cout << "vToCID: " << endl;
-        for (int i = 0, sizeI = tempGraph->getNumberOfVertices(); i != sizeI; ++i) {
-            cout << i << " " << vToCID[i] << endl;
-        }
+        // cout << "vToCID: " << endl;
+        // for (int i = 0, sizeI = tempGraph->getNumberOfVertices(); i != sizeI; ++i) {
+        //     cout << i << " " << vToCID[i] << endl;
+        // }
     }
 
     cout << "clean up" << endl;
@@ -1297,14 +1321,17 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
 
     // Bring unclustered nodes to clusters
     int weight;
+    SmallEdgeSet tempOutE;
+    SmallEdgeSet tempInE;
+
     for (int i = 0; i < N; i++) {
         if (vToCID[i] == -1) {
-            SmallEdgeSet outEdges;
-            tempGraph->getOutE(i, outEdges);
+            cout << "Unclustered node: " << i << endl;
+            tempGraph->getOutE(i, tempOutE);
             VertexID minVertexID = -1;
             int minWeight = N + 1;
-            for (size_t j = 0, size = outEdges.size(); j != size; ++j) {
-                VertexID v = outEdges[j].first;
+            for (size_t j = 0, size = tempOutE.size(); j != size; ++j) {
+                VertexID v = tempOutE[j].first;
                 // all nodes that can be connected should have weight > 0
                 tempGraph->getWeight(v, weight);
                 if (weight < minWeight) {
@@ -1312,41 +1339,61 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
                     minVertexID = v;
                 }
             }
+
+            tempGraph->getInE(i, tempInE);
+            for (size_t j = 0, sizeJ = tempInE.size(); j != sizeJ ; ++j) {
+                VertexID v = tempInE[j].first;
+                // all nodes that can be connected should have weight > 0
+                tempGraph->getWeight(v, weight);
+                if (weight < minWeight) {
+                    minWeight = weight;
+                    minVertexID = v;
+                }
+            }
+
             if (minVertexID != -1) {
+                // cout << " merge with " << minVertexID << endl;
                 modifyGraph(tempGraph, minVertexID, (VertexID) i, clusters, vToCID);
             }
+            // cout << endl;
         }
     }
 
     int newN = tempGraph->getNumberOfVertices();
-    SmallEdgeSet tempOutE;
-    SmallEdgeSet tempInE
     vector<VertexID> smallClusters;
     for (int i = N; i < newN; i++) {
         tempGraph->getWeight(i, weight);
         tempGraph->getOutE(i, tempOutE);
         tempGraph->getInE(i, tempInE);
-        if (weight != 0 && weight < minClusterSize && tempOutE.empty() && tempInE.empty()) {
+        if (weight != 0 && weight < minClusterSize && !(tempOutE.empty() && tempInE.empty())) {
             smallClusters.push_back(i);
         }
     }
 
-    if (!smallClusters.empty()) { 
+    cout << "Small Clusters: ";
+    for (int i = 0, sizeI = smallClusters.size(); i != sizeI; ++i) {
+        cout << smallClusters[i] << " ";
+    }
+    cout << endl;
+
+    cout << "Total & Small: " << clusters.size() << " " << smallClusters.size() << endl;
+
+    if (!smallClusters.empty()) {
         for (size_t i = 0, sizeI = smallClusters.size(); i != sizeI; ++i) {
             // the node will only be merged once regardless
             // 1. node become empty if merging is required
             // 2. the node can't be merged as it has no neighbours
             // 3. the node, after some previous merging, has become big enough
-            // 4. the node, after all the merging, still does not reach the minimum size, 
+            // 4. the node, after all the merging, still does not reach the minimum size,
             //    will be merged with a node that exceeds minimum size.
             tempGraph->getWeight(smallClusters[i], weight);
             if (weight < minClusterSize) {
-                SmallEdgeSet outEdges;
-                tempGraph->getOutE(smallClusters[i], outEdges);
+                cout << "small cluster: " << smallClusters[i];
+                tempGraph->getOutE(smallClusters[i], tempOutE);
                 VertexID minVertexID = -1;
                 int minWeight = N + 1;
-                for (size_t j = 0, sizeJ = outEdges.size(); j != sizeJ ; ++j) {
-                    VertexID v = outEdges[j].first;
+                for (size_t j = 0, sizeJ = tempOutE.size(); j != sizeJ ; ++j) {
+                    VertexID v = tempOutE[j].first;
                     // all nodes that can be connected should have weight > 0
                     tempGraph->getWeight(v, weight);
                     if (weight < minWeight) {
@@ -1354,10 +1401,24 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
                         minVertexID = v;
                     }
                 }
-                if (minVertexID != -1) {
-                    modifyGraph(tempGraph, minVertexID, (VertexID) i, clusters, vToCID);
+
+                tempGraph->getInE(smallClusters[i], tempInE);
+                for (size_t j = 0, sizeJ = tempInE.size(); j != sizeJ ; ++j) {
+                    VertexID v = tempInE[j].first;
+                    // all nodes that can be connected should have weight > 0
+                    tempGraph->getWeight(v, weight);
+                    if (weight < minWeight) {
+                        minWeight = weight;
+                        minVertexID = v;
+                    }
                 }
-            } 
+
+                if (minVertexID != -1) {
+                    cout << " merge with " << minVertexID << " with weight " << minWeight << endl;
+                    modifyGraph(tempGraph, minVertexID, smallClusters[i], clusters, vToCID);
+                }
+                // cout << endl;
+            }
         }
 
     }
@@ -1377,15 +1438,63 @@ void DGraph::newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToC
     // Update VToCID based on cluster redirection
     for (int i = 0; i != N; ++i) {
         int clusterID = vToCID[i];
-        while (vToCID[clusterID + N] != clusterID) {
-            clusterID = vToCID[clusterID + N];
+        if (clusterID == -1) {
+            vToCID[i] = clusters.size();
+            clusters.push_back(vector<VertexID>(i));
+        } else {
+            while (vToCID[clusterID + N] != clusterID) {
+                clusterID = vToCID[clusterID + N];
+            }
+
+            // path compression
+            vToCID[vToCID[i] + N] = clusterID;
+
+            vToCID[i] = clusterID;
         }
-
-        // path compression
-        vToCID[vToCID[i] + N] = clusterID;
-
-        vToCID[i] = clusterID;
     }
+
+    cout << "done union find" << endl;
+
+    // the cluster ids may not be consecutive due to merging
+    // Need to serialize the vToCID and consolidate cluster info
+    int oldSize = clusters.size();
+    int newSize = 0;
+    vector<int> cIDToConsecutiveCID(oldSize, -1);
+    for (int i = 0; i != N; ++i) {
+        if (cIDToConsecutiveCID[vToCID[i]] == -1) {
+            cIDToConsecutiveCID[vToCID[i]] = newSize;
+            newSize ++;
+        }
+    }
+
+    cout << "done serialization" << endl;
+    cout << "old size: " << oldSize << endl;
+    cout << "new size: " << newSize << endl;
+
+    clusters.clear();
+    vector<vector<VertexID>> temp(newSize, vector<VertexID>());
+    clusters = temp;
+    for (int i = 0; i != N; ++i) {
+        vToCID[i] = cIDToConsecutiveCID[vToCID[i]];
+        clusters[vToCID[i]].push_back(i);
+    }
+
+    cout << "done clustering" << endl;
+
+
+    // for (int i = 0, sizeI = clusters.size(); i != sizeI; ++i) {
+    //     vector<VertexID> cluster = clusters[i];
+    //     cout << "Cluster " << i << ": ";
+    //     for (int j = 0, sizeJ = cluster.size(); j != sizeJ; ++j) {
+    //         cout << cluster[j] << " ";
+    //     }
+    //     cout << endl;
+    // }
+
+    // cout << "vToCID: " << endl;
+    // for (int i = 0, sizeI = N; i != sizeI; ++i) {
+    //     cout << i << " " << vToCID[i] << endl;
+    // }
 
 }
 

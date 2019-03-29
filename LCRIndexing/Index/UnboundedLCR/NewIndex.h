@@ -81,6 +81,7 @@ using namespace std;
             map<VertexID, int> positionInC;
             vector<bool> isBoundaryNode;
             vector<vector<VertexID>> boundaryNodesPerCluster;
+            vector<VertexID> boundaryNodes;
             Graph* D;
             vector<vector<VertexID>> clusters;
 

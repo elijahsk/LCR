@@ -77,7 +77,7 @@ void NewIndex::queryAll(VertexID source, LabelSet ls, dynamic_bitset<>& canReach
 void NewIndex::initializeLocalIndexes() {
     int N = graph->getNumberOfVertices();
 
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i != N; i++) {
         vector<pair<VertexID, vector<LabelSet>>> v1, v2;
         vector<pair<int, vector<LabelSet>>> v3;
         RBI.push_back(v1);
@@ -104,7 +104,16 @@ void NewIndex::buildIndex() {
     // each vertex -> a cluster IDs
     this->vToCID = vector<int>(N, -1);
     this->isBoundaryNode = vector<bool>(N, false);
-    this->graph->newClustering(clusters, vToCID, 3, 5, 2);
+    this->graph->newClustering(clusters, vToCID, 15, N / 10, N / 30);
+
+    for (int i = 0, sizeI = clusters.size(); i != sizeI; ++i) {
+        vector<VertexID> cluster = clusters[i];
+        cout << "Cluster " << i << ": ";
+        for (int j = 0, sizeJ = cluster.size(); j != sizeJ; ++j) {
+            cout << cluster[j] << " ";
+        }
+        cout << endl;
+    }
 
     // this->graph->randomClustering(clusters, vToCID);
 
@@ -122,9 +131,9 @@ void NewIndex::buildIndex() {
     }
 
     // position of nodes in each cluster starting from 0 to cluster.size() - 1
-    for (int i = 0; i < clusters.size(); i++) {
+    for (int i = 0, sizeI = clusters.size(); i != sizeI; ++i) {
         vector<VertexID> cluster = clusters.at(i);
-        for (int j = 0; j < cluster.size(); j++) {
+        for (int j = 0, sizeJ = cluster.size(); j != sizeJ; ++j) {
             positionInC[cluster[j]] = j;
         }
     }
@@ -156,17 +165,17 @@ void NewIndex::buildIndex() {
         }
     }
 
-    // subGraphs[4]->addEdge(1, 2, labelSetToLabelID(4));
-    // cout << subGraphs[4]->toString() << endl;
-    // cout << "Boundary Nodes: ";
-    // for (int i = 0; i < N; i++) {
-    //     if (isBoundaryNode[i]) {
-    //         cout << i << " ";
-    //     }
-    // }
-    // cout << endl;
+    int BNCount = 0;
+    cout << "Boundary Nodes: ";
+    for (int i = 0; i < N; i++) {
+        if (isBoundaryNode[i]) {
+            boundaryNodes.push_back(i);
+        }
+    }
+    cout << boundaryNodes.size() << endl;
 
-    cout << "Step 1 (clustering): " << print_digits( getCurrentTimeInMilliSec() - constStartTime, 2 ) << endl;
+
+    cout << "Step 1 (clustering): " << print_digits( getCurrentTimeInMilliSec() - constStartTime, 6 ) << endl;
 
     // build an index for each cluster first
     for (int i = 0; i < subGraphs.size(); i++) {
@@ -175,7 +184,7 @@ void NewIndex::buildIndex() {
         getRRBI(i, subGraphs[i], clusters);
     }
 
-    cout << "Step 2 (RBI & RRBI indices built): " << print_digits( getCurrentTimeInMilliSec() - constStartTime, 2 ) << endl;
+    cout << "Step 2 (RBI & RRBI indices built): " << print_digits( getCurrentTimeInMilliSec() - constStartTime, 6 ) << endl;
     // printRBI();
     // printRRBI();
 
@@ -188,7 +197,7 @@ void NewIndex::buildIndex() {
 
     // printRRCI();
 
-    cout << "Step 3 (RRCI indices built): " << print_digits( getCurrentTimeInMilliSec() - constStartTime, 2 ) << endl;
+    cout << "Step 3 (RRCI indices built): " << print_digits( getCurrentTimeInMilliSec() - constStartTime, 6 ) << endl;
 
     this->didComplete = true;
     constEndTime = getCurrentTimeInMilliSec();
@@ -557,18 +566,17 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
         return false;
 
     int sourceCluster = vToCID[source];
-    int targetCluster = vToCID[target];
 
     // same cluster
-    if (sourceCluster == targetCluster) {
-        cout << "Same cluster " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
+    if (sourceCluster == vToCID[target]) {
+        // cout << "Same cluster " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
         unordered_set<int> possibleBoundaryNodes;
-        vector<pair<VertexID, vector<LabelSet>>> RBIs = RBI.at(source);
-        for (int i = 0; i < RBIs.size(); i++) {
-            vector<LabelSet> BNLabelSets = RBIs.at(i).second;
-            for (int j = 0; j < BNLabelSets.size(); j++) {
-                if (joinLabelSets(ls, BNLabelSets.at(j)) == ls) {
-                    possibleBoundaryNodes.insert((int)RBIs.at(i).first);
+        vector<pair<VertexID, vector<LabelSet>>> RBIs = RBI[source];
+        for (unsigned int i = 0, sizeI = RBIs.size(); i != sizeI; ++i) {
+            vector<LabelSet> BNLabelSets = RBIs[i].second;
+            for (unsigned int j = 0, sizeJ = BNLabelSets.size(); j != sizeJ; ++j) {
+                if (isLabelSubset(BNLabelSets[j], ls)) {
+                    possibleBoundaryNodes.insert((int)RBIs[i].first);
                     break;
                 }
             }
@@ -580,12 +588,12 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
         // }
         // cout << endl;
 
-        vector<pair<VertexID, vector<LabelSet>>> RRBIt = RRBI.at(target);
-        for (int i = 0; i < RRBIt.size(); i++) {
-            if (possibleBoundaryNodes.find(RRBIt.at(i).first) != possibleBoundaryNodes.end()) {
-                vector<LabelSet> BNLabelSets = RRBIt.at(i).second;
-                for (int j = 0; j < BNLabelSets.size(); j++) {
-                    if (joinLabelSets(ls, BNLabelSets.at(j)) == ls) {
+        vector<pair<VertexID, vector<LabelSet>>> RRBIt = RRBI[target];
+        for (unsigned int i = 0, sizeI = RRBIt.size(); i != sizeI; ++i) {
+            if (possibleBoundaryNodes.find(RRBIt[i].first) != possibleBoundaryNodes.end()) {
+                vector<LabelSet> BNLabelSets = RRBIt[i].second;
+                for (unsigned int j = 0, sizeJ = BNLabelSets.size(); j != sizeJ; ++j) {
+                    if (isLabelSubset(BNLabelSets[j], ls)) {
                         return true;
                     }
                 }
@@ -595,7 +603,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
         queue< VertexID > q;
         q.push(source);
 
-        cout << "BFS within cluster " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
+        // cout << "BFS within cluster " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
         // Use a BFS within cluster
         int N = graph->getNumberOfVertices();
         dynamic_bitset<> marked = dynamic_bitset<>(N);
@@ -616,8 +624,8 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 
             SmallEdgeSet ses;
             graph->getOutNeighbours(x, ses);
-            for (int i = 0; i < ses.size(); i++) {
-                if ((isLabelSubset(ses[i].second, ls) == true) && (vToCID[ses[i].first] == sourceCluster)) {
+            for (unsigned int i = 0, sizeI = ses.size(); i != sizeI; ++i) {
+                if ((isLabelSubset(ses[i].second, ls)) && (vToCID[ses[i].first] == sourceCluster)) {
                     // cout << "Add to queue: " << ses[i].first << endl;
                     q.push(ses[i].first);
                 }
@@ -626,13 +634,13 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
     }
 
     // Found out clusters that can reach target cluster
-    cout << "X " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
+    // cout << "X " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
     unordered_set<int> X;
     vector<pair<int, vector<LabelSet>>> RRCIt = RRCI.at(vToCID[target]);
-    for (int i = 0; i < RRCIt.size(); i++) {
-        vector<LabelSet> lss = RRCIt.at(i).second;
-        for (int j = 0; j < lss.size(); j++) {
-            if (joinLabelSets(ls, lss.at(j)) == ls) {
+    for (unsigned int i = 0, sizeI = RRCIt.size(); i != sizeI; ++i) {
+        vector<LabelSet> lss = RRCIt[i].second;
+        for (unsigned int j = 0, sizeJ = lss.size(); j != sizeJ; ++j) {
+            if (isLabelSubset(lss.at(j), ls)) {
                 X.insert(RRCIt.at(i).first);
                 break;
             }
@@ -647,13 +655,13 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 
 
     // Get boundary nodes that source can reach
-    cout << "BS " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
+    // cout << "BS " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
     unordered_set<int> BS;
     vector<pair<VertexID, vector<LabelSet>>> RBIs = RBI.at(source);
-    for (int i = 0; i < RBIs.size(); i++) {
+    for (unsigned int i = 0, sizeI = RBIs.size(); i != sizeI; ++i) {
         vector<LabelSet> BNLabelSets = RBIs.at(i).second;
-        for (int j = 0; j < BNLabelSets.size(); j++) {
-            if (joinLabelSets(ls, BNLabelSets.at(j)) == ls) {
+        for (unsigned int j = 0, sizeJ = BNLabelSets.size(); j != sizeJ; j++) {
+            if (isLabelSubset(BNLabelSets.at(j), ls)) {
                 BS.insert((int)RBIs.at(i).first);
                 break;
             }
@@ -675,13 +683,13 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
     // cout << endl;
 
     // Get boundary nodes that can reach target
-    cout << "BT " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
+    // cout << "BT " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
     unordered_set<int> BT;
     vector<pair<VertexID, vector<LabelSet>>> RRBIt = RRBI.at(target);
-    for (int i = 0; i < RRBIt.size(); i++) {
+    for (unsigned int i = 0, sizeI = RRBIt.size(); i != sizeI; ++i) {
         vector<LabelSet> BNLabelSets = RRBIt.at(i).second;
-        for (int j = 0; j < BNLabelSets.size(); j++) {
-            if (joinLabelSets(ls, BNLabelSets.at(j)) == ls) {
+        for (unsigned int j = 0, sizeJ = BNLabelSets.size(); j != sizeJ; j++) {
+            if (isLabelSubset(BNLabelSets.at(j), ls)) {
                 BT.insert((int)RRBIt.at(i).first);
                 break;
             }
@@ -701,18 +709,17 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
     //         cout << *i << ", ";
     // }
     // cout << endl;
-    cout << "BFS Across cluters " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 ) << endl;
+    // cout << "BFS Across cluters " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 ) << endl;
     int N = graph->getNumberOfVertices();
-    map<VertexID, int> BNToID;
-    vector<bool> visited;
-    int count = 0;
-    for (int i = 0; i < N; i++) {
-        if (isBoundaryNode[i]) {
-            visited.push_back(false);
-            BNToID[i] = count;
-            count ++;
-        }
-    }
+    // map<VertexID, int> BNToID;
+    // int count = 0;
+    // for (int i = 0; i < N; i++) {
+    //     if (isBoundaryNode[i]) {
+    //         BNToID[i] = count;
+    //         count ++;
+    //     }
+    // }
+    dynamic_bitset<> visited = dynamic_bitset<>(N);
     // for (int i = 0; i < visited.size(); i++) {
     //     cout << visited[i] << " ";
     // }
@@ -725,7 +732,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
         totalVisitedBN += BS.size();
         totalNumofPasses += 1;
         unordered_set<int> BS1;
-        for (unordered_set<int>::iterator i = BS.begin(); i != BS.end(); i++) {
+        for (unordered_set<int>::iterator i = BS.begin(); i != BS.end(); ++i) {
             // cout << "Viewing queued element v in BS: " << *i << endl;
 
             if (BT.find(*i) != BT.end()) {
@@ -736,16 +743,16 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 
             vector<pair<VertexID, vector<LabelSet>>> RBIi = RBI.at(*i);
             // cout << "RBIi size: " << RBIi.size() << endl;
-            for (int j = 0; j < RBIi.size(); j++) {
-                int globalVID = RBIi.at(j).first;
+            for (unsigned int j = 0, sizeJ = RBIi.size(); j != sizeJ; ++j) {
+                unsigned int globalVID = RBIi.at(j).first;
                 // cout << "reachable boundary node: " << globalVID << endl;
-                if (visited[BNToID[globalVID]] == false) {
+                if (visited[globalVID] == 0) {
                     vector<LabelSet> lss = RBIi.at(j).second;
-                    for (int k = 0; k < lss.size(); k++) {
-                        if (joinLabelSets(lss.at(k), ls) == ls) {
+                    for (unsigned int k = 0, sizeK = lss.size(); k != sizeK; k++) {
+                        if (isLabelSubset(lss.at(k), ls)) {
                             BS1.insert(globalVID);
                             // cout << "Insert into BS1: " << globalVID << endl;
-                            visited[BNToID[globalVID]] = true;
+                            visited[globalVID] = 1;
                             break;
                         }
                     }
@@ -754,7 +761,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 
             SmallEdgeSet ses;
             graph->getOutNeighbours(*i, ses);
-            for (int j = 0; j < ses.size(); j++) {
+            for (unsigned int j = 0, sizeJ = ses.size(); j != sizeJ; ++j) {
                 VertexID v2 = ses[j].first;
                 LabelSet ls2 = ses[j].second;
                 // cout << "v2: " << v2 << " ls2 :" << ls2 << endl;
@@ -769,11 +776,11 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
                 // cout << (BT.find(v2) != BT.end()) << endl;
 
                 // Unvisited boundary nodes from a different cluster that can reach target
-                if ((vToCID[*i] != vToCID[v2]) && (joinLabelSets(ls2, ls) == ls)) {
-                    if ((visited[BNToID[v2]] == false) && (X.find(vToCID[v2]) != X.end())) {
+                if ((vToCID[*i] != vToCID[v2]) && (isLabelSubset(ls2, ls))) {
+                    if ((visited[v2] == 0) && (X.find(vToCID[v2]) != X.end())) {
                         BS1.insert((int)v2);
                         // cout << "Insert into BS1: " << v2 << endl;
-                        visited[BNToID[v2]] = true;
+                        visited[v2] = 1;
                     }
                 }
             }
@@ -789,7 +796,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
     }
 
     cout << "Total Visted BN: " << totalVisitedBN;
-    cout << "    Total Number of passes: " << totalNumofPasses << " " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 ) << endl;
+    cout << "    Total Number of passes: " << totalNumofPasses << " " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 7 ) << endl;
 
     return false;
 };

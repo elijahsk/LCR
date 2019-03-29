@@ -1,7 +1,6 @@
 #!/usr/bin/python2.7
 
-import sys, random, math, snap;
-from snap import *;
+import sys, random, math;
 from operator import itemgetter
 
 ### Generates a random directed graph with edge labels using preferential attachment
@@ -10,17 +9,17 @@ from operator import itemgetter
 def exitMain():
     sys.exit(1);
 
-if(len(sys.argv) < 6):
-    print("usage python2.7 " + sys.argv[0] + " unlabeled_file_path {uni|norm|exp} {pa|ff|pl|er}");
+if(len(sys.argv) != 4):
+    print("usage python2.7 " + sys.argv[0] + " unlabeled_file_path L {uni|norm|exp}");
     exitMain();
 
 try:
-    filePath = int(sys.argv[1]);
-    dist = sys.argv[2];
-    model = sys.argv[3];
+    filePath = sys.argv[1];
+    L = int(sys.argv[2]);
+    dist = sys.argv[3];
     name = filePath + "_labeled";
 except:
-    print("first param need to be integers");
+    print("second param need to be integers");
     exitMain();
 
 
@@ -36,9 +35,8 @@ dgraph = [];
 line = infile.readline();
 while line:
     nodes = line.split(' ');
-    node1 = line[0];
-    ## remove the last \n
-    node2 = line[1][:-1] 
+    node1 = nodes[0];
+    node2 = nodes[1]; 
 
     if dist == "norm":
         label = random.normalvariate(mean, sd);
@@ -65,7 +63,7 @@ dgraph = sorted(dgraph,key=lambda x: x[0], reverse=False);
 for triple in dgraph:
     (s,t,l) = triple;
     base = 0;
-    ss = str(base+s) + " " + str(base+t) + " " + str(l);
+    ss = str(s) + " " + str(t) + " " + str(l);
     f.write(ss + "\n");
 
 f.close();

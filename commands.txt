@@ -31,3 +31,75 @@ RRCI doesn't give much insight
 python2.7 ./datagen/addLabel.py ../../data/out.cit-HepTh 3 norm
 ./rebuild.sh;./build/default/runExperiment ../../data/out.cit-HepTh_labeled 1 ./output_test
 ./build/default/genQuery ../../data/out.cit-HepTh_labeled 2 20 2 3
+
+python2.7 ./datagen/genGraph.py 5000 1 3 uni pa
+
+python2.7 ./datagen/addLabel.py ../../data/out.tntp-ChicagoRegional 3 norm
+./build/default/genQuery ../../data/out.tntp-ChicagoRegional_labeled 2 20 2 3
+./build/default/runExperiment ../../data/out.tntp-ChicagoRegional_labeled 1 ./output_test
+
+python2.7 ./datagen/addLabel.py ../../data/out.douban 3 norm;./build/default/genQuery ../../data/out.douban_labeled 2 20 2 3
+./rebuild.sh;./build/default/runExperiment ../../data/out.douban_labeled 1 ./output_test
+
+
+
+
+
+For dense graph, it's difficult to reduce the number of BN
+
+BN with high degrees are preferred? Fewer BNs / passes are needed likely.
+
+Clusters that does not reach minimum means that they are isolated, 
+- false if source & target are in different clusters and at least one is below minimum
+- only check within cluster
+
+when minimum cluster size > average cluster size
+
+Problem Statement
+
+Approach
+Graph to explain the approach
+Divide and conquer
+The clustering strategy will be explained in Section X.
+
+Random Clustering
+A random clustering is implemented as a benchmark to prove the feasibility of the method.
+Describe the random clustering strategy.
+A random number of edges are selected and nodes on the ends of the edges are grouped into the same cluster.
+
+A union-find data structure is used to improve the efficiency of the algorithm.
+
+Show data of random clustering and factors that may affect the efficiency of the algorithm e.g. the no. of rounds of BFS propagation required, no. of BNs to be visited, max size of the cluster for BFS within the cluster
+
+max size of the cluster for BFS within the cluster:
+- smaller the diameter of the cluster (the longest shortest path among all pairs of vertices of the cluster), the faster the BFS is??
+- No, BFS is only about the size, O(V)
+- smaller the size of the cluster, faster BFS within the cluster is
+
+no. of BNs to be visited
+- As this is for BFS, it is ideal that smaller the no. of BN is, faster the BFS is.
+
+However, smaller the cluster, there is a higher chance that there are higher ratio of BNs in a cluster
+Assume a node has an average degree of k, 
+for a node, it takes an average k nodes for it to become a non-BN, less than k^2 nodes for the k nodes the be BN
+
+Clustering strategy
+Within cluster, BFS search
+How to keep up a good BN to non-BN ratio?
+a "rounder" cluster, where more nodes are enclosed in the middle, instead a long chain shape of clusters, where there might be no BNs at all.
+???? for nodes within the cluster, there are more connections within the cluster, so that there are fewer connections towards the BNs
+
+Why longest chain?
+Traversal takes longer if the longest chain are left as BNs
+
+Restriction on capacity of BFS e.g. RBI & RRBI
+There should be a size cap on the cluster size e.g. controlled by radius
+ 
+Works better on sparse graphs, it takes fewer nodes to enclose the existing nodes to become a non-BN
+
+Bigger the cluster fewer the BN?? No, rounder, a long chain of cluster doesn't create any non-BN
+
+Physical capability
+
+The capacity of RRCI & RBI supports roughly ___?
+

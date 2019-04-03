@@ -435,6 +435,8 @@ public:
 
     virtual void randomClustering(vector<vector<graphns::VertexID>>& clusters, vector<int>& vToCID) = 0;
     virtual void newClustering(vector<vector<graphns::VertexID>>& clusters, vector<int>& vToCID, int radius, int maxClusterSize, int minClusterSize) = 0;
+    virtual void minBoundaryNodesClustering(vector<vector<graphns::VertexID>>& clusters, vector<int>& vToCID, int maxClusterSize) = 0;
+    // virtual void weightedMinBoundaryNodesClustering(vector<vector<graphns::VertexID>>& clusters, vector<int>& vToCID, int maxClusterSize) = 0;
     virtual void tarjan(vector< vector< graphns::VertexID > >& SCCs) = 0;
 
     // prints stats of the graph

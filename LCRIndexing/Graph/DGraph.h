@@ -3,6 +3,7 @@
 #include <set>
 #include <stack>
 #include <boost/dynamic_bitset.hpp>
+#include <queue>
 
 using namespace graphns;
 using namespace boost;
@@ -92,7 +93,9 @@ public:
     void modifyGraph(DGraph* tempGraph, int segmentCount, vector<vector<VertexID>>& clusters, vector<int>& vToCID);
     void newClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID, int radius, int maxClusterSize, int minClusterSize);
 
-
+    void getNodesRequiredToUnBN(int index, pair<VertexID, vector<VertexID>>& entry);
+    void minBoundaryNodesClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID, int maxClusterSize);
+    // void weightedMinBoundaryNodesClustering(vector<vector<VertexID>>& clusters, vector<int>& vToCID, int maxClusterSize);
     void tarjan(vector< vector<VertexID> >& SCCs);
     void tarjanStrongConnect(int v, int& index, stack<VertexID>& q, vector< int >& indexPerNode,
                              vector< int >& lowlinkPerNode, vector< bool >& onStack, vector< vector<VertexID> >& SCCs);

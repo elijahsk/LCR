@@ -104,16 +104,18 @@ void NewIndex::buildIndex() {
     // each vertex -> a cluster IDs
     this->vToCID = vector<int>(N, -1);
     this->isBoundaryNode = vector<bool>(N, false);
-    this->graph->newClustering(clusters, vToCID, 15, N / 10, N / 30);
+    // this->graph->newClustering(clusters, vToCID, 15, N / 10, N / 30);
+    this->graph->minBoundaryNodesClustering(clusters, vToCID, max(N / 20, 2000));
 
-    for (int i = 0, sizeI = clusters.size(); i != sizeI; ++i) {
-        vector<VertexID> cluster = clusters[i];
-        cout << "Cluster " << i << ": ";
-        for (int j = 0, sizeJ = cluster.size(); j != sizeJ; ++j) {
-            cout << cluster[j] << " ";
-        }
-        cout << endl;
-    }
+
+    // for (int i = 0, sizeI = clusters.size(); i != sizeI; ++i) {
+    //     vector<VertexID> cluster = clusters[i];
+    //     cout << "Cluster " << i << ": ";
+    //     for (int j = 0, sizeJ = cluster.size(); j != sizeJ; ++j) {
+    //         cout << cluster[j] << " ";
+    //     }
+    //     cout << endl;
+    // }
 
     // this->graph->randomClustering(clusters, vToCID);
 

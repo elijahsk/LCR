@@ -156,7 +156,7 @@ void NewIndex::buildIndex() {
                 //cout << "- ses[j].first =" << ses[j].first << ", jID=" << iID << ", jSID=" << jSID << endl;
                 subGraphs[iCID]->addEdge( positionInC.at(i), positionInC.at(ses[j].first), labelSetToLabelID(ses[j].second) );
             } else {
-				ROBI[i].push_back(ses[j]);c
+				ROBI[i].push_back(ses[j]);
                 if (isBoundaryNode[i] == false) {
                     boundaryNodesPerCluster.at(iCID).push_back(positionInC.at(i));
                     isBoundaryNode[i] = true;

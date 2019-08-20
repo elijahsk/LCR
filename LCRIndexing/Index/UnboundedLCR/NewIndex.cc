@@ -761,7 +761,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
         for (unordered_set<int>::iterator i = BS_same.begin(); i != BS_same.end(); ++i) {
             // cout << "Viewing queued element v in BS_same: " << *i << endl;
 
-            SmallEdgeSet ses = ROBI[i];
+            SmallEdgeSet ses = ROBI[*i];
             // graph->getOutNeighbours(*i, ses);
             for (unsigned int j = 0, sizeJ = ses.size(); j != sizeJ; ++j) {
                 VertexID v2 = ses[j].first;
@@ -807,7 +807,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 				}
 			}
 
-			SmallEdgeSet ses = ROBI[i];
+			SmallEdgeSet ses = ROBI[*i];
 			// graph->getOutNeighbours(*i, ses);
 			for (unsigned int j = 0, sizeJ = ses.size(); j != sizeJ; ++j) {
 				VertexID v2 = ses[j].first;

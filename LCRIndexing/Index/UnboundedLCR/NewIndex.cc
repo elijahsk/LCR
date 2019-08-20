@@ -631,7 +631,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
             for (unsigned int i = 0, sizeI = ses.size(); i != sizeI; ++i) {
 				// in the same cluster, not a boundary node (or a path can be confirmed in the front part), compatible labelset
 				// same cluster condition can be merged into not a boundary node condition
-                if ((!isBoundaryNode(ses[i].first) && (isLabelSubset(ses[i].second, ls))) {
+                if (!isBoundaryNode(ses[i].first) && isLabelSubset(ses[i].second, ls)) {
                     // cout << "Add to queue: " << ses[i].first << endl;
                     q.push(ses[i].first);
                 }

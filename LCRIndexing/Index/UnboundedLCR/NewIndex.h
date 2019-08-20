@@ -85,9 +85,14 @@ using namespace std;
             Graph* D;
             vector<vector<VertexID>> clusters;
 
-            // each node -> a list of boundary nodes and respectively minimal labelset
+            // each node -> a list of boundary nodes and respective minimal labelset
+			// boundary nodes that a node can reach within a cluster
             vector<vector<pair<VertexID, vector<LabelSet>>>> RBI;
+			// boundary nodes that can reach the current node within a cluster
             vector<vector<pair<VertexID, vector<LabelSet>>>> RRBI;
+			// neighbouring boundary nodes that a node can reach outside a cluster
+			vector<vector<pair<VertexID, LabelSet>>> ROBI;
+
             // each cluster -> a list of clusters and minimal labelset
             vector<vector<pair<int, vector<LabelSet>>>> RRCI;
     };

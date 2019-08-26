@@ -1675,7 +1675,9 @@ void DGraph::minBoundaryNodesClustering(vector<vector<VertexID>>& clusters, vect
     while (count < N) {
         entry = requiredNodesQueue.top();
         requiredNodesQueue.pop();
+		// the node
         int v1 = (int) entry.first;
+		// a vector of required nodes
         vector<VertexID> v2s = entry.second;
         // cout << "entry: " << entry.first << endl;
 
@@ -1687,9 +1689,11 @@ void DGraph::minBoundaryNodesClustering(vector<vector<VertexID>>& clusters, vect
 
         // check total weight
         int existingWeight = 0;
+		// use set to remove duplicates
         unordered_set<int> cIDs;
 
-        // v1
+        // v1 
+		// v1 does not belong to any cluster
         if (vToCID[v1] == -1) {
             existingWeight += 1;
         } else {
@@ -1762,6 +1766,7 @@ void DGraph::minBoundaryNodesClustering(vector<vector<VertexID>>& clusters, vect
 
             vector<VertexID> cluster = clusters[clusterID];
 
+			// merge the required nodes into the cluster
             for (int i = 0, sizeI = v2s.size(); i != sizeI; ++i) {
                 int v2 = (int) v2s[i];
                 int oldCID = vToCID[v2];
@@ -1782,6 +1787,7 @@ void DGraph::minBoundaryNodesClustering(vector<vector<VertexID>>& clusters, vect
                 }
             }
 
+			// update required nodes
             for (int i = 0, sizeI = clusters[clusterID].size(); i != sizeI; ++i) {
                 // cout << "i: " << i << endl;
                 int v = (int) clusters[clusterID][i];
@@ -1790,6 +1796,7 @@ void DGraph::minBoundaryNodesClustering(vector<vector<VertexID>>& clusters, vect
                 }
 
                 // enumerate all nodes in the same cluster
+				// remove link if there was a link between nodes in the same cluster
                 bool clusterNodesUpdated = false;
                 for (int j = 0, sizeJ = clusters[clusterID].size(); j != sizeJ; ++j) {
                     if (i != j) {
@@ -1825,10 +1832,12 @@ void DGraph::minBoundaryNodesClustering(vector<vector<VertexID>>& clusters, vect
                         k++;
                     }
                     // cout << endl;
+					// push a new entry into the queue if the node is updated
                     if (neighbourUpdated) {
                         requiredNodesQueue.push(make_pair(v3, requiredNodesVector[v3]));
                     }
                 }
+				// push a new entry into the queue if the node is updated
                 if (clusterNodesUpdated) {
                     requiredNodesQueue.push(make_pair(v, requiredNodesVector[v]));
                 }
@@ -1884,13 +1893,58 @@ void DGraph::minBoundaryNodesClustering(vector<vector<VertexID>>& clusters, vect
         vToCID[i] = cID;
     }
 
-    // Add unmergeable nodes into the clusters as single-node clusters
-    for (int i = 0, sizeI = unmergeableNodes.size(); i != sizeI; ++i) {
-        if (vToCID[(int) unmergeableNodes[i]] == -1) {
-            vToCID[(int) unmergeableNodes[i]] = clusters.size();
-            clusters.push_back(vector<VertexID> {unmergeableNodes[i]});    
-        }
-    }
+    //// Add unmergeable nodes into the clusters as single-node clusters
+    //for (int i = 0, sizeI = unmergeableNodes.size(); i != sizeI; ++i) {
+    //    if (vToCID[(int) unmergeableNodes[i]] == -1) {
+    //        vToCID[(int) unmergeableNodes[i]] = clusters.size();
+    //        clusters.push_back(vector<VertexID> {unmergeableNodes[i]});    
+    //    }
+    //}
+
+	// merge single nodes to their smallest neighbouring nodes / clusters
+	for (int i = 0, sizeI = unmergeableNodes.size(); i != sizeI; ++i) {
+		// if the node is unclustered
+		if (vToCID[(int) unmergeableNodes[i]] == -1) {
+			int v1 = unmergeableNodes[i];
+			int minNeighbourSize = N;
+			int minV2 = -1;
+			// for all its out neighbours
+			for (int j = 0, sizeJ = outE[v1].size(); j != sizeJ; ++j) {
+				int v2 = outE[v1][j].first;
+				// if the out neighbour is a single node, 
+				// immediately return this node as the target to be merged
+				if (vToCID[v2] == -1) {
+					minV2 = v2;
+					minNeighbourSize = 1;
+					break;
+				}
+				// otherwise update the smallest neighbour by its cluster size
+				if (clusters[vToCID[v2]].size() < minNeighbourSize) {
+					minNeighbourSize = clusters[vToCID[v2]].size();
+					minV2 = v2;
+				}
+			}
+			// if the node does not have any neighbours
+			// make this node a new single node cluster
+			if (minV2 == -1) {
+				vToCID[v1] = clusters.size();
+				clusters.push_back(vector<VertexID> {v1});
+			} 
+			// if the neighbour is a single node
+			// make the two nodes a new two-node cluster
+			else if (minNeighbourSize == 1) {
+				vToCID[v1] = clusters.size();
+				vToCID[minV2] = vToCID[v1];
+				clusters.push_back(vector<VertexID> {v1, minV2});
+			}
+			// the neighbour is a cluster
+			// add the node into the cluster
+			else {
+				vToCID[v1] = vToCID[minV2];
+				clusters[vToCID[minV2]].push_back(v1);
+			}
+		}
+	}
 
     // for (int i = 0, sizeI = clusters.size(); i != sizeI; ++i) {
     //     cout << "Cluster " << i << ": ";

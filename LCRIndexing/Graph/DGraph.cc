@@ -1928,20 +1928,20 @@ void DGraph::minBoundaryNodesClustering(vector<vector<VertexID>>& clusters, vect
 			// make this node a new single node cluster
 			if (minV2 == -1) {
 				vToCID[v1] = clusters.size();
-				clusters.push_back(vector<VertexID> {v1});
+				clusters.push_back(vector<VertexID> {(VertexID) v1});
 			} 
 			// if the neighbour is a single node
 			// make the two nodes a new two-node cluster
 			else if (minNeighbourSize == 1) {
 				vToCID[v1] = clusters.size();
 				vToCID[minV2] = vToCID[v1];
-				clusters.push_back(vector<VertexID> {v1, minV2});
+				clusters.push_back(vector<VertexID> {(VertexID) v1, (VertexID) minV2});
 			}
 			// the neighbour is a cluster
 			// add the node into the cluster
 			else {
 				vToCID[v1] = vToCID[minV2];
-				clusters[vToCID[minV2]].push_back(v1);
+				clusters[vToCID[minV2]].push_back((VertexID) v1);
 			}
 		}
 	}

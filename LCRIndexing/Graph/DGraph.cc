@@ -1647,7 +1647,7 @@ void DGraph::minBoundaryNodesClustering(vector<vector<VertexID>>& clusters, vect
 
         // if number of nodes in a is larger than that of b, a is after b
         bool operator()(pair<VertexID, vector<VertexID>> const& a, pair<VertexID, vector<VertexID>> const& b) const {
-            return (a.second).size() > (b.second).size();
+            return (a.second).size() < (b.second).size();
         }
     };
 

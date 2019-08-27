@@ -656,7 +656,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 	X.insert(vToCID[target]);
 
     // If the source and target clusters can't be linked by another common cluster, return false
-    if (X.count(vToCID[source]) != 0) {
+    if (X.count(vToCID[source]) == 0) {
         return false;
     }
 

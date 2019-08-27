@@ -244,7 +244,7 @@ int main(int argc, char *argv[]) {
             index = new BFSIndex(graph);
 
         // LI+ (both extensions)
-        if ( i == 4 ) {
+        if ( i == 5 ) {
             int k = 1250 + sqrt(N);
             int b = 20;
             index = new LandmarkedIndex(graph, true, true, k, b);
@@ -265,7 +265,7 @@ int main(int argc, char *argv[]) {
         }
 
         // Zou
-        if ( i == 5 ) {
+        if ( i == 4 ) {
             index = new Zou(graph);
         }
 

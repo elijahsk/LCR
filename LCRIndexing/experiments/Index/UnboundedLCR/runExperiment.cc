@@ -230,7 +230,7 @@ int main(int argc, char *argv[]) {
     int N = graph->getNumberOfVertices();
     int M = graph->getNumberOfEdges();
 
-    noOfMethods = 2;
+    noOfMethods = 5;
 
     // Here we loop over all methods
     for (int i = firstMethod; i < noOfMethods; i++) {

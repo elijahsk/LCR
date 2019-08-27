@@ -566,7 +566,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
     double queryStartTime = getCurrentTimeInMilliSec();
     if (source == target)
         return true;
-    if ( ls == 0 )
+    if (ls == 0)
         return false;
 
     int sourceCluster = vToCID[source];
@@ -594,7 +594,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 
         vector<pair<VertexID, vector<LabelSet>>> RRBIt = RRBI[target];
         for (unsigned int i = 0, sizeI = RRBIt.size(); i != sizeI; ++i) {
-            if (possibleBoundaryNodes.find(RRBIt[i].first) != possibleBoundaryNodes.end()) {
+            if (possibleBoundaryNodes.count(RRBIt[i].first) > 0) {
                 vector<LabelSet> BNLabelSets = RRBIt[i].second;
                 for (unsigned int j = 0, sizeJ = BNLabelSets.size(); j != sizeJ; ++j) {
                     if (isLabelSubset(BNLabelSets[j], ls)) {
@@ -629,7 +629,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
             SmallEdgeSet ses;
             graph->getOutNeighbours(x, ses);
             for (unsigned int i = 0, sizeI = ses.size(); i != sizeI; ++i) {
-				// in the same cluster, not a boundary node (or a path can be confirmed in the front part), compatible labelset
+				// 3 conditions: in the same cluster, not a boundary node (or a path can be confirmed in the front part), compatible labelset
 				// same cluster condition can be merged into not a boundary node condition
                 if (!isBoundaryNode[ses[i].first] && isLabelSubset(ses[i].second, ls)) {
                     // cout << "Add to queue: " << ses[i].first << endl;
@@ -652,12 +652,13 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
             }
         }
     }
-    X.insert(vToCID[target]);
 
     // If the source and target clusters can't be linked by another common cluster, return false
-    if (X.find(vToCID[source]) == X.end()) {
+    if (X.count(vToCID[source]) != 0) {
         return false;
     }
+
+	X.insert(vToCID[target]);
 
 
     // Get boundary nodes that source can reach
@@ -699,6 +700,9 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
         vector<LabelSet> BNLabelSets = RRBIt.at(i).second;
         for (unsigned int j = 0, sizeJ = BNLabelSets.size(); j != sizeJ; j++) {
             if (isLabelSubset(BNLabelSets.at(j), ls)) {
+				if (BS.count(RRBIt.at(i).first) != 0) {
+					return true;
+				}
                 BT.insert((int)RRBIt.at(i).first);
                 break;
             }
@@ -729,31 +733,28 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
     //     }
     // }
     dynamic_bitset<> visited = dynamic_bitset<>(N);
-    // for (int i = 0; i < visited.size(); i++) {
-    //     cout << visited[i] << " ";
-    // }
-    // cout << endl;
 
-    int totalVisitedBN = 0;
-    int totalNumofPasses = 0;
+    /*int totalVisitedBN = 0;
+    int totalNumofPasses = 0;*/
 
     while (!(BS_same.empty() && BS_diff.empty())) {
         unordered_set<int> BS1_same;
 		unordered_set<int> BS1_diff;
-		for (unordered_set<int>::iterator i = BS_same.begin(); i != BS_same.end(); ++i) {
-			if (BT.find(*i) != BT.end()) {
-				cout << "Total Visted BN: " << totalVisitedBN;
-				cout << "    Total Number of passes: " << totalNumofPasses << " " << print_digits(getCurrentTimeInMilliSec() - queryStartTime, 4) << endl;
-				return true;
-			}
-		}
-		for (unordered_set<int>::iterator i = BS_diff.begin(); i != BS_diff.end(); ++i) {
-			if (BT.find(*i) != BT.end()) {
-				cout << "Total Visted BN: " << totalVisitedBN;
-				cout << "    Total Number of passes: " << totalNumofPasses << " " << print_digits(getCurrentTimeInMilliSec() - queryStartTime, 4) << endl;
-				return true;
-			}
-		}
+		// inline the result check at the point of insertion
+		//for (unordered_set<int>::iterator i = BS_same.begin(); i != BS_same.end(); ++i) {
+		//	if (BT.count(*i) != 0) {
+		//	/*	cout << "Total Visted BN: " << totalVisitedBN;
+		//		cout << "    Total Number of passes: " << totalNumofPasses << " " << print_digits(getCurrentTimeInMilliSec() - queryStartTime, 4) << endl;*/
+		//		return true;
+		//	}
+		//}
+		//for (unordered_set<int>::iterator i = BS_diff.begin(); i != BS_diff.end(); ++i) {
+		//	if (BT.count(*i) != 0) {
+		//		/*cout << "Total Visted BN: " << totalVisitedBN;
+		//		cout << "    Total Number of passes: " << totalNumofPasses << " " << print_digits(getCurrentTimeInMilliSec() - queryStartTime, 4) << endl;*/
+		//		return true;
+		//	}
+		//}
 
 		totalVisitedBN += BS_same.size() + BS_diff.size();
 		totalNumofPasses += 1;
@@ -766,22 +767,16 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
             for (unsigned int j = 0, sizeJ = ses.size(); j != sizeJ; ++j) {
                 VertexID v2 = ses[j].first;
                 LabelSet ls2 = ses[j].second;
-                // cout << "v2: " << v2 << " ls2 :" << ls2 << endl;
-                // cout << "Cv: " << vToCID[*i] << " Cv2: "<< vToCID[v2] << endl;
-                // cout << "ls: " << joinLabelSets(ls2, ls) << endl;
-                // cout << "visited? " << visited[BNToID[v2]] << endl;
-                // for (unordered_set<int>::iterator k = X.begin(); k != X.end(); k++) {
-                //     cout << *k << "__";
-                // }
-                // cout << endl;
-                // cout << (X.find(vToCID[v2]) != X.end()) << endl;
-                // cout << (BT.find(v2) != BT.end()) << endl;
 
                 // Unvisited boundary nodes from a different cluster that can reach target
                 if (isLabelSubset(ls2, ls) && (visited[v2] == 0) && (X.find(vToCID[v2]) != X.end())) {
-                        BS1_diff.insert((int)v2);
-                        // cout << "Insert into BS1_diff: " << v2 << endl;
-                        visited[v2] = 1;
+					// inline the result check for efficiency purpose
+					if (BT.count(v2) != 0) {
+						return true;
+					}
+                    BS1_diff.insert((int)v2);
+                    // cout << "Insert into BS1_diff: " << v2 << endl;
+                    visited[v2] = 1;
                 }
             }
         }
@@ -798,6 +793,10 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 					vector<LabelSet> lss = RBIi.at(j).second;
 					for (unsigned int k = 0, sizeK = lss.size(); k != sizeK; k++) {
 						if (isLabelSubset(lss.at(k), ls)) {
+							// inline the result check for efficiency purpose
+							if (BT.count(globalVID) != 0) {
+								return true;
+							}
 							BS1_same.insert(globalVID);
 							// cout << "Insert into BS1_same: " << globalVID << endl;
 							visited[globalVID] = 1;
@@ -825,6 +824,9 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 
 				// Unvisited boundary nodes from a different cluster that can reach target
 				if (isLabelSubset(ls2, ls) && (visited[v2] == 0) && (X.find(vToCID[v2]) != X.end())) {
+					if (BT.count(v2) != 0) {
+						return true;
+					}
 					BS1_diff.insert((int)v2);
 					// cout << "Insert into BS1_diff: " << v2 << endl;
 					visited[v2] = 1;
@@ -842,8 +844,8 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
         // cout << endl;
     }
 
-    cout << "Total Visted BN: " << totalVisitedBN;
-    cout << "    Total Number of passes: " << totalNumofPasses << " " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 7 ) << endl;
+    /*cout << "Total Visted BN: " << totalVisitedBN;
+    cout << "    Total Number of passes: " << totalNumofPasses << " " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 7 ) << endl;*/
 
     return false;
 };

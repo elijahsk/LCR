@@ -733,8 +733,8 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
     // }
     dynamic_bitset<> visited = dynamic_bitset<>(N);
 
-    /*int totalVisitedBN = 0;
-    int totalNumofPasses = 0;*/
+    int totalVisitedBN = 0;
+	/*int totalNumofPasses = 0;*/
 
     while (!(BS_same.empty() && BS_diff.empty())) {
         unordered_set<int> BS1_same;
@@ -759,6 +759,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 		totalNumofPasses += 1;*/
 
         for (unordered_set<int>::iterator i = BS_same.begin(); i != BS_same.end(); ++i) {
+			totalVisitedBN ++;
             // cout << "Viewing queued element v in BS_same: " << *i << endl;
 
             SmallEdgeSet ses = ROBI[*i];
@@ -771,6 +772,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
                 if (isLabelSubset(ls2, ls) && (visited[v2] == 0) && (X.find(vToCID[v2]) != X.end())) {
 					// inline the result check for efficiency purpose
 					if (BT.count(v2) != 0) {
+						cout << totalVisitedBN << endl;
 						return true;
 					}
                     BS1_diff.insert((int)v2);
@@ -782,7 +784,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 
 		for (unordered_set<int>::iterator i = BS_diff.begin(); i != BS_diff.end(); ++i) {
 			// cout << "Viewing queued element v in BS_diff: " << *i << endl;
-
+			totalVisitedBN++;
 			vector<pair<VertexID, vector<LabelSet>>> RBIi = RBI.at(*i);
 			// cout << "RBIi size: " << RBIi.size() << endl;
 			for (unsigned int j = 0, sizeJ = RBIi.size(); j != sizeJ; ++j) {
@@ -794,6 +796,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 						if (isLabelSubset(lss.at(k), ls)) {
 							// inline the result check for efficiency purpose
 							if (BT.count(globalVID) != 0) {
+								cout << totalVisitedBN << endl;
 								return true;
 							}
 							BS1_same.insert(globalVID);
@@ -824,6 +827,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 				// Unvisited boundary nodes from a different cluster that can reach target
 				if (isLabelSubset(ls2, ls) && (visited[v2] == 0) && (X.find(vToCID[v2]) != X.end())) {
 					if (BT.count(v2) != 0) {
+						cout << totalVisitedBN << endl;
 						return true;
 					}
 					BS1_diff.insert((int)v2);

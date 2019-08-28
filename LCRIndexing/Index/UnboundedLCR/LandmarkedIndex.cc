@@ -1422,9 +1422,11 @@ bool LandmarkedIndex::queryShell(VertexID source, VertexID target, LabelSet ls)
     int roundNo = 0;
     int count = 0;
     int noOfQueries = 0;
+	int visitCount = 0;
 
     while( q.empty() == false )
     {
+		visitCount++;
         VertexID v1 = q.front();
         q.pop();
 
@@ -1439,6 +1441,7 @@ bool LandmarkedIndex::queryShell(VertexID source, VertexID target, LabelSet ls)
 
         if( v1 == target )
         {
+			cout << visitCount << endl;
             return true;
         }
 
@@ -1461,6 +1464,7 @@ bool LandmarkedIndex::queryShell(VertexID source, VertexID target, LabelSet ls)
                     if( queryDirect(v1, target, ls) )
                     {
                         //cout << "noOfQueries=" << noOfQueries << endl;
+						cout << visitCount << endl;
                         return true;
                     }
                 //}

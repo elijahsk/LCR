@@ -1893,14 +1893,6 @@ void DGraph::minBoundaryNodesClustering(vector<vector<VertexID>>& clusters, vect
         vToCID[i] = cID;
     }
 
-    //// Add unmergeable nodes into the clusters as single-node clusters
-    //for (int i = 0, sizeI = unmergeableNodes.size(); i != sizeI; ++i) {
-    //    if (vToCID[(int) unmergeableNodes[i]] == -1) {
-    //        vToCID[(int) unmergeableNodes[i]] = clusters.size();
-    //        clusters.push_back(vector<VertexID> {unmergeableNodes[i]});    
-    //    }
-    //}
-
 	// merge single nodes to their smallest neighbouring nodes / clusters
 	for (int i = 0, sizeI = unmergeableNodes.size(); i != sizeI; ++i) {
 		// if the node is unclustered
@@ -1939,10 +1931,18 @@ void DGraph::minBoundaryNodesClustering(vector<vector<VertexID>>& clusters, vect
 			}
 			// the neighbour is a cluster
 			// add the node into the cluster
-			else {
+			else if (minNeighbourSize < maxClusterSize){
 				vToCID[v1] = vToCID[minV2];
 				clusters[vToCID[minV2]].push_back((VertexID) v1);
 			}
+		}
+	}
+
+	// Add unmergeable nodes into the clusters as single-node clusters
+	for (int i = 0, sizeI = unmergeableNodes.size(); i != sizeI; ++i) {
+		if (vToCID[(int)unmergeableNodes[i]] == -1) {
+			vToCID[(int)unmergeableNodes[i]] = clusters.size();
+			clusters.push_back(vector<VertexID> {unmergeableNodes[i]});
 		}
 	}
 
@@ -1954,7 +1954,7 @@ void DGraph::minBoundaryNodesClustering(vector<vector<VertexID>>& clusters, vect
     //     cout << endl;
     // }
 
-    cout << "Done!" << endl;
+    //cout << "Done!" << endl;
 
 }
 

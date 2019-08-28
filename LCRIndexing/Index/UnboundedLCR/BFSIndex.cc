@@ -58,9 +58,10 @@ bool BFSIndex::queryShell(VertexID source, VertexID target, LabelSet ls,set< Ver
         q.pop();
         //cout << "BFSIndex::query se.first=" << to_string(se.first) << ",se.second=" << labelSetToString(se.second) << endl;
 
-		if (x == target)
+		if (x == target) {
 			cout << count << endl;
-            return true;
+			return true;
+		}
 
         if( marked[x] == 1 )
         {

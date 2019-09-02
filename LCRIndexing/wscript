@@ -10,13 +10,16 @@ def set_options(ctx):
 def configure(ctx):
   ctx.check_tool('compiler_cxx')
   ctx.check_cxx(lib = ['glog', 'gflags'], uselib_store = 'common')
-  ctx.env.CXXFLAGS += ['-O2', '-g', '-I/usr/local/include/', '-std=c++0x']
-  ctx.env.append_value('LINKFLAGS', ['-L/usr/local/lib/'])
+  ctx.env.CXXFLAGS += ['-g', '-pg', '-O2', '-I/usr/local/include/', '-std=c++0x']
+  ctx.env.append_value('LINKFLAGS', ['-L/usr/local/lib/', '-pg'])
 
 
 def build(bld):
 
   IndexList = ['BFSIndex', 'DoubleBFS', 'LandmarkedIndex', 'Zou', 'ClusteredExactIndex', 'NewIndex'];
+
+  bld.env.MESSAGE = 'TEST'
+  bld(rule='echo ${MESSAGE}', always = True)
 
   bld(features     = 'cxx cstaticlib',
       source       = ['Graph/DGraph.cc'],
@@ -85,7 +88,9 @@ def build(bld):
       source       = ['experiments/Index/UnboundedLCR/runExperiment.cc'],
       target       = 'runExperiment',
       includes     = ['.'],
-      uselib_local = IndexList)
+      uselib_local = IndexList,
+#       rule         = 'pwd;g++ -o ${TGT} ${SRC} -I/usr/local/include -std=c++0x -L/usr/local/lib -g -pg'
+)
 
   bld(features     = 'cxx cprogram',
       source       = ['experiments/Index/UnboundedLCR/maintenanceExp.cc'],

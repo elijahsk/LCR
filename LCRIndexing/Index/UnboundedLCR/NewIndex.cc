@@ -3,6 +3,7 @@
 #include <queue>
 #include <iostream>
 #include <unordered_set>
+#include <unordered_map>
 #include <map>
 
 using namespace newns;
@@ -81,10 +82,12 @@ void NewIndex::initializeLocalIndexes() {
 		vector<pair<VertexID, vector<LabelSet>>> v1, v2;
 		vector<pair<VertexID, LabelSet>> v3;
         vector<pair<int, vector<LabelSet>>> v4;
+		unordered_map<LabelSet, vector<VertexID>> m1;
         RBI.push_back(v1);
         RRBI.push_back(v2);
 		ROBI.push_back(v3);
         RRCI.push_back(v4);
+		newRBI.push_back(m1);
     }
 }
 
@@ -402,11 +405,62 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
         for (int j = 0; j < closure.size(); j++) {
             VertexID globalVID = clusters.at(cID).at(closure.at(j).first);
             if (isBoundaryNode[globalVID]) {
-                RBPerVertex.push_back(make_pair(globalVID, closure.at(j).second));
+                RBPerVertex.push_back(make_pair(globalVID, closure.at(j).second)); 
             }
         }
         RBI.at(clusters.at(cID).at(i)) = RBPerVertex;
     }
+	int L = sG->getNumberOfLabels();
+	vector<unordered_set<LabelSet>> labelSetBuckets;
+	// LabelSet with number of labels = X goes to Xth bucket
+	// bucket[0] should be empty
+	for (int j = 0; j <= L; j++) {
+		unordered_set<LabelSet> s1;
+		labelSetBuckets.push_back(s1);
+	}
+
+	vector<VertexID> cluster = clusters[cID];
+	for (int i = 0; i != N; i++) {
+		vector<pair<VertexID, vector<LabelSet>>> closure = tIn.at(i);
+		VertexID globalVID1 = cluster[i];
+		unordered_map<LabelSet, unordered_set<VertexID>> lmap = newRBI[globalVID1];
+
+		// organization
+		for (int j = 0, sizeJ = closure.size(); j != sizeJ; j++) {
+			VertexID globalVID2 = cluster[closure[j].first];
+			LabelSets lss = closure[j].second;
+			for (int k = 0, sizeK = lss.size(); k != sizeK; k++) {
+				// propagation preparation
+				labelSetBuckets[getNumberOfLabelsInLabelSet(lss[k])].insert(lss[k]);
+				// end of preparation, continue organization
+				if (lmap.contains(lss[k])) {
+					lmap[lss[k]].insert(globalVID2);
+				}
+				else {
+					unordered_set<VertexID> s1({ globalVID2 });
+					lmap.insert({ lss[k], s1 });
+				}
+			}
+		}
+
+		// propagation
+		for (int j = 1; j <= L; j++) {
+			unordered_set<VertexID> labelSetBucket = labelSetBuckets[j];
+			for (const auto& ls : labelSetBucket) {
+				vector<LabelID> labels;
+				getLabelIDsFromLabelSet(ls, &labels);
+				for (const auto& label : labels) {
+					LabelSet reducedLs = ls - label;
+					if (lmap.contains(reducedLs)) {
+						lmap[ls].insert(lmap[reducedLs]);
+					}
+				}
+			}
+		}
+	}
+
+	
+	
 }
 
 void NewIndex::getRRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
@@ -666,7 +720,8 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 	// cout << "BS_same " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
     unordered_set<int> BS_same;
 	unordered_set<int> BS_diff;
-    vector<pair<VertexID, vector<LabelSet>>> RBIs = RBI.at(source);
+
+    /*vector<pair<VertexID, vector<LabelSet>>> RBIs = RBI.at(source);
     for (unsigned int i = 0, sizeI = RBIs.size(); i != sizeI; ++i) {
         vector<LabelSet> BNLabelSets = RBIs.at(i).second;
         for (unsigned int j = 0, sizeJ = BNLabelSets.size(); j != sizeJ; j++) {
@@ -675,7 +730,9 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
                 break;
             }
         }
-    }
+    }*/
+
+	BS_same = newRBI[source][ls];
 
     if (isBoundaryNode[source]) {
         BS_same.insert(source);
@@ -785,26 +842,38 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 		for (unordered_set<int>::iterator i = BS_diff.begin(); i != BS_diff.end(); ++i) {
 			// cout << "Viewing queued element v in BS_diff: " << *i << endl;
 			totalVisitedBN++;
-			vector<pair<VertexID, vector<LabelSet>>> RBIi = RBI.at(*i);
-			// cout << "RBIi size: " << RBIi.size() << endl;
-			for (unsigned int j = 0, sizeJ = RBIi.size(); j != sizeJ; ++j) {
-				unsigned int globalVID = RBIi.at(j).first;
-				// cout << "reachable boundary node: " << globalVID << endl;
-				if (visited[globalVID] == 0) {
-					vector<LabelSet> lss = RBIi.at(j).second;
-					for (unsigned int k = 0, sizeK = lss.size(); k != sizeK; k++) {
-						if (isLabelSubset(lss.at(k), ls)) {
-							// inline the result check for efficiency purpose
-							if (BT.count(globalVID) != 0) {
-								cout << totalVisitedBN << endl;
-								return true;
-							}
-							BS1_same.insert(globalVID);
-							// cout << "Insert into BS1_same: " << globalVID << endl;
-							visited[globalVID] = 1;
-							break;
-						}
+			//vector<pair<VertexID, vector<LabelSet>>> RBIi = RBI.at(*i);
+			//// cout << "RBIi size: " << RBIi.size() << endl;
+			//for (unsigned int j = 0, sizeJ = RBIi.size(); j != sizeJ; ++j) {
+			//	unsigned int globalVID = RBIi.at(j).first;
+			//	// cout << "reachable boundary node: " << globalVID << endl;
+			//	if (visited[globalVID] == 0) {
+			//		vector<LabelSet> lss = RBIi.at(j).second;
+			//		for (unsigned int k = 0, sizeK = lss.size(); k != sizeK; k++) {
+			//			if (isLabelSubset(lss.at(k), ls)) {
+			//				// inline the result check for efficiency purpose
+			//				if (BT.count(globalVID) != 0) {
+			//					cout << totalVisitedBN << endl;
+			//					return true;
+			//				}
+			//				BS1_same.insert(globalVID);
+			//				// cout << "Insert into BS1_same: " << globalVID << endl;
+			//				visited[globalVID] = 1;
+			//				break;
+			//			}
+			//		}
+			//	}
+			//}
+
+			unordered_set<VertexID> preliminaryBS = newRBI[*i][ls];
+			for (const auto& v : preliminaryBS) {
+				if (visited[v] == 0) {
+					if (BT.count(v) != 0) {
+						cout << totalVisitedBN << endl;
+						return true;
 					}
+					BS1_same.insert(v);
+					visited[v] = 1;
 				}
 			}
 

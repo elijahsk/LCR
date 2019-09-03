@@ -3,6 +3,7 @@
 
 #include <boost/dynamic_bitset.hpp>
 #include <map>
+#include <unordered_map>
 
 using namespace graphns;
 using namespace indexns;
@@ -92,6 +93,9 @@ using namespace std;
             vector<vector<pair<VertexID, vector<LabelSet>>>> RRBI;
 			// neighbouring boundary nodes that a node can reach outside a cluster
 			vector<vector<pair<VertexID, LabelSet>>> ROBI;
+			
+			// each node -> a mapping from labelset to a list of BNs that the node can reach
+			vector<unordered_map<LabelSet, unordered_set<VertexID>>> newRBI;
 
             // each cluster -> a list of clusters and minimal labelset
             vector<vector<pair<int, vector<LabelSet>>>> RRCI;

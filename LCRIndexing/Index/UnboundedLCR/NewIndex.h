@@ -63,6 +63,7 @@ using namespace std;
             void getRBI(int cID, Graph* graph, vector<vector<VertexID>> clusters);
             void getRRBI(int cID, Graph* graph, vector<vector<VertexID>> clusters);
             void getRRCI(int cID);
+			void printNewRBI();
             void printRBI();
             void printRRBI();
             void printRRCI();

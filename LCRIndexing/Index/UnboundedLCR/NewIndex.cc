@@ -193,6 +193,7 @@ void NewIndex::buildIndex() {
 
     cout << "Step 2 (RBI & RRBI indices built): " << print_digits( getCurrentTimeInMilliSec() - constStartTime, 6 ) << endl;
     // printRBI();
+	printNewRBI();
     // printRRBI();
 
     initializeIndex();
@@ -319,6 +320,16 @@ bool NewIndex::tryInsert(VertexID s, VertexID v, LabelSet ls) {
     bool b2 = tryInsertLabelSetToIndex(ls, s, v);
     //cout << "tryInsert: w=" << w << ",v=" << v << ",ls=" << labelSetToString(ls) << ",b2=" << b2 << endl;
     return b2;
+}
+
+void NewIndex::printNewRBI() {
+	cout << "New RBI" < endl;
+	for (int i = 0; i < N; i++) {
+		cout << "Vertex " << i << ": " << endl;
+		for (auto it = newRBI.begin(); it != newRBI.end(); ++it) {
+			cout << it->first << ": " << it->second << endl;
+		}
+	}
 }
 
 void NewIndex::printRBI() {

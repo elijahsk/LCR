@@ -520,10 +520,10 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 			unordered_set<VertexID> labelSetBucket = labelSetBuckets[j];
 			for (const auto& ls : labelSetBucket) {
 				vector<LabelID> labels;
-				getLabelIDsFromLabelSet(ls, &labels);
+				getLabelIDsFromLabelSet(ls, labels);
 				for (const auto& label : labels) {
 					LabelSet reducedLs = ls - label;
-					lmap[ls].insert(lmap[reducedLs].begin(), lmap[reducedLS].end());
+					lmap[ls].insert(lmap[reducedLs].begin(), lmap[reducedLs].end());
 				}
 			}
 		}
@@ -785,8 +785,8 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 	// BS_same stores nodes obtained by RBI in the same cluster
 	// BS_diff stores neighbouring BNs from a different cluster
 	// cout << "BS_same " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
-    unordered_set<int> BS_same;
-	unordered_set<int> BS_diff;
+    unordered_set<VertexID> BS_same;
+	unordered_set<VertexID> BS_diff;
 
     /*vector<pair<VertexID, vector<LabelSet>>> RBIs = RBI.at(source);
     for (unsigned int i = 0, sizeI = RBIs.size(); i != sizeI; ++i) {
@@ -826,7 +826,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 				if (BS_same.count(RRBIt.at(i).first) != 0) {
 					return true;
 				}
-                BT.insert((int)RRBIt.at(i).first);
+                BT.insert(RRBIt.at(i).first);
                 break;
             }
         }
@@ -899,7 +899,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 						cout << totalVisitedBN << endl;
 						return true;
 					}
-                    BS1_diff.insert((int)v2);
+                    BS1_diff.insert(v2);
                     // cout << "Insert into BS1_diff: " << v2 << endl;
                     visited[v2] = 1;
                 }
@@ -966,7 +966,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 						cout << totalVisitedBN << endl;
 						return true;
 					}
-					BS1_diff.insert((int)v2);
+					BS1_diff.insert(v2);
 					// cout << "Insert into BS1_diff: " << v2 << endl;
 					visited[v2] = 1;
 				}

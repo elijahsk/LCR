@@ -328,7 +328,11 @@ void NewIndex::printNewRBI() {
 		cout << "Vertex " << i << ": " << endl;
 		for (auto& x : newRBI[i]) {
 			cout << x.first << ": "; 
-			cout << x.second << endl;
+			unordered_set<VertexID> vs = x.second;
+			for (auto& y : vs) {
+				cout << y << " ";
+			}
+			cout << endl;
 		}
 	}
 }

@@ -324,7 +324,7 @@ bool NewIndex::tryInsert(VertexID s, VertexID v, LabelSet ls) {
 
 void NewIndex::printNewRBI() {
 	cout << "New RBI" < endl;
-	for (int i = 0; i < N; i++) {
+	for (int i = 0; i < newRBI.size(); i++) {
 		cout << "Vertex " << i << ": " << endl;
 		for (auto it = newRBI.begin(); it != newRBI.end(); ++it) {
 			cout << it->first << ": " << it->second << endl;

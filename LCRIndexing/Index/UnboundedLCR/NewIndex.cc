@@ -326,8 +326,9 @@ void NewIndex::printNewRBI() {
 	cout << "New RBI" < endl;
 	for (int i = 0; i < newRBI.size(); i++) {
 		cout << "Vertex " << i << ": " << endl;
-		for (auto it = newRBI[i].begin(); it != newRBI[i].end(); ++it) {
-			cout << it->first << ": " << it->second << endl;
+		for (auto& x : newRBI[i]) {
+			cout << x.first << ": "; 
+			cout << x.second << endl;
 		}
 	}
 }

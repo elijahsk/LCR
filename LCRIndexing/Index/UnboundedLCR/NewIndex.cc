@@ -110,19 +110,19 @@ void NewIndex::buildIndex() {
     this->vToCID = vector<int>(N, -1);
     this->isBoundaryNode = vector<bool>(N, false);
     // this->graph->newClustering(clusters, vToCID, 15, N / 10, N / 30);
-    this->graph->minBoundaryNodesClustering(clusters, vToCID, max(N / 20, 2000));
+    this->graph->minBoundaryNodesClustering(clusters, vToCID, max(N / 20, 10));
 
 
-    // for (int i = 0, sizeI = clusters.size(); i != sizeI; ++i) {
-    //     vector<VertexID> cluster = clusters[i];
-    //     cout << "Cluster " << i << ": ";
-    //     for (int j = 0, sizeJ = cluster.size(); j != sizeJ; ++j) {
-    //         cout << cluster[j] << " ";
-    //     }
-    //     cout << endl;
-    // }
+     for (int i = 0, sizeI = clusters.size(); i != sizeI; ++i) {
+         vector<VertexID> cluster = clusters[i];
+         cout << "Cluster " << i << ": ";
+         for (int j = 0, sizeJ = cluster.size(); j != sizeJ; ++j) {
+             cout << cluster[j] << " ";
+         }
+         cout << endl;
+     }
 
-    // this->graph->randomClustering(clusters, vToCID);
+     this->graph->randomClustering(clusters, vToCID);
 
     // create a subgraph for each cluster containing only the right edges
     subGraphs = vector< Graph* >();
@@ -434,6 +434,8 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 		unordered_set<LabelSet> s1;
 		labelSetBuckets.push_back(s1);
 	}
+	
+	cout << "L in cluster " << cID << ": " << L << endl;
 
 	//vector<VertexID> cluster = clusters[cID];
 	//for (int i = 0; i != N; i++) {
@@ -498,6 +500,16 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 			}
 		}
 
+		cout << "LabelSetBucket: " << endl;
+		for (int j = 0; j <= L; j++) {
+			unordered_set<VertexID> labelSetBucket = labelSetBuckets[i];
+			cout << j << ": "
+			for (auto& ls : labelSetBucket) {
+				cout << ls << " ";
+			}
+			cout << endl;
+		}
+
 		// assume that the L in the cluster = the L in the graph
 		// use a topdown approach to from full labelset, to get all possible labelsets
 		// this can be extracted to be repeatedly used
@@ -508,6 +520,16 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 			unordered_set<VertexID> s1;
 			lmap.insert({ lss, s1 });
 			labelSetBuckets[L].insert(lss);
+		}
+
+		cout << "LabelSetBucket after population: " << endl;
+		for (int j = 0; j <= L; j++) {
+			unordered_set<VertexID> labelSetBucket = labelSetBuckets[i];
+			cout << j << ": "
+				for (auto& ls : labelSetBucket) {
+					cout << ls << " ";
+				}
+			cout << endl;
 		}
 		
 		// for each iteration, take the labelsets from the bucket 1 level above

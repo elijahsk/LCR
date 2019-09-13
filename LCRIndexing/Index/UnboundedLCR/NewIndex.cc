@@ -861,8 +861,8 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 	/*int totalNumofPasses = 0;*/
 
     while (!(BS_same.empty() && BS_diff.empty())) {
-        unordered_set<int> BS1_same;
-		unordered_set<int> BS1_diff;
+        unordered_set<VertexID> BS1_same;
+		unordered_set<VertexID> BS1_diff;
 		// inline the result check at the point of insertion
 		//for (unordered_set<int>::iterator i = BS_same.begin(); i != BS_same.end(); ++i) {
 		//	if (BT.count(*i) != 0) {

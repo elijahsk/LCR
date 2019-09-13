@@ -82,7 +82,7 @@ void NewIndex::initializeLocalIndexes() {
 		vector<pair<VertexID, vector<LabelSet>>> v1, v2;
 		vector<pair<VertexID, LabelSet>> v3;
         vector<pair<int, vector<LabelSet>>> v4;
-		unordered_map<LabelSet, vector<VertexID>> m1;
+		unordered_map<LabelSet, unordered_set<VertexID>> m1;
         RBI.push_back(v1);
         RRBI.push_back(v2);
 		ROBI.push_back(v3);
@@ -433,7 +433,7 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 	//			// propagation preparation
 	//			labelSetBuckets[getNumberOfLabelsInLabelSet(lss[k])].insert(lss[k]);
 	//			// end of preparation, continue organization
-	//			if (lmap.contains(lss[k])) {
+	//			if (lmap.count(lss[k])) {
 	//				lmap[lss[k]].insert(globalVID2);
 	//			}
 	//			else {
@@ -451,7 +451,7 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 	//			getLabelIDsFromLabelSet(ls, &labels);
 	//			for (const auto& label : labels) {
 	//				LabelSet reducedLs = ls - label;
-	//				if (lmap.contains(reducedLs)) {
+	//				if (lmap.count(reducedLs)) {
 	//					lmap[ls].insert(lmap[reducedLs]);
 	//				}
 	//			}
@@ -472,7 +472,7 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 				// propagation preparation
 				labelSetBuckets[getNumberOfLabelsInLabelSet(lss[k])].insert(lss[k]);
 				// end of preparation, continue organization
-				if (lmap.contains(lss[k])) {
+				if (lmap.count(lss[k])) {
 					lmap[lss[k]].insert(globalVID2);
 				}
 				else {
@@ -504,7 +504,7 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 				getLabelIDsFromLabelSet(ls, &labels);
 				for (const auto& label : labels) {
 					LabelSet reducedLs = ls - label;
-					if (!lmap.contains(reducedLs)) {
+					if (!lmap.count(reducedLs)) {
 						unordered_set<VertexID> s1;
 						lmap.insert({ reducedLs, s1 });
 						labelSetBuckets[j].insert(reducedLs);

@@ -122,7 +122,7 @@ void NewIndex::buildIndex() {
          cout << endl;
      }
 
-     this->graph->randomClustering(clusters, vToCID);
+    // this->graph->randomClustering(clusters, vToCID);
 
     // create a subgraph for each cluster containing only the right edges
     subGraphs = vector< Graph* >();

@@ -488,7 +488,7 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 		LabelSet lss = 1 << L - 1;
 
 		// insert the full-label into the lmap and bucket if it does not exist
-		if (!lmap.constains(lss)) {
+		if (!lmap.counts(lss)) {
 			unordered_set<VertexID> s1;
 			lmap.insert({ lss, s1 });
 			labelSetBuckets[L].insert(lss);
@@ -501,7 +501,7 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 			unordered_set<VertexID> labelSetBucket = labelSetBuckets[j + 1];
 			for (const auto& ls : labelSetBucket) {
 				vector<LabelID> labels;
-				getLabelIDsFromLabelSet(ls, &labels);
+				getLabelIDsFromLabelSet(ls, labels);
 				for (const auto& label : labels) {
 					LabelSet reducedLs = ls - label;
 					if (!lmap.count(reducedLs)) {
@@ -523,7 +523,7 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 				getLabelIDsFromLabelSet(ls, &labels);
 				for (const auto& label : labels) {
 					LabelSet reducedLs = ls - label;
-					lmap[ls].insert(lmap[reducedLs]);
+					lmap[ls].insert(lmap[reducedLs].begin(), lamp[reducedLS].end());
 				}
 			}
 		}

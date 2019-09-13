@@ -882,7 +882,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 		/*totalVisitedBN += BS_same.size() + BS_diff.size();
 		totalNumofPasses += 1;*/
 
-        for (unordered_set<int>::iterator i = BS_same.begin(); i != BS_same.end(); ++i) {
+        for (unordered_set<VertexID>::iterator i = BS_same.begin(); i != BS_same.end(); ++i) {
 			totalVisitedBN ++;
             // cout << "Viewing queued element v in BS_same: " << *i << endl;
 
@@ -906,7 +906,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
             }
         }
 
-		for (unordered_set<int>::iterator i = BS_diff.begin(); i != BS_diff.end(); ++i) {
+		for (unordered_set<VertexID>::iterator i = BS_diff.begin(); i != BS_diff.end(); ++i) {
 			// cout << "Viewing queued element v in BS_diff: " << *i << endl;
 			totalVisitedBN++;
 			//vector<pair<VertexID, vector<LabelSet>>> RBIi = RBI.at(*i);

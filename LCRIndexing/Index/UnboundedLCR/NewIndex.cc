@@ -762,7 +762,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 
     // Found out clusters that can reach target cluster
     // cout << "X " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
-    unordered_set<int> X;
+    unordered_set<VertexID> X;
     vector<pair<int, vector<LabelSet>>> RRCIt = RRCI.at(vToCID[target]);
     for (unsigned int i = 0, sizeI = RRCIt.size(); i != sizeI; ++i) {
         vector<LabelSet> lss = RRCIt[i].second;
@@ -884,7 +884,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 
         for (unordered_set<VertexID>::iterator i = BS_same.begin(); i != BS_same.end(); ++i) {
 			totalVisitedBN ++;
-            // cout << "Viewing queued element v in BS_same: " << *i << endl;
+            cout << "Viewing queued element v in BS_same: " << *i << endl;
 
             SmallEdgeSet ses = ROBI[*i];
             // graph->getOutNeighbours(*i, ses);
@@ -907,7 +907,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
         }
 
 		for (unordered_set<VertexID>::iterator i = BS_diff.begin(); i != BS_diff.end(); ++i) {
-			// cout << "Viewing queued element v in BS_diff: " << *i << endl;
+			cout << "Viewing queued element v in BS_diff: " << *i << endl;
 			totalVisitedBN++;
 			//vector<pair<VertexID, vector<LabelSet>>> RBIi = RBI.at(*i);
 			//// cout << "RBIi size: " << RBIi.size() << endl;
@@ -934,6 +934,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 
 			unordered_set<VertexID> preliminaryBS = newRBI[*i][ls];
 			for (const auto& v : preliminaryBS) {
+				cout << "preliminary BS " << v << endl;
 				if (visited[v] == 0) {
 					if (BT.count(v) != 0) {
 						cout << totalVisitedBN << endl;

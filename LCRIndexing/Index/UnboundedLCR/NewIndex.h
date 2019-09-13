@@ -4,6 +4,7 @@
 #include <boost/dynamic_bitset.hpp>
 #include <map>
 #include <unordered_map>
+#include <unordered_set>
 
 using namespace graphns;
 using namespace indexns;

@@ -113,14 +113,14 @@ void NewIndex::buildIndex() {
     this->graph->minBoundaryNodesClustering(clusters, vToCID, max(N / 20, 10));
 
 
-     for (int i = 0, sizeI = clusters.size(); i != sizeI; ++i) {
+     /*for (int i = 0, sizeI = clusters.size(); i != sizeI; ++i) {
          vector<VertexID> cluster = clusters[i];
          cout << "Cluster " << i << ": ";
          for (int j = 0, sizeJ = cluster.size(); j != sizeJ; ++j) {
              cout << cluster[j] << " ";
          }
          cout << endl;
-     }
+     }*/
 
     // this->graph->randomClustering(clusters, vToCID);
 
@@ -756,11 +756,11 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
             }
         }*/
 
-        cout << "Possible boundary nodes: ";
+       /* cout << "Possible boundary nodes: ";
         for (unordered_set<VertexID>::iterator i = possibleBoundaryNodes.begin(); i != possibleBoundaryNodes.end(); i++) {
             cout << *i << ", ";
         }
-        cout << endl;
+        cout << endl;*/
 
 		if (possibleBoundaryNodes.count(target)) {
 			return true;
@@ -937,7 +937,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 
         for (unordered_set<VertexID>::iterator i = BS_same.begin(); i != BS_same.end(); ++i) {
 			totalVisitedBN ++;
-            cout << "Viewing queued element v in BS_same: " << *i << endl;
+            // cout << "Viewing queued element v in BS_same: " << *i << endl;
 
             SmallEdgeSet ses = ROBI[*i];
             // graph->getOutNeighbours(*i, ses);
@@ -960,7 +960,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
         }
 
 		for (unordered_set<VertexID>::iterator i = BS_diff.begin(); i != BS_diff.end(); ++i) {
-			cout << "Viewing queued element v in BS_diff: " << *i << endl;
+			// cout << "Viewing queued element v in BS_diff: " << *i << endl;
 			totalVisitedBN++;
 			//vector<pair<VertexID, vector<LabelSet>>> RBIi = RBI.at(*i);
 			//// cout << "RBIi size: " << RBIi.size() << endl;
@@ -987,7 +987,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 
 			unordered_set<VertexID> preliminaryBS = newRBI[*i][ls];
 			for (const auto& v : preliminaryBS) {
-				cout << "preliminary BS " << v << endl;
+				// cout << "preliminary BS " << v << endl;
 				if (visited[v] == 0) {
 					if (BT.count(v) != 0) {
 						cout << totalVisitedBN << endl;

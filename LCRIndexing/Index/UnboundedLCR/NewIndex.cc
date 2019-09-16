@@ -501,7 +501,7 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 			}
 		}
 
-		cout << "LabelSetBucket: " << endl;
+		/*cout << "LabelSetBucket: " << endl;
 		for (int j = 0; j <= L; j++) {
 			unordered_set<VertexID> labelSetBucket = labelSetBuckets[j];
 			cout << j << ": ";
@@ -509,7 +509,7 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 				cout << ls << " ";
 			}
 			cout << endl;
-		}
+		}*/
 
 		// assume that the L in the cluster = the L in the graph
 		// use a topdown approach to from full labelset, to get all possible labelsets
@@ -542,7 +542,7 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 			}
 		}
 
-		cout << "LabelSetBucket after population: " << endl;
+		/*cout << "LabelSetBucket after population: " << endl;
 		for (int j = 0; j <= L; j++) {
 			unordered_set<VertexID> labelSetBucket = labelSetBuckets[j];
 			cout << j << ": ";
@@ -550,7 +550,7 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 				cout << ls << " ";
 			}
 			cout << endl;
-		}
+		}*/
 
 		// propagation
 		// for each labelset ls 
@@ -567,13 +567,15 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 			}
 		}
 
-		for (auto& it : lmap) {
+		/*for (auto& it : lmap) {
 			cout << it.first << ": ";
 			for (auto& v : it.second) {
 				cout << v << " ";
 			}
 			cout << endl;
-		}
+		}*/
+
+		newRBI[globalVID1] = lmap;
 	}	
 }
 

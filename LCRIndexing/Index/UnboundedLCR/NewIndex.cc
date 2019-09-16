@@ -485,6 +485,7 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 		// organization
 		for (int j = 0, sizeJ = closure.size(); j != sizeJ; j++) {
 			VertexID globalVID2 = cluster[closure[j].first];
+
 			LabelSets lss = closure[j].second;
 			for (int k = 0, sizeK = lss.size(); k != sizeK; k++) {
 				// propagation preparation
@@ -502,7 +503,7 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 
 		cout << "LabelSetBucket: " << endl;
 		for (int j = 0; j <= L; j++) {
-			unordered_set<VertexID> labelSetBucket = labelSetBuckets[i];
+			unordered_set<VertexID> labelSetBucket = labelSetBuckets[j];
 			cout << j << ": ";
 			for (auto& ls : labelSetBucket) {
 				cout << ls << " ";
@@ -513,23 +514,13 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 		// assume that the L in the cluster = the L in the graph
 		// use a topdown approach to from full labelset, to get all possible labelsets
 		// this can be extracted to be repeatedly used
-		LabelSet lss = 1 << L - 1;
+		LabelSet lss = (1 << L) - 1;
 
 		// insert the full-label into the lmap and bucket if it does not exist
 		if (!lmap.count(lss)) {
 			unordered_set<VertexID> s1;
 			lmap.insert({ lss, s1 });
 			labelSetBuckets[L].insert(lss);
-		}
-
-		cout << "LabelSetBucket after population: " << endl;
-		for (int j = 0; j <= L; j++) {
-			unordered_set<VertexID> labelSetBucket = labelSetBuckets[i];
-			cout << j << ": ";
-				for (auto& ls : labelSetBucket) {
-					cout << ls << " ";
-				}
-			cout << endl;
 		}
 		
 		// for each iteration, take the labelsets from the bucket 1 level above
@@ -541,7 +532,7 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 				vector<LabelID> labels;
 				getLabelIDsFromLabelSet(ls, labels);
 				for (const auto& label : labels) {
-					LabelSet reducedLs = ls - label;
+					LabelSet reducedLs = ls - (1 << label);
 					if (!lmap.count(reducedLs)) {
 						unordered_set<VertexID> s1;
 						lmap.insert({ reducedLs, s1 });
@@ -549,6 +540,16 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 					}
 				}
 			}
+		}
+
+		cout << "LabelSetBucket after population: " << endl;
+		for (int j = 0; j <= L; j++) {
+			unordered_set<VertexID> labelSetBucket = labelSetBuckets[i];
+			cout << j << ": ";
+			for (auto& ls : labelSetBucket) {
+				cout << ls << " ";
+			}
+			cout << endl;
 		}
 
 		// propagation

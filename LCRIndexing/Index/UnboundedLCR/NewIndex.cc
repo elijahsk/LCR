@@ -744,8 +744,8 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
     // same cluster
     if (sourceCluster == vToCID[target]) {
         // cout << "Same cluster " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
-        unordered_set<int> possibleBoundaryNodes;
-        vector<pair<VertexID, vector<LabelSet>>> RBIs = RBI[source];
+        unordered_set<VertexID> possibleBoundaryNodes = newRBI[source][ls];
+        /*vector<pair<VertexID, vector<LabelSet>>> RBIs = RBI[source];
         for (unsigned int i = 0, sizeI = RBIs.size(); i != sizeI; ++i) {
             vector<LabelSet> BNLabelSets = RBIs[i].second;
             for (unsigned int j = 0, sizeJ = BNLabelSets.size(); j != sizeJ; ++j) {
@@ -754,13 +754,13 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
                     break;
                 }
             }
-        }
+        }*/
 
-        // cout << "Possible boundary nodes: ";
-        // for (unordered_set<int>::iterator i = possibleBoundaryNodes.begin(); i != possibleBoundaryNodes.end(); i++) {
-        //     cout << *i << ", ";
-        // }
-        // cout << endl;
+         cout << "Possible boundary nodes: ";
+         for (unordered_set<int>::iterator i = possibleBoundaryNodes.begin(); i != possibleBoundaryNodes.end(); i++) {
+             cout << *i << ", ";
+         }
+         cout << endl;
 
         vector<pair<VertexID, vector<LabelSet>>> RRBIt = RRBI[target];
         for (unsigned int i = 0, sizeI = RRBIt.size(); i != sizeI; ++i) {

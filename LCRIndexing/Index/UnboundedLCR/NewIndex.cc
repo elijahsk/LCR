@@ -193,7 +193,7 @@ void NewIndex::buildIndex() {
 
     cout << "Step 2 (RBI & RRBI indices built): " << print_digits( getCurrentTimeInMilliSec() - constStartTime, 6 ) << endl;
     // printRBI();
-	printNewRBI();
+	// printNewRBI();
     // printRRBI();
 
     initializeIndex();
@@ -756,11 +756,15 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
             }
         }*/
 
-         cout << "Possible boundary nodes: ";
-         for (unordered_set<VertexID>::iterator i = possibleBoundaryNodes.begin(); i != possibleBoundaryNodes.end(); i++) {
-             cout << *i << ", ";
-         }
-         cout << endl;
+        cout << "Possible boundary nodes: ";
+        for (unordered_set<VertexID>::iterator i = possibleBoundaryNodes.begin(); i != possibleBoundaryNodes.end(); i++) {
+            cout << *i << ", ";
+        }
+        cout << endl;
+
+		if (possibleBoundaryNodes.count(target)) {
+			return true;
+		}
 
         vector<pair<VertexID, vector<LabelSet>>> RRBIt = RRBI[target];
         for (unsigned int i = 0, sizeI = RRBIt.size(); i != sizeI; ++i) {

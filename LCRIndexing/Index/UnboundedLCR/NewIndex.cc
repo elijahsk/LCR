@@ -757,7 +757,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
         }*/
 
          cout << "Possible boundary nodes: ";
-         for (unordered_set<int>::iterator i = possibleBoundaryNodes.begin(); i != possibleBoundaryNodes.end(); i++) {
+         for (unordered_set<VertexID>::iterator i = possibleBoundaryNodes.begin(); i != possibleBoundaryNodes.end(); i++) {
              cout << *i << ", ";
          }
          cout << endl;

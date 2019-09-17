@@ -110,7 +110,7 @@ void NewIndex::buildIndex() {
     this->vToCID = vector<int>(N, -1);
     this->isBoundaryNode = vector<bool>(N, false);
     // this->graph->newClustering(clusters, vToCID, 15, N / 10, N / 30);
-    this->graph->minBoundaryNodesClustering(clusters, vToCID, max(N / 20, 10));
+    this->graph->minBoundaryNodesClustering(clusters, vToCID, 1000);
 
 
      /*for (int i = 0, sizeI = clusters.size(); i != sizeI; ++i) {
@@ -544,13 +544,13 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 			}
 		}
 
-		/*for (auto& it : lmap) {
-			cout << it.first << ": ";
-			for (auto& v : it.second) {
-				cout << v << " ";
-			}
-			cout << endl;
-		}*/
+		//for (auto& it : lmap) {
+		//	cout << it.first << ": ";
+		//	for (auto& v : it.second) {
+		//		cout << v << " ";
+		//	}
+		//	cout << endl;
+		//}
 
 		newRBI[globalVID1] = lmap;
 	}	
@@ -710,6 +710,7 @@ bool NewIndex::query(VertexID source, VertexID target, LabelSet ls) {
 }
 
 bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
+	ls = ls & (1 << (graph->getNumberOfLabels) - 1);
     double queryStartTime = getCurrentTimeInMilliSec();
     if (source == target)
         return true;

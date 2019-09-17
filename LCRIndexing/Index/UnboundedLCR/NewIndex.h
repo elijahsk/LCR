@@ -93,14 +93,20 @@ using namespace std;
             vector<vector<pair<VertexID, vector<LabelSet>>>> RBI;
 			// boundary nodes that can reach the current node within a cluster
             vector<vector<pair<VertexID, vector<LabelSet>>>> RRBI;
+			// each cluster -> a list of clusters and minimal labelset
+			vector<vector<pair<int, vector<LabelSet>>>> RRCI;
+
 			// neighbouring boundary nodes that a node can reach outside a cluster
 			vector<vector<pair<VertexID, LabelSet>>> ROBI;
 			
 			// each node -> a mapping from labelset to a list of BNs that the node can reach
 			vector<unordered_map<LabelSet, unordered_set<VertexID>>> newRBI;
 
-            // each cluster -> a list of clusters and minimal labelset
-            vector<vector<pair<int, vector<LabelSet>>>> RRCI;
+			//each node -> a mapping from labelset to a list of BNs that can reach the node
+			vector<unordered_map<LabelSet, unordered_set<VertexID>>> newRRBI;
+
+			// each cluster -> a mapping from labelset to a list of BNs that the node can reach
+			vector<unordered_map<LabelSet, unordered_set<VertexID>>> newRRCI;
     };
 
 #endif

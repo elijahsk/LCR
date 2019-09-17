@@ -77,17 +77,32 @@ void NewIndex::queryAll(VertexID source, LabelSet ls, dynamic_bitset<>& canReach
 
 void NewIndex::initializeLocalIndexes() {
     int N = graph->getNumberOfVertices();
+	int L = graph->getNumberOfLabels();
+
+	unordered_map<LabelSet, unordered_set<VertexID>> lmap;
+
+	for (LabelSet j = 0, sizeJ = 1 << L; j < sizeJ; j++) {
+		// initialize
+		unordered_set<VertexID> s;
+		lmap.insert({ j, s });
+	}
 
     for (int i = 0; i != N; i++) {
 		vector<pair<VertexID, vector<LabelSet>>> v1, v2;
 		vector<pair<VertexID, LabelSet>> v3;
         vector<pair<int, vector<LabelSet>>> v4;
-		unordered_map<LabelSet, unordered_set<VertexID>> m1;
+		unordered_map<LabelSet, unordered_set<VertexID>> m1, m2, m3;
         RBI.push_back(v1);
         RRBI.push_back(v2);
 		ROBI.push_back(v3);
         RRCI.push_back(v4);
 		newRBI.push_back(m1);
+		newRRBI.push_back(m2);
+		newRRCI.push_back(m3);
+		newRBI[i] = lmap;
+		newRRBI[i] = lmap;
+		newRRCI[i] = lmap;
+
     }
 }
 
@@ -427,7 +442,9 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
         RBI.at(clusters.at(cID).at(i)) = RBPerVertex;
     }
 	int L = sG->getNumberOfLabels();
+
 	vector<unordered_set<LabelSet>> labelSetBuckets;
+
 	// LabelSet with number of labels = X goes to Xth bucket
 	// bucket[0] should be empty
 	for (int j = 0; j <= L; j++) {
@@ -435,6 +452,10 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 		labelSetBuckets.push_back(s1);
 	}
 	
+	for (LabelSet j = 0, sizeJ = 1 << L; j < sizeJ; j++) {
+		// add the labelset into the bucket
+		labelSetBuckets[getNumberOfLabelsInLabelSet(j)].insert(j);
+	}
 	// cout << "L in cluster " << cID << ": " << L << endl;
 
 	//vector<VertexID> cluster = clusters[cID];
@@ -480,26 +501,8 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 	for (int i = 0; i != N; i++) {
 		vector<pair<VertexID, vector<LabelSet>>> closure = tIn.at(i);
 		VertexID globalVID1 = cluster[i];
-		unordered_map<LabelSet, unordered_set<VertexID>> lmap;
+		unordered_map<LabelSet, unordered_set<VertexID>> lmap = newRBI[globalVID1];
 		
-		for (LabelSet j = 0, sizeJ = 1 << L; j < sizeJ; j++) {
-			// add the labelset into the bucket
-			labelSetBuckets[getNumberOfLabelsInLabelSet(j)].insert(j);
-			// initialize
-			unordered_set<VertexID> s;
-			lmap.insert({ j, s });
-		}
-
-		/*cout << "LabelSetBucket after population: " << endl;
-		for (int j = 0; j <= L; j++) {
-			unordered_set<VertexID> labelSetBucket = labelSetBuckets[j];
-			cout << j << ": ";
-			for (auto& ls : labelSetBucket) {
-				cout << ls << " ";
-			}
-			cout << endl;
-		}*/
-
 		// add nodes into the respective labels
 		for (int j = 0, sizeJ = closure.size(); j != sizeJ; j++) {
 			VertexID globalVID2 = cluster[closure[j].first];
@@ -509,29 +512,8 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 			}
 		}
 
-		
-		//// for each iteration, take the labelsets from the bucket 1 level above
-		//// reduce 1 label at a time to obtain new "less" labelset
-		//// a full labelset should have been built up
-		//for (int j = l - 1; j != 0; j--) {
-		//	unordered_set<vertexid> labelsetbucket = labelsetbuckets[j + 1];
-		//	for (const auto& ls : labelsetbucket) {
-		//		vector<labelid> labels;
-		//		getlabelidsfromlabelset(ls, labels);
-		//		for (const auto& label : labels) {
-		//			labelset reducedls = ls - (1 << label);
-		//			if (!lmap.count(reducedls)) {
-		//				unordered_set<vertexid> s1;
-		//				lmap.insert({ reducedls, s1 });
-		//				labelsetbuckets[j].insert(reducedls);
-		//			}
-		//		}
-		//	}
-		//}
-
 		// propagation
-		// for each labelset ls 
-		// corresponding vertices = { vertices of ls - 1 label }
+		// for each labelset ls, corresponding vertices = { vertices of ls - 1 label }
 		for (int j = 2; j <= L; j++) {
 			unordered_set<VertexID> labelSetBucket = labelSetBuckets[j];
 			for (const auto& ls : labelSetBucket) {
@@ -570,6 +552,69 @@ void NewIndex::getRRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
             RRBI.at(globalVID).push_back(make_pair(globalBoundaryVID, RRBInstanceLabelSets));
         }
     }
+
+	int L = sG->getNumberOfLabels();
+	vector<unordered_set<LabelSet>> labelSetBuckets;
+	
+	// LabelSet with number of labels = X goes to Xth bucket
+	// bucket[0] should be empty
+	for (int j = 0; j <= L; j++) {
+		unordered_set<LabelSet> s1;
+		labelSetBuckets.push_back(s1);
+	}
+
+	for (LabelSet j = 0, sizeJ = 1 << L; j < sizeJ; j++) {
+		// add the labelset into the bucket
+		labelSetBuckets[getNumberOfLabelsInLabelSet(j)].insert(j);
+	}
+
+	vector<VertexID> cluster = clusters[cID];
+
+	// organization
+	for (int i = 0; i != N; i++) {
+		vector<pair<VertexID, vector<LabelSet>>> closure = tIn.at(i);
+		VertexID globalVID1 = cluster[i];
+
+		// add nodes into the respective labels
+		for (int j = 0, sizeJ = closure.size(); j != sizeJ; j++) {
+			VertexID globalVID2 = cluster[closure[j].first];
+			LabelSets lss = closure[j].second;
+			for (int k = 0, sizeK = lss.size(); k != sizeK; k++) {
+				newRRBI[globalVID2][lss[k]].insert(globalVID1);
+			}
+		}
+	}
+
+	// propagation for each node
+	for (int i = 0; i != N; i++) {
+		VertexID globalVID1 = cluster[i];
+		unordered_map<LabelSet, unordered_set<VertexID>> lmap = newRRBI[globalVID1];
+
+		// for each labelset ls 
+		// corresponding vertices = { vertices of ls - 1 label }
+		for (int j = 2; j <= L; j++) {
+			unordered_set<VertexID> labelSetBucket = labelSetBuckets[j];
+			for (const auto& ls : labelSetBucket) {
+				vector<LabelID> labels;
+				getLabelIDsFromLabelSet(ls, labels);
+				for (const auto& label : labels) {
+					LabelSet reducedLs = ls - (1 << label);
+					lmap[ls].insert(lmap[reducedLs].begin(), lmap[reducedLs].end());
+				}
+			}
+		}
+
+		//for (auto& it : lmap) {
+		//	cout << it.first << ": ";
+		//	for (auto& v : it.second) {
+		//		cout << v << " ";
+		//	}
+		//	cout << endl;
+		//}
+
+		newRBI[globalVID1] = lmap;
+	}
+
 }
 
 void NewIndex::labeledBFSAcrossClusters(int cID, vector<vector<VertexID>> clusters, vector<bool>& BNIndexed) {
@@ -698,6 +743,71 @@ void NewIndex::getRRCI(int cID) {
             }
         }
     }
+
+	int L = sG->getNumberOfLabels();
+	vector<unordered_set<LabelSet>> labelSetBuckets;
+
+	// LabelSet with number of labels = X goes to Xth bucket
+	// bucket[0] should be empty
+	for (int j = 0; j <= L; j++) {
+		unordered_set<LabelSet> s1;
+		labelSetBuckets.push_back(s1);
+	}
+
+	for (LabelSet j = 0, sizeJ = 1 << L; j < sizeJ; j++) {
+		// add the labelset into the bucket
+		labelSetBuckets[getNumberOfLabelsInLabelSet(j)].insert(j);
+	}
+
+	vector<VertexID> cluster = clusters[cID];
+	vector<VertexID> boundaryNodes = boundaryNodesPerCluster.at(cID);
+
+	// organization
+	for (int i = 0, sizeI = boundaryNodes.size(); i != sizeI; i++) {
+		VertexID globalVID1 = cluster[i];
+		vector<pair<VertexID, vector<LabelSet>>> closure = tIn.at(globalVID);
+
+		// add nodes into the respective labels
+		for (int j = 0, sizeJ = closure.size(); j != sizeJ; j++) {
+			VertexID globalVID2 = closure[j].first;
+			VertexID cID2 = vToCID[globalVID2];
+			if (cID2 != cID) {
+				LabelSets lss = closure[j].second;
+				for (int k = 0, sizeK = lss.size(); k != sizeK; k++) {
+					newRRCI[cID2][lss[k]].insert(cID);
+				}
+			}
+		}
+	}
+
+	// propagation for each node
+	for (int i = 0, sizeI = clusters.size(); i != sizeI; i++) {
+		unordered_map<LabelSet, unordered_set<VertexID>> lmap = newRRCI[i];
+
+		// for each labelset ls 
+		// corresponding vertices = { vertices of ls - 1 label }
+		for (int j = 2; j <= L; j++) {
+			unordered_set<VertexID> labelSetBucket = labelSetBuckets[j];
+			for (const auto& ls : labelSetBucket) {
+				vector<LabelID> labels;
+				getLabelIDsFromLabelSet(ls, labels);
+				for (const auto& label : labels) {
+					LabelSet reducedLs = ls - (1 << label);
+					lmap[ls].insert(lmap[reducedLs].begin(), lmap[reducedLs].end());
+				}
+			}
+		}
+
+		//for (auto& it : lmap) {
+		//	cout << it.first << ": ";
+		//	for (auto& v : it.second) {
+		//		cout << v << " ";
+		//	}
+		//	cout << endl;
+		//}
+
+		newRRCI[i] = lmap;
+	}
 }
 
 bool NewIndex::query(VertexID source, VertexID target, LabelSet ls) {

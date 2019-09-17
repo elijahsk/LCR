@@ -710,7 +710,7 @@ bool NewIndex::query(VertexID source, VertexID target, LabelSet ls) {
 }
 
 bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
-	ls = ls & (1 << (graph->getNumberOfLabels) - 1);
+	ls = ls & ((1 << graph->getNumberOfLabels()) - 1);;
     double queryStartTime = getCurrentTimeInMilliSec();
     if (source == target)
         return true;

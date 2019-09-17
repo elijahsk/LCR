@@ -91,7 +91,7 @@ void NewIndex::initializeLocalIndexes() {
 		vector<pair<VertexID, vector<LabelSet>>> v1, v2;
 		vector<pair<VertexID, LabelSet>> v3;
         vector<pair<int, vector<LabelSet>>> v4;
-		unordered_map<LabelSet, unordered_set<VertexID>> m1, m2, m3;
+		unordered_map<LabelSet, unordered_set<VertexID>> m1(lmap.begin(), lmap.end()), m2(lmap.begin(), lmap.end()), m3(lmap.begin(), lmap.end());
         RBI.push_back(v1);
         RRBI.push_back(v2);
 		ROBI.push_back(v3);
@@ -99,10 +99,6 @@ void NewIndex::initializeLocalIndexes() {
 		newRBI.push_back(m1);
 		newRRBI.push_back(m2);
 		newRRCI.push_back(m3);
-		newRBI[i] = lmap;
-		newRRBI[i] = lmap;
-		newRRCI[i] = lmap;
-
     }
 }
 

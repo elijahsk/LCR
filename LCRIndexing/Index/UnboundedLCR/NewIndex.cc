@@ -482,7 +482,7 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 		VertexID globalVID1 = cluster[i];
 		unordered_map<LabelSet, unordered_set<VertexID>> lmap;
 		
-		for (LabelSet j = 0, sizeJ = 1 << L; j < lssMax; j++) {
+		for (LabelSet j = 0, sizeJ = 1 << L; j < sizeJ; j++) {
 			// add the labelset into the bucket
 			labelSetBuckets[getNumberOfLabelsInLabelSet(j)].insert(j);
 			// initialize

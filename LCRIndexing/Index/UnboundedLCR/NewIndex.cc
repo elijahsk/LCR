@@ -435,7 +435,7 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 		labelSetBuckets.push_back(s1);
 	}
 	
-	cout << "L in cluster " << cID << ": " << L << endl;
+	// cout << "L in cluster " << cID << ": " << L << endl;
 
 	//vector<VertexID> cluster = clusters[cID];
 	//for (int i = 0; i != N; i++) {
@@ -480,77 +480,54 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 	for (int i = 0; i != N; i++) {
 		vector<pair<VertexID, vector<LabelSet>>> closure = tIn.at(i);
 		VertexID globalVID1 = cluster[i];
-		unordered_map<LabelSet, unordered_set<VertexID>> lmap = newRBI[globalVID1];
+		unordered_map<LabelSet, unordered_set<VertexID>> lmap;
+		
+		for (LabelSet j = 0, sizeJ = 1 << L; j < lssMax; j++) {
+			// add the labelset into the bucket
+			labelSetBuckets[getNumberOfLabelsInLabelSet(j)].insert(j);
+			// initialize
+			unordered_set<VertexID> s;
+			lmap.insert({ j, s });
+		}
 
-		// organization
+		cout << "LabelSetBucket after population: " << endl;
+		for (int j = 0; j <= L; j++) {
+			unordered_set<VertexID> labelSetBucket = labelSetBuckets[j];
+			cout << j << ": ";
+			for (auto& ls : labelSetBucket) {
+				cout << ls << " ";
+			}
+			cout << endl;
+		}
+
+		// add nodes into the respective labels
 		for (int j = 0, sizeJ = closure.size(); j != sizeJ; j++) {
 			VertexID globalVID2 = cluster[closure[j].first];
-
 			LabelSets lss = closure[j].second;
 			for (int k = 0, sizeK = lss.size(); k != sizeK; k++) {
-				// propagation preparation
-				labelSetBuckets[getNumberOfLabelsInLabelSet(lss[k])].insert(lss[k]);
-				// end of preparation, continue organization
-				if (lmap.count(lss[k])) {
-					lmap[lss[k]].insert(globalVID2);
-				}
-				else {
-					unordered_set<VertexID> s1({ globalVID2 });
-					lmap.insert({ lss[k], s1 });
-				}
+				lmap[lss[k]].insert(globalVID2);
 			}
 		}
 
-		/*cout << "LabelSetBucket: " << endl;
-		for (int j = 0; j <= L; j++) {
-			unordered_set<VertexID> labelSetBucket = labelSetBuckets[j];
-			cout << j << ": ";
-			for (auto& ls : labelSetBucket) {
-				cout << ls << " ";
-			}
-			cout << endl;
-		}*/
-
-		// assume that the L in the cluster = the L in the graph
-		// use a topdown approach to from full labelset, to get all possible labelsets
-		// this can be extracted to be repeatedly used
-		LabelSet lss = (1 << L) - 1;
-
-		// insert the full-label into the lmap and bucket if it does not exist
-		if (!lmap.count(lss)) {
-			unordered_set<VertexID> s1;
-			lmap.insert({ lss, s1 });
-			labelSetBuckets[L].insert(lss);
-		}
 		
-		// for each iteration, take the labelsets from the bucket 1 level above
-		// reduce 1 label at a time to obtain new "less" labelset
-		// a full labelset should have been built up
-		for (int j = L - 1; j != 0; j--) {
-			unordered_set<VertexID> labelSetBucket = labelSetBuckets[j + 1];
-			for (const auto& ls : labelSetBucket) {
-				vector<LabelID> labels;
-				getLabelIDsFromLabelSet(ls, labels);
-				for (const auto& label : labels) {
-					LabelSet reducedLs = ls - (1 << label);
-					if (!lmap.count(reducedLs)) {
-						unordered_set<VertexID> s1;
-						lmap.insert({ reducedLs, s1 });
-						labelSetBuckets[j].insert(reducedLs);
-					}
-				}
-			}
-		}
-
-		/*cout << "LabelSetBucket after population: " << endl;
-		for (int j = 0; j <= L; j++) {
-			unordered_set<VertexID> labelSetBucket = labelSetBuckets[j];
-			cout << j << ": ";
-			for (auto& ls : labelSetBucket) {
-				cout << ls << " ";
-			}
-			cout << endl;
-		}*/
+		//// for each iteration, take the labelsets from the bucket 1 level above
+		//// reduce 1 label at a time to obtain new "less" labelset
+		//// a full labelset should have been built up
+		//for (int j = l - 1; j != 0; j--) {
+		//	unordered_set<vertexid> labelsetbucket = labelsetbuckets[j + 1];
+		//	for (const auto& ls : labelsetbucket) {
+		//		vector<labelid> labels;
+		//		getlabelidsfromlabelset(ls, labels);
+		//		for (const auto& label : labels) {
+		//			labelset reducedls = ls - (1 << label);
+		//			if (!lmap.count(reducedls)) {
+		//				unordered_set<vertexid> s1;
+		//				lmap.insert({ reducedls, s1 });
+		//				labelsetbuckets[j].insert(reducedls);
+		//			}
+		//		}
+		//	}
+		//}
 
 		// propagation
 		// for each labelset ls 
@@ -567,13 +544,13 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 			}
 		}
 
-		/*for (auto& it : lmap) {
+		for (auto& it : lmap) {
 			cout << it.first << ": ";
 			for (auto& v : it.second) {
 				cout << v << " ";
 			}
 			cout << endl;
-		}*/
+		}
 
 		newRBI[globalVID1] = lmap;
 	}	

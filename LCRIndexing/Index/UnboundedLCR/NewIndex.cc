@@ -568,7 +568,7 @@ void NewIndex::getRRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 		labelSetBuckets[getNumberOfLabelsInLabelSet(j)].insert(j);
 	}
 
-	vector<VertexID> cluster = clusters[cID];
+	// vector<VertexID> cluster = clusters[cID];
 
 	// organization
 	for (int i = 0; i != N; i++) {
@@ -744,7 +744,7 @@ void NewIndex::getRRCI(int cID) {
         }
     }
 
-	int L = sG->getNumberOfLabels();
+	int L = graph->getNumberOfLabels();
 	vector<unordered_set<LabelSet>> labelSetBuckets;
 
 	// LabelSet with number of labels = X goes to Xth bucket
@@ -760,11 +760,11 @@ void NewIndex::getRRCI(int cID) {
 	}
 
 	vector<VertexID> cluster = clusters[cID];
-	vector<VertexID> boundaryNodes = boundaryNodesPerCluster.at(cID);
+	// vector<VertexID> boundaryNodes = boundaryNodesPerCluster.at(cID);
 
 	// organization
 	for (int i = 0, sizeI = boundaryNodes.size(); i != sizeI; i++) {
-		VertexID globalVID1 = cluster[i];
+		VertexID globalVID = cluster[i];
 		vector<pair<VertexID, vector<LabelSet>>> closure = tIn.at(globalVID);
 
 		// add nodes into the respective labels

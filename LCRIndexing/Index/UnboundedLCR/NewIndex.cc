@@ -490,7 +490,7 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 			lmap.insert({ j, s });
 		}
 
-		cout << "LabelSetBucket after population: " << endl;
+		/*cout << "LabelSetBucket after population: " << endl;
 		for (int j = 0; j <= L; j++) {
 			unordered_set<VertexID> labelSetBucket = labelSetBuckets[j];
 			cout << j << ": ";
@@ -498,7 +498,7 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 				cout << ls << " ";
 			}
 			cout << endl;
-		}
+		}*/
 
 		// add nodes into the respective labels
 		for (int j = 0, sizeJ = closure.size(); j != sizeJ; j++) {
@@ -544,13 +544,13 @@ void NewIndex::getRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 			}
 		}
 
-		for (auto& it : lmap) {
+		/*for (auto& it : lmap) {
 			cout << it.first << ": ";
 			for (auto& v : it.second) {
 				cout << v << " ";
 			}
 			cout << endl;
-		}
+		}*/
 
 		newRBI[globalVID1] = lmap;
 	}	

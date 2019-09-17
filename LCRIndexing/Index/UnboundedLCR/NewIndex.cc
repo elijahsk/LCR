@@ -968,7 +968,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 				// cout << "preliminary BS " << v << endl;
 				if (visited[v] == 0) {
 					if (BT.count(v) != 0) {
-						cout << totalVisitedBN << endl;
+						// cout << totalVisitedBN << endl;
 						return true;
 					}
 					BS1_same.insert(v);
@@ -995,7 +995,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 				// Unvisited boundary nodes from a different cluster that can reach target
 				if (isLabelSubset(ls2, ls) && (visited[v2] == 0) && (X.find(vToCID[v2]) != X.end())) {
 					if (BT.count(v2) != 0) {
-						cout << totalVisitedBN << endl;
+						// cout << totalVisitedBN << endl;
 						return true;
 					}
 					BS1_diff.insert(v2);

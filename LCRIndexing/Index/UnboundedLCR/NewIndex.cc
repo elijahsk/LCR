@@ -62,11 +62,42 @@ unsigned long NewIndex::getIndexSizeInBytes() {
         }
     }
 
+
     cout << "RBI Size: " << RBISize << endl;
     cout << "RRBI Size: " << RRBISize << endl;
     cout << "RRCI Size: " << RRCISize << endl;
+	
+	long unsigned newRBISize = 0;
+	long unsigned newRRBISize = 0;
+	long unsigned newRRCISize = 0;
 
-    size += RBISize + RRBISize + RRCISize + graph->getGraphSizeInBytes();
+	newRBISize += N * emptyVectorSize;
+	newRBISize += N * emptyVectorSize;
+	newRBISize += clusters.size() * emptyVectorSize;
+	
+	for (int i = 0; i < N; i++) {
+		for (LabelSet j = 0; j < 1 << L; j++) {
+				newRBISize += L + emptyVectorSize + newRBI[i][j].size() * sizeof(VertexID);
+			}
+		}
+
+		for (LabelSet j = 0; j < 1 << L; j++) {
+			newRRBISize += L + emptyVectorSize + newRRBI[i][j].size() * sizeof(VertexID);
+		}
+	}
+
+	for (int i = 0; i < clusters.size(); i++) {
+		for (LabelSet j = 0; j < 1 << L; j++) {
+			newRRCISize += L + emptyVectorSize + newRRCI[i][j].size() * sizeof(VertexID);
+		}
+	}
+
+	cout << "newRBI Size: " << newRBISize << endl;
+	cout << "newRRBI Size: " << newRRBISize << endl;
+	cout << "newRRCI Size: " << newRRCISize << endl;
+
+
+    size += newRBISize + newRRBISize + newRRCISize + graph->getGraphSizeInBytes();
 
     return size;
 };

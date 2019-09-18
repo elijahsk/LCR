@@ -954,20 +954,22 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 
     // Get boundary nodes that can reach target
     // cout << "BT " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
-    unordered_set<int> BT;
-    vector<pair<VertexID, vector<LabelSet>>> RRBIt = RRBI.at(target);
-    for (unsigned int i = 0, sizeI = RRBIt.size(); i != sizeI; ++i) {
-        vector<LabelSet> BNLabelSets = RRBIt.at(i).second;
-        for (unsigned int j = 0, sizeJ = BNLabelSets.size(); j != sizeJ; j++) {
-            if (isLabelSubset(BNLabelSets.at(j), ls)) {
-				if (BS_same.count(RRBIt.at(i).first) != 0) {
-					return true;
-				}
-                BT.insert(RRBIt.at(i).first);
-                break;
-            }
-        }
-    }
+    unordered_set<VertexID> BT;
+    //vector<pair<VertexID, vector<LabelSet>>> RRBIt = RRBI.at(target);
+    //for (unsigned int i = 0, sizeI = RRBIt.size(); i != sizeI; ++i) {
+    //    vector<LabelSet> BNLabelSets = RRBIt.at(i).second;
+    //    for (unsigned int j = 0, sizeJ = BNLabelSets.size(); j != sizeJ; j++) {
+    //        if (isLabelSubset(BNLabelSets.at(j), ls)) {
+				//if (BS_same.count(RRBIt.at(i).first) != 0) {
+				//	return true;
+				//}
+    //            BT.insert(RRBIt.at(i).first);
+    //            break;
+    //        }
+    //    }
+    //}
+
+	BT = newRRBI[target][ls];
 
     if (isBoundaryNode[target]) {
         BT.insert(target);

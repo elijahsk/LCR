@@ -608,7 +608,7 @@ void NewIndex::getRRBI(int cID, Graph* sG, vector<vector<VertexID>> clusters) {
 		//	cout << endl;
 		//}
 
-		newRBI[globalVID1] = lmap;
+		newRRBI[globalVID1] = lmap;
 	}
 
 }

@@ -760,7 +760,7 @@ void NewIndex::getRRCI(int cID) {
 
 	// organization
 	for (int i = 0, sizeI = boundaryNodes.size(); i != sizeI; i++) {
-		VertexID globalVID = cluster[i];
+		VertexID globalVID = cluster[boundaryNodes[i]];
 		vector<pair<VertexID, vector<LabelSet>>> closure = tIn.at(globalVID);
 
 		// add nodes into the respective labels
@@ -900,7 +900,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
     // Found out clusters that can reach target cluster
     // cout << "X " << print_digits( getCurrentTimeInMilliSec() - queryStartTime, 4 );
     unordered_set<VertexID> X;
-    vector<pair<int, vector<LabelSet>>> RRCIt = RRCI.at(vToCID[target]);
+    /*vector<pair<int, vector<LabelSet>>> RRCIt = RRCI.at(vToCID[target]);
     for (unsigned int i = 0, sizeI = RRCIt.size(); i != sizeI; ++i) {
         vector<LabelSet> lss = RRCIt[i].second;
         for (unsigned int j = 0, sizeJ = lss.size(); j != sizeJ; ++j) {
@@ -909,8 +909,8 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
                 break;
             }
         }
-    }
-
+    }*/
+	X = newRRCI[vToCID[target]][ls];
 	X.insert(vToCID[target]);
 
     // If the source and target clusters can't be linked by another common cluster, return false

@@ -78,7 +78,6 @@ unsigned long NewIndex::getIndexSizeInBytes() {
 	for (VertexID i = 0; i < N; i++) {
 		for (LabelSet j = 0; j < 1 << L; j++) {
 				newRBISize += L + emptyVectorSize + newRBI[i][j].size() * sizeof(VertexID);
-			}
 		}
 
 		for (LabelSet j = 0; j < 1 << L; j++) {

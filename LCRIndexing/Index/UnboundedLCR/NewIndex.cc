@@ -75,7 +75,7 @@ unsigned long NewIndex::getIndexSizeInBytes() {
 	newRBISize += N * emptyVectorSize;
 	newRBISize += clusters.size() * emptyVectorSize;
 	
-	for (int i = 0; i < N; i++) {
+	for (VertexID i = 0; i < N; i++) {
 		for (LabelSet j = 0; j < 1 << L; j++) {
 				newRBISize += L + emptyVectorSize + newRBI[i][j].size() * sizeof(VertexID);
 			}
@@ -86,7 +86,7 @@ unsigned long NewIndex::getIndexSizeInBytes() {
 		}
 	}
 
-	for (int i = 0; i < clusters.size(); i++) {
+	for (VertexID i = 0; i < clusters.size(); i++) {
 		for (LabelSet j = 0; j < 1 << L; j++) {
 			newRRCISize += L + emptyVectorSize + newRRCI[i][j].size() * sizeof(VertexID);
 		}

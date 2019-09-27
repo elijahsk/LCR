@@ -230,8 +230,6 @@ int main(int argc, char *argv[]) {
     int N = graph->getNumberOfVertices();
     int M = graph->getNumberOfEdges();
 
-    noOfMethods = 5;
-
     // Here we loop over all methods
     for (int i = firstMethod; i < noOfMethods; i++) {
         cout << "method i=" << i << endl;
@@ -259,7 +257,7 @@ int main(int argc, char *argv[]) {
 
         // Full-LI
         if ( i == 2 ) {
-            int k = N;
+            int k = N / 10;
             int b = 0;
             index = new LandmarkedIndex(graph, false, false, k, b);
         }

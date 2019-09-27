@@ -880,7 +880,14 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
 			return true;
 		}
 
-        vector<pair<VertexID, vector<LabelSet>>> RRBIt = RRBI[target];
+		unordered_set<VertexID> RRBIt = newRRBI[target][ls];
+
+		for (auto i = RRBIt.begin(), sizeI = RRBIt.end(); i != sizeI; i++) {
+			if (possibleBoundaryNodes.count(*i)) {
+				return true;
+			}
+		}
+        /*vector<pair<VertexID, vector<LabelSet>>> RRBIt = RRBI[target];
         for (unsigned int i = 0, sizeI = RRBIt.size(); i != sizeI; ++i) {
             if (possibleBoundaryNodes.count(RRBIt[i].first) > 0) {
                 vector<LabelSet> BNLabelSets = RRBIt[i].second;
@@ -890,8 +897,7 @@ bool NewIndex::queryShell(VertexID source, VertexID target, LabelSet ls) {
                     }
                 }
             }
-        }
-
+		}*/
         queue< VertexID > q;
         q.push(source);
 
